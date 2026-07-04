@@ -163,6 +163,33 @@ export async function calculate(
   return (await res.json()) as CalculationResult;
 }
 
+export interface ComparisonEntry {
+  ruleset: Ruleset;
+  ok: boolean;
+  result?: CalculationResult;
+  error?: string;
+  detail?: string;
+}
+
+// Compare the same heirs across rule sets (KHI vs Syafi'i by default).
+export async function compare(
+  req: CalculationRequest,
+  rulesets: Ruleset[],
+  mode: Mode
+): Promise<ComparisonEntry[]> {
+  const res = await fetch(`${API_BASE}/api/compare/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...req, rulesets, mode }),
+  });
+  if (res.status === 400) {
+    const err = await res.json();
+    throw new CalculationError(JSON.stringify(err), true);
+  }
+  if (!res.ok) throw new CalculationError(`Server error (${res.status})`, true);
+  return ((await res.json()).comparison as ComparisonEntry[]) ?? [];
+}
+
 // Professional-mode PDF export (PRD §7). Returns the PDF as a Blob for download.
 export async function fetchPdf(req: CalculationRequest): Promise<Blob> {
   const res = await fetch(`${API_BASE}/api/calculate/professional/pdf/`, {

@@ -6,6 +6,8 @@ import {
   CalculationError,
   CalculationRequest,
   CalculationResult,
+  compare,
+  ComparisonEntry,
   EstateInput,
   fetchPdf,
   HeirsInput,
@@ -16,6 +18,7 @@ import { RULESET_LABELS } from "@/lib/labels";
 import HeirForm from "@/components/HeirForm";
 import ResultView from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
+import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
@@ -33,6 +36,8 @@ export default function Home() {
   const [hartaBersama, setHartaBersama] = useState(false);
 
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const [comparison, setComparison] = useState<ComparisonEntry[] | null>(null);
+  const [compareMode, setCompareMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
@@ -74,8 +79,15 @@ export default function Home() {
     setError(null);
     const req: CalculationRequest = buildRequest();
     try {
-      const res = await calculate(req, mode);
-      setResult(res);
+      if (compareMode) {
+        const entries = await compare(req, ["khi", "syafii"], mode);
+        setComparison(entries);
+        setResult(null);
+      } else {
+        const res = await calculate(req, mode);
+        setResult(res);
+        setComparison(null);
+      }
     } catch (err) {
       const message =
         err instanceof CalculationError
@@ -83,6 +95,7 @@ export default function Home() {
           : "Tidak dapat menghubungi server. Pastikan backend berjalan di :8000.";
       setError(message);
       setResult(null);
+      setComparison(null);
     } finally {
       setLoading(false);
     }
@@ -148,10 +161,14 @@ export default function Home() {
           setHartaBersama={setHartaBersama}
         />
 
-        <div style={{ marginTop: 20 }}>
+        <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
           <button className="btn" onClick={onSubmit} disabled={loading}>
-            {loading ? "Menghitung…" : "Hitung pembagian"}
+            {loading ? "Menghitung…" : compareMode ? "Bandingkan pembagian" : "Hitung pembagian"}
           </button>
+          <label className="checkbox">
+            <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
+            Bandingkan KHI vs Syafi&apos;i berdampingan
+          </label>
         </div>
       </div>
 
@@ -191,6 +208,13 @@ export default function Home() {
               <div className="disclaimer" style={{ marginTop: 16 }}>{result.disclaimer}</div>
             </>
           )}
+        </div>
+      )}
+
+      {comparison && (
+        <div className="card">
+          <h2>Perbandingan madzhab</h2>
+          <ComparisonView entries={comparison} />
         </div>
       )}
 

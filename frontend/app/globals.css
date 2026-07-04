@@ -112,6 +112,11 @@ th { color: var(--muted); font-weight: 600; font-size: 0.82rem; text-transform: 
 .muted { color: var(--muted); }
 .small { font-size: 0.85rem; }
 
+/* Comparison view */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.compare-col { border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg); }
+@media (max-width: 820px) { .compare-grid { grid-template-columns: 1fr; } }
+
 /* React Flow derivation view */
 .flow-wrap { height: 560px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 12px; }
 .rf-node {
