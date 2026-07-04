@@ -12,7 +12,8 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { CalculationResult } from "@/lib/api";
-import { relationLabel, CATEGORY_LABELS } from "@/lib/labels";
+import { useI18n, relationLabel, categoryLabel } from "@/lib/i18n";
+import { explainShare, explainBlocked } from "@/lib/explain";
 
 // PRD §7: tree/flow view of the derivation — hajb exclusions, furud assignment, asabah
 // distribution — with citations on hover. The estate flows to each awarded heir (colored
@@ -47,13 +48,14 @@ function FlowNode({ data }: { data: NodeData }) {
 const nodeTypes = { faraid: FlowNode };
 
 export default function DerivationFlow({ result }: { result: CalculationResult }) {
+  const { lang, t } = useI18n();
   const { nodes, edges } = useMemo(() => {
     const nodes: Node<NodeData>[] = [];
     const edges: Edge[] = [];
     const src = result.sources;
 
     const awarded = result.shares.filter((s) => s.category !== "harta_bersama");
-    const rootSub = `pokok masalah ${result.pokok_masalah}${
+    const rootSub = `${t("pokok_masalah")} ${result.pokok_masalah}${
       result.aul_applied ? ` · 'aul → ${result.aul_base}` : ""
     }${result.radd_applied ? " · radd" : ""}`;
 
@@ -61,7 +63,7 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
       id: "root",
       type: "faraid",
       position: { x: 0, y: Math.max(60, (awarded.length * 92) / 2 - 40) },
-      data: { title: "Harta warisan", sub: rootSub, variant: "root" },
+      data: { title: t('divisible_estate'), sub: rootSub, variant: "root" },
     });
 
     const relationToNode: Record<string, string> = {};
@@ -77,10 +79,10 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
         type: "faraid",
         position: { x: 360, y: i * 92 },
         data: {
-          title: `${relationLabel(s.label_id)}${s.count > 1 ? ` ×${s.count}` : ""}`,
-          sub: `${s.share.text} · ${CATEGORY_LABELS[s.category] ?? s.category}`,
+          title: `${relationLabel(s.label_id, lang)}${s.count > 1 ? ` ×${s.count}` : ""}`,
+          sub: `${s.share.text} · ${categoryLabel(s.category, t)}`,
           variant,
-          hover: `${s.reason}${cite ? `  [${cite.reference}]` : ""}`,
+          hover: `${explainShare(s, lang)}${cite ? `  [${cite.reference}]` : ""}`,
         },
       });
       edges.push({
@@ -101,10 +103,10 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
         type: "faraid",
         position: { x: 720, y: i * 92 },
         data: {
-          title: `${relationLabel(b.label_id)}${b.count > 1 ? ` ×${b.count}` : ""}`,
-          sub: "terhalang (hajb)",
+          title: `${relationLabel(b.label_id, lang)}${b.count > 1 ? ` ×${b.count}` : ""}`,
+          sub: t("blocked_title"),
           variant: "blocked",
-          hover: `${b.reason}${cite ? `  [${cite.reference}]` : ""}`,
+          hover: `${explainBlocked(b, lang)}${cite ? `  [${cite.reference}]` : ""}`,
         },
       });
       const source = relationToNode[b.blocked_by] ?? "root";
@@ -112,7 +114,7 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
         id: `e-${source}-${id}`,
         source,
         target: id,
-        label: "terhalang",
+        label: lang === "id" ? "terhalang" : "blocked",
         style: { stroke: "var(--blocked)", strokeDasharray: "5 4" },
         labelStyle: { fill: "var(--blocked)" },
         markerEnd: { type: MarkerType.ArrowClosed, color: "var(--blocked)" },
@@ -120,7 +122,7 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
     });
 
     return { nodes, edges };
-  }, [result]);
+  }, [result, lang, t]);
 
   return (
     <div className="flow-wrap">

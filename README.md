@@ -42,6 +42,13 @@ Built in the CLAUDE.md build order (all 9 steps). Tier 1 (KHI + Syafi'i): 100% p
 the validation test bank (the v1 gate). Tier 2 (Hanafi/Maliki/Hanbali): implemented and
 clearly marked **Beta** — the badge stays until a ≥30-example validation pass per madhab.
 
+Post-v1 features: side-by-side KHI-vs-Syafi'i **comparison** (`/api/compare/`),
+**al-jadd wa al-ikhwah** (grandfather + siblings, Zaid's muqasama, for Syafi'i/Maliki/
+Hanbali; the intricate akdariyya/mu'adda sub-cases still raise), and **English/Indonesian
+i18n** (EN/ID toggle; English derivation text is regenerated on the client from the
+engine's structured fields so the validated engine stays untouched — the PDF export
+remains Indonesian).
+
 ### API endpoints
 
 - `POST /api/calculate/personal/` — full derivation, Personal mode.

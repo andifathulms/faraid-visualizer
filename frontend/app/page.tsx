@@ -14,7 +14,7 @@ import {
   Mode,
   Ruleset,
 } from "@/lib/api";
-import { RULESET_LABELS } from "@/lib/labels";
+import { useI18n, rulesetLabel, Lang } from "@/lib/i18n";
 import HeirForm from "@/components/HeirForm";
 import ResultView from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
@@ -29,6 +29,7 @@ function cleanEstate(e: EstateInput): EstateInput | undefined {
 }
 
 export default function Home() {
+  const { lang, setLang, t } = useI18n();
   const [mode, setMode] = useState<Mode>("personal");
   const [ruleset, setRuleset] = useState<Ruleset>("khi");
   const [heirs, setHeirs] = useState<HeirsInput>({ husband: true, sons: 2, daughters: 1 });
@@ -68,7 +69,7 @@ export default function Home() {
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof CalculationError ? err.message : "Gagal membuat PDF.");
+      setError(err instanceof CalculationError ? err.message : t("preparing"));
     } finally {
       setExportingPdf(false);
     }
@@ -90,9 +91,7 @@ export default function Home() {
       }
     } catch (err) {
       const message =
-        err instanceof CalculationError
-          ? err.message
-          : "Tidak dapat menghubungi server. Pastikan backend berjalan di :8000.";
+        err instanceof CalculationError ? err.message : t("server_error");
       setError(message);
       setResult(null);
       setComparison(null);
@@ -113,25 +112,32 @@ export default function Home() {
     <div className="container">
       <div className="header">
         <div>
-          <h1>Faraid Visualizer</h1>
-          <div className="subtitle">
-            Kalkulator waris Islam yang menunjukkan <em>alasan</em> setiap bagian, dengan rujukan.
-          </div>
+          <h1>{t("app_title")}</h1>
+          <div className="subtitle">{t("app_subtitle")}</div>
         </div>
-        <div className="toggle-group" role="tablist" aria-label="Mode">
-          <button className={mode === "personal" ? "active" : ""} onClick={() => setMode("personal")}>
-            Personal
-          </button>
-          <button className={mode === "professional" ? "active" : ""} onClick={() => setMode("professional")}>
-            Profesional
-          </button>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="toggle-group" role="tablist" aria-label="Language">
+            {(["id", "en"] as Lang[]).map((l) => (
+              <button key={l} className={lang === l ? "active" : ""} onClick={() => setLang(l)}>
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <div className="toggle-group" role="tablist" aria-label="Mode">
+            <button className={mode === "personal" ? "active" : ""} onClick={() => setMode("personal")}>
+              {t("mode_personal")}
+            </button>
+            <button className={mode === "professional" ? "active" : ""} onClick={() => setMode("professional")}>
+              {t("mode_professional")}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="card">
-        <h2>Dasar hukum & ahli waris</h2>
+        <h2>{t("heirs_card_title")}</h2>
         <div className="field" style={{ maxWidth: 320 }}>
-          <label>Dasar hukum (madhab)</label>
+          <label>{t("legal_basis")}</label>
           <select
             value={ruleset}
             onChange={(e) => {
@@ -145,7 +151,7 @@ export default function Home() {
           >
             {RULESETS.map((r) => (
               <option key={r} value={r}>
-                {RULESET_LABELS[r]}
+                {rulesetLabel(r, lang)}
               </option>
             ))}
           </select>
@@ -163,11 +169,11 @@ export default function Home() {
 
         <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
           <button className="btn" onClick={onSubmit} disabled={loading}>
-            {loading ? "Menghitung…" : compareMode ? "Bandingkan pembagian" : "Hitung pembagian"}
+            {loading ? t("calculating") : compareMode ? t("calc_compare") : t("calc")}
           </button>
           <label className="checkbox">
             <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
-            Bandingkan KHI vs Syafi&apos;i berdampingan
+            {t("compare_toggle")}
           </label>
         </div>
       </div>
@@ -175,7 +181,7 @@ export default function Home() {
       {error && (
         <div className="card">
           <div className="error-box">
-            <strong>Tidak dapat dihitung.</strong> {error}
+            <strong>{t("cannot_calc")}</strong> {error}
           </div>
         </div>
       )}
@@ -183,19 +189,19 @@ export default function Home() {
       {result && (
         <div className="card">
           <div className="header" style={{ marginBottom: 8 }}>
-            <h2 style={{ margin: 0 }}>Hasil — {RULESET_LABELS[result.ruleset]}</h2>
+            <h2 style={{ margin: 0 }}>{t("result")} — {rulesetLabel(result.ruleset, lang)}</h2>
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <div className="toggle-group" role="tablist" aria-label="Tampilan">
+              <div className="toggle-group" role="tablist" aria-label="View">
                 <button className={view === "table" ? "active" : ""} onClick={() => setView("table")}>
-                  Tabel
+                  {t("view_table")}
                 </button>
                 <button className={view === "diagram" ? "active" : ""} onClick={() => setView("diagram")}>
-                  Diagram
+                  {t("view_diagram")}
                 </button>
               </div>
               {result.mode === "professional" && (
                 <button className="btn btn-secondary" onClick={handleExportPdf} disabled={exportingPdf}>
-                  {exportingPdf ? "Menyiapkan…" : "Ekspor PDF"}
+                  {exportingPdf ? t("preparing") : t("export_pdf")}
                 </button>
               )}
             </div>
@@ -205,7 +211,9 @@ export default function Home() {
           ) : (
             <>
               <DerivationFlow result={result} />
-              <div className="disclaimer" style={{ marginTop: 16 }}>{result.disclaimer}</div>
+              <div className="disclaimer" style={{ marginTop: 16 }}>
+                {result.mode === "professional" ? t("disclaimer_professional") : t("disclaimer_personal")}
+              </div>
             </>
           )}
         </div>
@@ -213,7 +221,7 @@ export default function Home() {
 
       {comparison && (
         <div className="card">
-          <h2>Perbandingan madzhab</h2>
+          <h2>{t("comparison_title")}</h2>
           <ComparisonView entries={comparison} />
         </div>
       )}
