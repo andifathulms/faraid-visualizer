@@ -30,6 +30,10 @@ class RuleSetConfig:
     dzawil_arham_distributed: bool          # Hanafi/Hanbali/KHI-practice True; Syafi'i/Maliki
                                             # route residue to baitul mal instead
 
+    # Maliki rejects radd entirely (baitul mal is treated as an heir); Hanafi, Hanbali,
+    # KHI, and later-Syafi'i practice accept radd to non-spouse ashabul furud.
+    applies_radd: bool = True
+
     # --- Per-rule citation mapping ------------------------------------------------
     # Keys are stable rule tags used across faraid_engine.rules; values are source_ids
     # that MUST resolve in faraid_engine.sources.

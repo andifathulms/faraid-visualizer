@@ -48,11 +48,22 @@ class CalculateEndpointTests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(res.json()["error"], "UnsupportedConfiguration")
 
-    def test_beta_madhab_not_implemented_returns_422(self):
+    def test_beta_madhab_returns_200_with_beta_flag(self):
         res = self.client.post(
             "/api/calculate/personal/", {"heirs": {"sons": 1}, "ruleset": "hanafi"}, format="json"
         )
-        self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        body = res.json()
+        self.assertTrue(body["beta"])
+        self.assertTrue(any("BETA" in n for n in body["notes"]))
+
+    def test_maliki_no_radd_diverges_from_hanbali(self):
+        heirs = {"mother": True, "daughters": 2}
+        maliki = self.client.post(
+            "/api/calculate/personal/", {"heirs": heirs, "ruleset": "maliki"}, format="json"
+        ).json()
+        daughters = next(s for s in maliki["shares"] if s["relation"] == "daughter")
+        self.assertEqual(daughters["share"]["text"], "2/3")  # Maliki: no radd
 
     def test_invalid_heirs_returns_422(self):
         res = self.client.post(
@@ -85,4 +96,4 @@ class SourcesEndpointTests(APITestCase):
     def test_sources_listed(self):
         res = self.client.get("/api/sources/")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.json()["count"], 27)
+        self.assertEqual(res.json()["count"], 33)

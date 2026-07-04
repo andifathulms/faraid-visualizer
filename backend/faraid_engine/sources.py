@@ -307,6 +307,54 @@ _CLASSICAL = [
         ),
     ),
     Source(
+        id="madhab-hanafi",
+        type=SourceType.CLASSICAL,
+        reference="Hanafi fiqh al-mawarith — Ibn 'Abidin, Radd al-Muhtar; az-Zuhaili (Hanafi positions)",
+        pointer="Hanafi",
+        note="General reference for Hanafi inheritance positions; text not reproduced.",
+    ),
+    Source(
+        id="madhab-maliki",
+        type=SourceType.CLASSICAL,
+        reference="Maliki fiqh al-mawarith — az-Zuhaili (Maliki positions); Mukhtasar Khalil tradition",
+        pointer="Maliki",
+        note="General reference for Maliki inheritance positions; text not reproduced.",
+    ),
+    Source(
+        id="madhab-hanbali",
+        type=SourceType.CLASSICAL,
+        reference="Hanbali fiqh al-mawarith — Ibn Qudamah, al-Mughni; az-Zuhaili (Hanbali positions)",
+        pointer="Hanbali",
+        note="General reference for Hanbali inheritance positions; text not reproduced.",
+    ),
+    Source(
+        id="hanafi-jadd-blocks-siblings",
+        type=SourceType.CLASSICAL,
+        reference="Abu Hanifa: the grandfather blocks siblings (treated like the father)",
+        pointer="al-jadd (Hanafi)",
+        note=(
+            "Unlike the majority (Maliki/Syafi'i/Hanbali, who apply Zaid's muqasama), Abu "
+            "Hanifa gives the grandfather the father's blocking power over siblings."
+        ),
+    ),
+    Source(
+        id="radd-hanafi-hanbali",
+        type=SourceType.CLASSICAL,
+        reference="Radd accepted (Hanafi & Hanbali) — surplus returned to non-spouse ashabul furud",
+        pointer="radd (Hanafi/Hanbali)",
+        note="Spouse excluded from radd in the majority view.",
+    ),
+    Source(
+        id="maliki-no-radd",
+        type=SourceType.CLASSICAL,
+        reference="Maliki: no radd — surplus escheats to baitul mal, which is treated as an heir",
+        pointer="baitul mal (Maliki)",
+        note=(
+            "The Maliki school does not apply radd; when fixed shares are under-subscribed "
+            "and no asabah exist, the remainder goes to baitul mal."
+        ),
+    ),
+    Source(
         id="khi-harta-bersama",
         type=SourceType.CASE_LAW,
         reference="KHI Pasal 96–97 (harta bersama) applied before faraid",

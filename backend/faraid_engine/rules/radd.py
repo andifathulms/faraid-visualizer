@@ -41,6 +41,19 @@ def apply_radd(
         return awards, False, Fraction(0), steps
 
     source = config.source_for("radd")
+
+    # Maliki: no radd at all — the surplus escheats to baitul mal, treated as an heir.
+    if not config.applies_radd:
+        steps.append(
+            DerivationStep(
+                step="radd", title="Tanpa radd — sisa ke baitul mal",
+                detail=f"Madhab ini tidak menerapkan radd; sisa {_frac(surplus)} disalurkan "
+                "ke baitul mal (baitul mal dipandang sebagai penerima).",
+                source_id=source,
+            )
+        )
+        return awards, False, surplus, steps
+
     non_spouse = [a for a in awards if a.relation not in _SPOUSE]
     spouse = [a for a in awards if a.relation in _SPOUSE]
 
