@@ -92,6 +92,28 @@ class CalculateEndpointTests(APITestCase):
         self.assertEqual(shares["granddaughter_via_son"], "1/9")
 
 
+class PdfExportTests(APITestCase):
+    def test_professional_pdf_returned(self):
+        res = self.client.post(
+            "/api/calculate/professional/pdf/",
+            {"heirs": {"husband": True, "daughters": 3, "father": True, "mother": True}, "ruleset": "khi"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res["Content-Type"], "application/pdf")
+        self.assertIn("attachment", res["Content-Disposition"])
+        self.assertTrue(res.content.startswith(b"%PDF"))
+        self.assertGreater(len(res.content), 1500)
+
+    def test_pdf_export_rejects_unsupported(self):
+        res = self.client.post(
+            "/api/calculate/professional/pdf/",
+            {"heirs": {"paternal_grandfather": True, "full_brothers": 1}, "ruleset": "syafii"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
 class SourcesEndpointTests(APITestCase):
     def test_sources_listed(self):
         res = self.client.get("/api/sources/")

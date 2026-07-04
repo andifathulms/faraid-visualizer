@@ -8,6 +8,7 @@ with the engine's explanation, never a wrong number.
 
 from __future__ import annotations
 
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -21,6 +22,7 @@ from faraid_engine import (
 )
 from faraid_engine.sources import all_sources
 
+from .pdf import build_pdf
 from .serializers import CalculationInputSerializer
 from .services import serialize_result
 
@@ -61,6 +63,38 @@ class CalculatePersonalView(_CalculateView):
 
 class CalculateProfessionalView(_CalculateView):
     mode = "professional"
+
+
+class CalculateProfessionalPdfView(APIView):
+    """Professional-mode PDF export (PRD §7) — full derivation + citation trail.
+
+    Same input contract as the calculate endpoints; returns application/pdf. Always
+    computes in Professional mode regardless of any ``mode`` in the body.
+    """
+
+    def post(self, request: Request) -> HttpResponse | Response:
+        serializer = CalculationInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        calc_input = serializer.to_calculation_input(mode_override="professional")
+
+        try:
+            result = calculate(calc_input)
+        except (InvalidHeirInput, UnsupportedConfiguration) as exc:
+            return Response(
+                {"error": type(exc).__name__, "detail": str(exc), "supported": False},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+        except EngineInvariantError as exc:  # pragma: no cover
+            return Response(
+                {"error": "EngineInvariantError", "detail": str(exc)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        payload = serialize_result(result)
+        pdf_bytes = build_pdf(payload, request.data.get("heirs"))
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
+        response["Content-Disposition"] = 'attachment; filename="perhitungan-faraid.pdf"'
+        return response
 
 
 class SourcesListView(APIView):
