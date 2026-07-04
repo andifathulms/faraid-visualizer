@@ -148,6 +148,14 @@ def compute_furud(
             awards.append(_father_sixth(config, also_asabah=True))
         # else: pure asabah — no fixed share (handled in asabah step)
 
+    # --- Paternal grandfather (father substitute; present only if no father) ------
+    if present[R.PATERNAL_GRANDFATHER]:
+        if male_desc:
+            awards.append(_grandfather_sixth(config))
+        elif female_desc:
+            awards.append(_grandfather_sixth(config, also_asabah=True))
+        # else: pure asabah — no fixed share (handled in asabah step)
+
     # --- Mother -------------------------------------------------------------------
     if present[R.MOTHER]:
         sibling_count = heirs.sibling_count()  # blocked siblings still reduce the mother
@@ -271,6 +279,24 @@ def _father_sixth(config: RuleSetConfig, *, also_asabah: bool = False) -> Award:
         rule_applied="furud:father:1/6",
         reason=reason,
         source_id=config.source_for("father"),
+    )
+
+
+def _grandfather_sixth(config: RuleSetConfig, *, also_asabah: bool = False) -> Award:
+    reason = "Kakek mendapat 1/6 (menggantikan posisi ayah) karena ada keturunan laki-laki."
+    if also_asabah:
+        reason = (
+            "Kakek mendapat 1/6 sebagai bagian tetap karena ada keturunan perempuan, "
+            "sekaligus menerima sisa (asabah) bila masih ada."
+        )
+    return Award(
+        relation=R.PATERNAL_GRANDFATHER,
+        count=1,
+        share=SIXTH,
+        category=ShareCategory.FURUD,
+        rule_applied="furud:grandfather:1/6",
+        reason=reason,
+        source_id=config.source_for("grandfather"),
     )
 
 
