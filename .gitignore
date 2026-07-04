@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+db.sqlite3
+*.log
+
+# Django
+/backend/staticfiles/
+/backend/media/
+local_settings.py
+
+# Node / Next.js
+node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+.env
+.env.local
+.env*.local
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
