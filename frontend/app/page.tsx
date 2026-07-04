@@ -14,6 +14,7 @@ import {
 import { RULESET_LABELS } from "@/lib/labels";
 import HeirForm from "@/components/HeirForm";
 import ResultView from "@/components/ResultView";
+import DerivationFlow from "@/components/DerivationFlow";
 import DisclaimerModal from "@/components/DisclaimerModal";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
@@ -35,6 +36,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [pendingCalc, setPendingCalc] = useState(false);
+  const [view, setView] = useState<"table" | "diagram">("table");
 
   async function runCalc() {
     setLoading(true);
@@ -137,8 +139,25 @@ export default function Home() {
 
       {result && (
         <div className="card">
-          <h2>Hasil — {RULESET_LABELS[result.ruleset]}</h2>
-          <ResultView result={result} />
+          <div className="header" style={{ marginBottom: 8 }}>
+            <h2 style={{ margin: 0 }}>Hasil — {RULESET_LABELS[result.ruleset]}</h2>
+            <div className="toggle-group" role="tablist" aria-label="Tampilan">
+              <button className={view === "table" ? "active" : ""} onClick={() => setView("table")}>
+                Tabel
+              </button>
+              <button className={view === "diagram" ? "active" : ""} onClick={() => setView("diagram")}>
+                Diagram
+              </button>
+            </div>
+          </div>
+          {view === "table" ? (
+            <ResultView result={result} />
+          ) : (
+            <>
+              <DerivationFlow result={result} />
+              <div className="disclaimer" style={{ marginTop: 16 }}>{result.disclaimer}</div>
+            </>
+          )}
         </div>
       )}
 
