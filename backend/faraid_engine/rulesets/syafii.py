@@ -33,6 +33,7 @@ SYAFII = RuleSetConfig(
         "paternal_sibling": "quran-nisa-176",
         "maternal_sibling": "quran-nisa-12",
         "asabah": "hadith-asabah-ibn-abbas",
+        "jadd_muqasama": "jadd-muqasama-zaid",
         "aul": "classical-aul-umar",
         "radd": "classical-radd-syafii",
         "dzawil_arham": "classical-dzawil-arham",

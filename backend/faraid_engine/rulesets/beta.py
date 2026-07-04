@@ -39,6 +39,9 @@ _SHARED_SOURCES = {
     "dzawil_arham": "classical-dzawil-arham",
 }
 
+# Maliki & Hanbali use Zaid's muqasama for grandfather + siblings; Hanafi blocks instead.
+_MUQASAMA_SOURCE = {"jadd_muqasama": "jadd-muqasama-zaid"}
+
 
 def _sources(**overrides: str) -> dict[str, str]:
     return {**_SHARED_SOURCES, **overrides}
@@ -70,7 +73,7 @@ MALIKI = RuleSetConfig(
     radd_includes_spouse_when_sole=False,
     dzawil_arham_distributed=False,     # baitul mal
     applies_radd=False,                 # Maliki rejects radd
-    sources=_sources(radd="maliki-no-radd"),
+    sources=_sources(radd="maliki-no-radd", **_MUQASAMA_SOURCE),
 )
 
 HANBALI = RuleSetConfig(
@@ -83,5 +86,5 @@ HANBALI = RuleSetConfig(
     radd_includes_spouse_when_sole=False,
     dzawil_arham_distributed=True,
     applies_radd=True,
-    sources=_sources(radd="radd-hanafi-hanbali"),
+    sources=_sources(radd="radd-hanafi-hanbali", **_MUQASAMA_SOURCE),
 )

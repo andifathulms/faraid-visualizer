@@ -21,6 +21,8 @@ from .awards import Award
 from .dzawil_arham import resolve_dzawil_arham
 from .furud import compute_furud
 from .hajb import apply_hajb
+from .jadd_ikhwah import applies as jadd_applies
+from .jadd_ikhwah import resolve as jadd_resolve
 from .radd import apply_radd
 
 _SIBLINGS = {
@@ -49,24 +51,6 @@ def derive(heirs: Heirs, config: RuleSetConfig) -> DeriveResult:
     # Step 3 — hajb.
     present, blocked = apply_hajb(heirs, config)
 
-    # Guard: grandfather + siblings under classical Syafi'i is the al-jadd wal-ikhwah
-    # (muqasama) problem — genuinely intricate and NOT implemented. Raise rather than
-    # guess (CLAUDE.md). KHI treats the grandfather like the father, so siblings are
-    # already blocked in hajb and this guard does not trigger.
-    if (
-        not config.grandfather_blocks_siblings
-        and heirs.paternal_grandfather
-        and not heirs.father
-        and any(present[r] for r in _SIBLINGS)
-    ):
-        raise UnsupportedConfiguration(
-            "Grandfather together with siblings (al-jadd wa al-ikhwah / muqasama) is not "
-            "implemented for classical Syafi'i in v1 — this case needs the Zaid ibn Thabit "
-            "computation and should be reviewed by an ustadz. Please remove the conflict "
-            "or use a supported configuration.",
-            ruleset=config.key.value,
-        )
-
     steps.append(
         DerivationStep(
             step="hajb",
@@ -79,6 +63,11 @@ def derive(heirs: Heirs, config: RuleSetConfig) -> DeriveResult:
             data={"blocked": [b.relation.value for b in blocked]},
         )
     )
+
+    # al-jadd wa al-ikhwah (Maliki/Syafi'i/Hanbali): the grandfather competes with siblings
+    # via Zaid's muqasama instead of taking a plain residuary share.
+    if jadd_applies(heirs, present, config):
+        return _derive_jadd_ikhwah(heirs, present, blocked, steps, config)
 
     # Step 4 — furud.
     furud_awards, extra_blocked, notes = compute_furud(heirs, present, config)
@@ -118,12 +107,62 @@ def derive(heirs: Heirs, config: RuleSetConfig) -> DeriveResult:
         result.baitul_mal_share = baitul_mal
         steps.extend(radd_steps)
 
-    if result.pokok_masalah == 1:
-        base = 1
-        from math import gcd
-        for a in result.awards:
-            d = a.share.denominator
-            base = base * d // gcd(base, d)
-        result.pokok_masalah = base
-
+    result.pokok_masalah = _pokok(result.awards, result.pokok_masalah)
     return result
+
+
+def _pokok(awards: list[Award], existing: int = 1) -> int:
+    if existing != 1:
+        return existing
+    from math import gcd
+
+    base = 1
+    for a in awards:
+        d = a.share.denominator
+        base = base * d // gcd(base, d)
+    return base
+
+
+def _derive_jadd_ikhwah(
+    heirs: Heirs,
+    present: dict[Relation, int],
+    blocked: list[HajbEntry],
+    steps: list[DerivationStep],
+    config: RuleSetConfig,
+) -> DeriveResult:
+    """Grandfather + siblings via muqasama. Any descendant here is unsupported (raise)."""
+    if heirs.has_descendant():
+        raise UnsupportedConfiguration(
+            "Grandfather together with siblings AND a descendant is not implemented — "
+            "this combination should be reviewed by an ustadz.",
+            ruleset=config.key.value,
+        )
+
+    # Furud for the non-competing heirs only (spouse, mother, grandmother). Zero the
+    # grandfather and the siblings so compute_furud does not assign them fixed shares;
+    # muqasama distributes the residue between them instead.
+    others = dict(present)
+    for r in (
+        Relation.PATERNAL_GRANDFATHER,
+        Relation.FULL_BROTHER, Relation.FULL_SISTER,
+        Relation.PATERNAL_BROTHER, Relation.PATERNAL_SISTER,
+    ):
+        others[r] = 0
+    furud_awards, extra_blocked, notes = compute_furud(heirs, others, config)
+    blocked.extend(extra_blocked)
+    if furud_awards:
+        steps.append(DerivationStep(
+            step="furud", title="Bagian tetap (furud muqaddarah)",
+            detail="; ".join(a.reason for a in furud_awards),
+        ))
+
+    furud_total = sum((a.share for a in furud_awards), Fraction(0))
+    residue = Fraction(1) - furud_total
+    gf_awards, gf_steps = jadd_resolve(present, residue, has_furud=furud_total > 0, config=config)
+    steps.extend(gf_steps)
+
+    awards = furud_awards + gf_awards
+    return DeriveResult(
+        awards=awards, blocked=blocked, steps=steps, notes=notes, present=present,
+        pokok_masalah=_pokok(awards),
+    )

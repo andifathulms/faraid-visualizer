@@ -164,9 +164,10 @@ def test_grandfather_blocks_siblings_under_khi():
     assert {R.FULL_BROTHER, R.FULL_SISTER} <= blocked
 
 
-def test_grandfather_with_siblings_raises_under_syafii():
-    """al-jadd wa al-ikhwah (muqasama) is intricate and NOT implemented for Syafi'i —
-    the engine raises rather than guessing (CLAUDE.md)."""
+def test_grandfather_with_siblings_uses_muqasama_under_syafii():
+    """Syafi'i shares between grandfather and siblings via Zaid's muqasama — it does NOT
+    block the siblings the way KHI does (see test_jadd_ikhwah for the full bank)."""
     heirs = Heirs(paternal_grandfather=True, full_brothers=1, full_sisters=1)
-    with pytest.raises(UnsupportedConfiguration):
-        calculate(CalculationInput(heirs=heirs, ruleset=S))
+    result = calculate(CalculationInput(heirs=heirs, ruleset=S))
+    shares = _shares(result)
+    assert shares == {R.PATERNAL_GRANDFATHER: F(2, 5), R.FULL_BROTHER: F(2, 5), R.FULL_SISTER: F(1, 5)}

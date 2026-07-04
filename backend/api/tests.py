@@ -42,7 +42,7 @@ class CalculateEndpointTests(APITestCase):
     def test_unsupported_configuration_returns_422(self):
         res = self.client.post(
             "/api/calculate/personal/",
-            {"heirs": {"paternal_grandfather": True, "full_brothers": 1}, "ruleset": "syafii"},
+            {"heirs": {"paternal_grandfather": True, "full_sisters": 1, "paternal_brothers": 1}, "ruleset": "syafii"},
             format="json",
         )
         self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
@@ -108,7 +108,7 @@ class PdfExportTests(APITestCase):
     def test_pdf_export_rejects_unsupported(self):
         res = self.client.post(
             "/api/calculate/professional/pdf/",
-            {"heirs": {"paternal_grandfather": True, "full_brothers": 1}, "ruleset": "syafii"},
+            {"heirs": {"paternal_grandfather": True, "full_sisters": 1, "paternal_brothers": 1}, "ruleset": "syafii"},
             format="json",
         )
         self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
@@ -128,10 +128,10 @@ class CompareEndpointTests(APITestCase):
         self.assertEqual(syafii["share"]["text"], "1/2")
 
     def test_compare_reports_unsupported_per_ruleset(self):
-        # Grandfather + siblings: handled under KHI, but raises under Syafi'i (pre-muqasama).
+        # Grandfather + siblings: handled under KHI, but mu'adda raises under Syafi'i.
         res = self.client.post(
             "/api/compare/",
-            {"heirs": {"paternal_grandfather": True, "full_brothers": 1}, "rulesets": ["khi", "syafii"]},
+            {"heirs": {"paternal_grandfather": True, "full_sisters": 1, "paternal_brothers": 1}, "rulesets": ["khi", "syafii"]},
             format="json",
         )
         by = {c["ruleset"]: c for c in res.json()["comparison"]}
@@ -155,4 +155,4 @@ class SourcesEndpointTests(APITestCase):
     def test_sources_listed(self):
         res = self.client.get("/api/sources/")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.json()["count"], 33)
+        self.assertEqual(res.json()["count"], 34)

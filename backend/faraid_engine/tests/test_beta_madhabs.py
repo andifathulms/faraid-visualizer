@@ -64,12 +64,19 @@ def test_beta_flag_set_and_noted(ruleset: Ruleset) -> None:
 
 
 @pytest.mark.parametrize("ruleset", [MALIKI, HANBALI])
-def test_muqasama_schools_raise_on_grandfather_with_siblings(ruleset: Ruleset) -> None:
-    """Maliki & Hanbali use Zaid's muqasama (al-jadd wa al-ikhwah) — not implemented, so
-    they raise rather than guess (same honest gap as classical Syafi'i)."""
+def test_muqasama_schools_share_grandfather_with_siblings(ruleset: Ruleset) -> None:
+    """Maliki & Hanbali apply Zaid's muqasama: grandfather shares with a lone brother 1:1
+    (see test_jadd_ikhwah for the full bank). The intricate sub-cases still raise."""
     heirs = Heirs(paternal_grandfather=True, full_brothers=1)
+    result = calculate(CalculationInput(heirs=heirs, ruleset=ruleset))
+    shares = {s.relation: s.share for s in result.shares}
+    assert shares == {R.PATERNAL_GRANDFATHER: F(1, 2), R.FULL_BROTHER: F(1, 2)}
+
+    # mu'adda (full sister leaving paternal siblings competing) is unimplemented → raises.
     with pytest.raises(UnsupportedConfiguration):
-        calculate(CalculationInput(heirs=heirs, ruleset=ruleset))
+        calculate(CalculationInput(
+            heirs=Heirs(paternal_grandfather=True, full_sisters=1, paternal_brothers=1), ruleset=ruleset,
+        ))
 
 
 @pytest.mark.parametrize("ruleset", [HANAFI, MALIKI, HANBALI])

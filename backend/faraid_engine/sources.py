@@ -328,6 +328,19 @@ _CLASSICAL = [
         note="General reference for Hanbali inheritance positions; text not reproduced.",
     ),
     Source(
+        id="jadd-muqasama-zaid",
+        type=SourceType.CLASSICAL,
+        reference="al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+        pointer="muqasama (Zaid)",
+        note=(
+            "With no father, the grandfather competes with full/paternal siblings: he takes "
+            "the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, "
+            "or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases "
+            "(akdariyya; mu'adda mixing full and paternal siblings) are not implemented and "
+            "raise instead of guessing."
+        ),
+    ),
+    Source(
         id="hanafi-jadd-blocks-siblings",
         type=SourceType.CLASSICAL,
         reference="Abu Hanifa: the grandfather blocks siblings (treated like the father)",
