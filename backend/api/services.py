@@ -14,6 +14,9 @@ from fractions import Fraction
 from faraid_engine import CalculationResult
 from faraid_engine.sources import get_source
 
+from .explain import blocked_reason, reason_for, translate_note
+from .labels import category_label, disclaimer, relation_label, step_title
+
 
 def _fraction(f: Fraction) -> dict:
     return {
@@ -28,7 +31,12 @@ def _money(d: Decimal | None) -> str | None:
     return None if d is None else str(d.quantize(Decimal("0.01")))
 
 
-def serialize_result(result: CalculationResult) -> dict:
+def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
+    """Serialize the full derivation, localized to ``lang`` ("id" or "en").
+
+    Indonesian uses the engine's authoritative prose; English is regenerated from the
+    structured fields via :mod:`api.explain` (the engine is never touched).
+    """
     source_ids: set[str] = set()
 
     shares = []
@@ -38,13 +46,15 @@ def serialize_result(result: CalculationResult) -> dict:
             {
                 "relation": s.relation.value,
                 "label_id": s.relation.label_id,
+                "label": relation_label(s.relation.label_id, lang),
                 "count": s.count,
                 "share": _fraction(s.share),
                 "per_head": _fraction(s.per_head),
                 "category": s.category.value,
+                "category_label": category_label(s.category.value, lang),
                 "asabah_type": s.asabah_type.value if s.asabah_type else None,
                 "rule_applied": s.rule_applied,
-                "reason": s.reason,
+                "reason": reason_for(s, lang),
                 "source_id": s.source_id,
                 "amount": _money(result.money_for(s)),
             }
@@ -57,10 +67,11 @@ def serialize_result(result: CalculationResult) -> dict:
             {
                 "relation": b.relation.value,
                 "label_id": b.relation.label_id,
+                "label": relation_label(b.relation.label_id, lang),
                 "count": b.count,
                 "blocked_by": b.blocked_by.value,
                 "blocked_by_label": b.blocked_by.label_id,
-                "reason": b.reason,
+                "reason": blocked_reason(b, lang),
                 "source_id": b.source_id,
                 "full": b.full,
             }
@@ -73,7 +84,7 @@ def serialize_result(result: CalculationResult) -> dict:
         steps.append(
             {
                 "step": st.step,
-                "title": st.title,
+                "title": step_title(st.step, st.title, lang),
                 "detail": st.detail,
                 "source_id": st.source_id,
                 "data": st.data,
@@ -115,7 +126,7 @@ def serialize_result(result: CalculationResult) -> dict:
         "shares": shares,
         "blocked": blocked,
         "steps": steps,
-        "notes": result.notes,
-        "disclaimer": result.disclaimer,
+        "notes": [translate_note(n, lang) for n in result.notes],
+        "disclaimer": disclaimer(result.mode.value, lang),
         "sources": sources,
     }

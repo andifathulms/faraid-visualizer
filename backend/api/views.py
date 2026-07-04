@@ -54,7 +54,8 @@ class _CalculateView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        return Response(serialize_result(result), status=status.HTTP_200_OK)
+        lang = serializer.validated_data.get("lang", "id")
+        return Response(serialize_result(result, lang), status=status.HTTP_200_OK)
 
 
 class CalculatePersonalView(_CalculateView):
@@ -82,12 +83,13 @@ class CompareView(APIView):
         rulesets = [r for r in requested if r in valid] or ["khi", "syafii"]
 
         mode = request.data.get("mode", "personal")
+        lang = serializer.validated_data.get("lang", "id")
         results = []
         for rs in rulesets:
             calc_input = serializer.to_calculation_input(mode_override=mode, ruleset_override=rs)
             try:
                 result = calculate(calc_input)
-                results.append({"ruleset": rs, "ok": True, "result": serialize_result(result)})
+                results.append({"ruleset": rs, "ok": True, "result": serialize_result(result, lang)})
             except (InvalidHeirInput, UnsupportedConfiguration) as exc:
                 results.append(
                     {"ruleset": rs, "ok": False, "error": type(exc).__name__, "detail": str(exc)}
@@ -120,8 +122,9 @@ class CalculateProfessionalPdfView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        payload = serialize_result(result)
-        pdf_bytes = build_pdf(payload, request.data.get("heirs"))
+        lang = serializer.validated_data.get("lang", "id")
+        payload = serialize_result(result, lang)
+        pdf_bytes = build_pdf(payload, request.data.get("heirs"), lang)
         response = HttpResponse(pdf_bytes, content_type="application/pdf")
         response["Content-Disposition"] = 'attachment; filename="perhitungan-faraid.pdf"'
         return response

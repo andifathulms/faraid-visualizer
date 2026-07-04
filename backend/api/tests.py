@@ -92,6 +92,33 @@ class CalculateEndpointTests(APITestCase):
         self.assertEqual(shares["granddaughter_via_son"], "1/9")
 
 
+class LanguageTests(APITestCase):
+    def test_english_json_localizes_reasons_and_labels(self):
+        res = self.client.post(
+            "/api/calculate/professional/",
+            {"heirs": {"wives": 1, "sons": 1, "daughters": 1}, "ruleset": "khi", "lang": "en"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        body = res.json()
+        wife = next(s for s in body["shares"] if s["relation"] == "wife")
+        self.assertEqual(wife["label"], "Wife")
+        self.assertIn("fixed share", wife["reason"].lower())
+        self.assertIn("residuary", body["shares"][1]["category_label"].lower())
+        self.assertIn("advisory", body["disclaimer"].lower())  # professional-mode disclaimer, EN
+
+    def test_indonesian_is_default_and_uses_engine_prose(self):
+        res = self.client.post(
+            "/api/calculate/personal/",
+            {"heirs": {"mother": True, "daughters": 2}, "ruleset": "khi"},
+            format="json",
+        )
+        body = res.json()
+        self.assertIn("edukasi", body["disclaimer"])
+        mother = next(s for s in body["shares"] if s["relation"] == "mother")
+        self.assertIn("radd", mother["reason"].lower())  # engine's ID prose retained
+
+
 class PdfExportTests(APITestCase):
     def test_professional_pdf_returned(self):
         res = self.client.post(
@@ -104,6 +131,17 @@ class PdfExportTests(APITestCase):
         self.assertIn("attachment", res["Content-Disposition"])
         self.assertTrue(res.content.startswith(b"%PDF"))
         self.assertGreater(len(res.content), 1500)
+
+    def test_english_pdf_generated(self):
+        res = self.client.post(
+            "/api/calculate/professional/pdf/",
+            {"heirs": {"husband": True, "daughters": 3, "father": True, "mother": True},
+             "ruleset": "khi", "lang": "en"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res["Content-Type"], "application/pdf")
+        self.assertTrue(res.content.startswith(b"%PDF"))
 
     def test_pdf_export_rejects_unsupported(self):
         res = self.client.post(

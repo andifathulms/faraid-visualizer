@@ -78,6 +78,7 @@ class CalculationInputSerializer(serializers.Serializer):
     mode = serializers.ChoiceField(choices=[m.value for m in Mode], default=Mode.PERSONAL.value)
     estate = EstateSerializer(required=False)
     apply_harta_bersama = serializers.BooleanField(default=False)
+    lang = serializers.ChoiceField(choices=["id", "en"], default="id")  # presentation only
 
     def to_calculation_input(
         self, *, mode_override: str | None = None, ruleset_override: str | None = None
