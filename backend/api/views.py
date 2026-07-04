@@ -65,6 +65,36 @@ class CalculateProfessionalView(_CalculateView):
     mode = "professional"
 
 
+class CompareView(APIView):
+    """Compare the same heirs across rule sets side by side (KHI vs Syafi'i by default).
+
+    Returns one entry per requested ruleset — either the full serialized derivation or a
+    structured error (unsupported/invalid) — so the UI can render both columns and show
+    exactly where the two schools diverge (PRD §4.1).
+    """
+
+    def post(self, request: Request) -> Response:
+        serializer = CalculationInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        requested = request.data.get("rulesets") or ["khi", "syafii"]
+        valid = {r.value for r in __import__("faraid_engine", fromlist=["Ruleset"]).Ruleset}
+        rulesets = [r for r in requested if r in valid] or ["khi", "syafii"]
+
+        mode = request.data.get("mode", "personal")
+        results = []
+        for rs in rulesets:
+            calc_input = serializer.to_calculation_input(mode_override=mode, ruleset_override=rs)
+            try:
+                result = calculate(calc_input)
+                results.append({"ruleset": rs, "ok": True, "result": serialize_result(result)})
+            except (InvalidHeirInput, UnsupportedConfiguration) as exc:
+                results.append(
+                    {"ruleset": rs, "ok": False, "error": type(exc).__name__, "detail": str(exc)}
+                )
+        return Response({"comparison": results})
+
+
 class CalculateProfessionalPdfView(APIView):
     """Professional-mode PDF export (PRD §7) — full derivation + citation trail.
 

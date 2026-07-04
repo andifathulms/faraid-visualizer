@@ -114,6 +114,43 @@ class PdfExportTests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
+class CompareEndpointTests(APITestCase):
+    def test_compare_khi_vs_syafii_shows_divergence(self):
+        # Sole husband: KHI radd → all to husband; Syafi'i → 1/2 + baitul mal.
+        res = self.client.post(
+            "/api/compare/", {"heirs": {"husband": True}, "rulesets": ["khi", "syafii"]}, format="json"
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        by = {c["ruleset"]: c for c in res.json()["comparison"]}
+        khi = next(s for s in by["khi"]["result"]["shares"] if s["relation"] == "husband")
+        syafii = next(s for s in by["syafii"]["result"]["shares"] if s["relation"] == "husband")
+        self.assertEqual(khi["share"]["text"], "1")
+        self.assertEqual(syafii["share"]["text"], "1/2")
+
+    def test_compare_reports_unsupported_per_ruleset(self):
+        # Grandfather + siblings: handled under KHI, but raises under Syafi'i (pre-muqasama).
+        res = self.client.post(
+            "/api/compare/",
+            {"heirs": {"paternal_grandfather": True, "full_brothers": 1}, "rulesets": ["khi", "syafii"]},
+            format="json",
+        )
+        by = {c["ruleset"]: c for c in res.json()["comparison"]}
+        self.assertTrue(by["khi"]["ok"])
+        self.assertFalse(by["syafii"]["ok"])
+        self.assertEqual(by["syafii"]["error"], "UnsupportedConfiguration")
+
+    def test_compare_drops_khi_only_options_for_classical(self):
+        # Representatives are KHI-only; comparison should still succeed on the Syafi'i side.
+        res = self.client.post(
+            "/api/compare/",
+            {"heirs": {"sons": 2, "representatives": [{"replacing": "son", "sons": 1, "daughters": 1}]},
+             "rulesets": ["khi", "syafii"]},
+            format="json",
+        )
+        by = {c["ruleset"]: c for c in res.json()["comparison"]}
+        self.assertTrue(by["khi"]["ok"] and by["syafii"]["ok"])
+
+
 class SourcesEndpointTests(APITestCase):
     def test_sources_listed(self):
         res = self.client.get("/api/sources/")

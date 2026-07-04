@@ -4,6 +4,7 @@ from .views import (
     CalculatePersonalView,
     CalculateProfessionalPdfView,
     CalculateProfessionalView,
+    CompareView,
     HealthView,
     SourcesListView,
 )
@@ -13,5 +14,6 @@ urlpatterns = [
     path("calculate/personal/", CalculatePersonalView.as_view(), name="calculate-personal"),
     path("calculate/professional/", CalculateProfessionalView.as_view(), name="calculate-professional"),
     path("calculate/professional/pdf/", CalculateProfessionalPdfView.as_view(), name="calculate-professional-pdf"),
+    path("compare/", CompareView.as_view(), name="compare"),
     path("sources/", SourcesListView.as_view(), name="sources"),
 ]

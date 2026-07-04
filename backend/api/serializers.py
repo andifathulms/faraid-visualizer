@@ -79,7 +79,9 @@ class CalculationInputSerializer(serializers.Serializer):
     estate = EstateSerializer(required=False)
     apply_harta_bersama = serializers.BooleanField(default=False)
 
-    def to_calculation_input(self, *, mode_override: str | None = None) -> CalculationInput:
+    def to_calculation_input(
+        self, *, mode_override: str | None = None, ruleset_override: str | None = None
+    ) -> CalculationInput:
         data = self.validated_data
         heirs_ser = HeirsSerializer(data=data["heirs"])
         heirs_ser.is_valid(raise_exception=True)
@@ -90,10 +92,19 @@ class CalculationInputSerializer(serializers.Serializer):
             estate_ser.is_valid(raise_exception=True)
             estate = estate_ser.to_estate()
 
+        ruleset = Ruleset(ruleset_override or data["ruleset"])
+        # Harta bersama / representation are KHI-only; drop them for non-KHI rule sets so a
+        # comparison across rule sets doesn't fail validation on the classical side.
+        apply_hb = data["apply_harta_bersama"] and ruleset == Ruleset.KHI
+        heirs = heirs_ser.to_heirs()
+        if ruleset != Ruleset.KHI and heirs.representatives:
+            from dataclasses import replace
+            heirs = replace(heirs, representatives=())
+
         return CalculationInput(
-            heirs=heirs_ser.to_heirs(),
-            ruleset=Ruleset(data["ruleset"]),
+            heirs=heirs,
+            ruleset=ruleset,
             mode=Mode(mode_override or data["mode"]),
             estate=estate,
-            apply_harta_bersama=data["apply_harta_bersama"],
+            apply_harta_bersama=apply_hb,
         )
