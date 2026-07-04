@@ -1,0 +1,136 @@
+"use client";
+
+import { ReactNode } from "react";
+import { FractionValue, Share } from "@/lib/api";
+
+/* ------------------------------------------------------------------ Icons */
+// Inline, stroke-based icons (self-contained — no icon package / network needed).
+
+const PATHS: Record<string, ReactNode> = {
+  scale: <><path d="M12 3v18" /><path d="M8 21h8" /><path d="M3 7h18" /><path d="M6.5 4.5 3 11h7z" /><path d="M17.5 4.5 21 11h-7z" /><path d="M12 3.2 6.5 4.5m5.5-1.3 5.5 1.3" /></>,
+  users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  heart: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />,
+  baby: <><path d="M9 12h.01M15 12h.01M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5" /><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5S14.5 8 13 8" /></>,
+  crown: <path d="M3 17h18l-1.5-9-4.5 4-3-6-3 6-4.5-4z" />,
+  branch: <><circle cx="6" cy="6" r="2.5" /><circle cx="6" cy="18" r="2.5" /><circle cx="18" cy="8" r="2.5" /><path d="M6 8.5v7M8.5 6.6C13 7 15.5 8 15.5 11v0" /></>,
+  layers: <><path d="m12 3 9 5-9 5-9-5 9-5z" /><path d="m3 13 9 5 9-5" /></>,
+  book: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5z" /></>,
+  alert: <><path d="M10.3 3.8 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></>,
+  info: <><circle cx="12" cy="12" r="9" /><path d="M12 16v-4M12 8h.01" /></>,
+  chevron: <path d="m6 9 6 6 6-6" />,
+  download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></>,
+  table: <><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M3 15h18M9 3v18" /></>,
+  sitemap: <><rect x="9" y="3" width="6" height="5" rx="1" /><rect x="3" y="16" width="6" height="5" rx="1" /><rect x="15" y="16" width="6" height="5" rx="1" /><path d="M12 8v4M6 16v-2h12v2" /></>,
+  plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  ban: <><circle cx="12" cy="12" r="9" /><path d="m5.6 5.6 12.8 12.8" /></>,
+  arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
+  sparkles: <path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4L12 3z" />,
+  scroll: <><path d="M8 3h9a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H8" /><path d="M3 5a2 2 0 0 1 2-2 2 2 0 0 1 2 2v13a3 3 0 0 0 3 3" /><path d="M11 7h5M11 11h5" /></>,
+  gift: <><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /><path d="M12 8S10 3 7.5 4.5 12 8 12 8zM12 8s2-5 4.5-3.5S12 8 12 8z" /></>,
+  globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" /></>,
+};
+
+export function Icon({ name, size = 18, className }: { name: string; size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      {PATHS[name] ?? PATHS.info}
+    </svg>
+  );
+}
+
+/* --------------------------------------------------------------- Fraction */
+export function Fraction({ value, className = "" }: { value: FractionValue; className?: string }) {
+  if (value.denominator === 1) return <span className={`frac ${className}`}>{value.numerator}</span>;
+  return (
+    <span className={`frac ${className}`}>
+      <span className="n">{value.numerator}</span>
+      <span className="s">/</span>
+      <span className="d">{value.denominator}</span>
+    </span>
+  );
+}
+
+/* ---------------------------------------------------------- Segmented ctrl */
+export function Segmented<T extends string>({
+  options, value, onChange, block, ariaLabel,
+}: {
+  options: { value: T; label: ReactNode }[];
+  value: T; onChange: (v: T) => void; block?: boolean; ariaLabel?: string;
+}) {
+  return (
+    <div className={`segmented ${block ? "block" : ""}`} role="tablist" aria-label={ariaLabel}>
+      {options.map((o) => (
+        <button key={o.value} role="tab" aria-selected={value === o.value}
+          className={value === o.value ? "active" : ""} onClick={() => onChange(o.value)}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* --------------------------------------------------------- Number stepper */
+export function NumberStepper({
+  label, value, onChange, max,
+}: { label: string; value: number; onChange: (n: number) => void; max?: number }) {
+  const v = value ?? 0;
+  return (
+    <div className="stepper-wrap">
+      <span className="field-label">{label}</span>
+      <div className="stepper">
+        <button type="button" aria-label="minus" disabled={v <= 0} onClick={() => onChange(Math.max(0, v - 1))}>
+          <Icon name="minus" size={16} />
+        </button>
+        <input type="number" min={0} max={max} value={v}
+          onChange={(e) => {
+            let n = parseInt(e.target.value || "0", 10);
+            if (Number.isNaN(n) || n < 0) n = 0;
+            if (max != null) n = Math.min(max, n);
+            onChange(n);
+          }} />
+        <button type="button" aria-label="plus" disabled={max != null && v >= max} onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}>
+          <Icon name="plus" size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------- Switch row */
+export function SwitchRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className={`switch-row ${checked ? "on" : ""}`}>
+      <span className="switch-label">{label}</span>
+      <span className="switch"><input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} /></span>
+    </label>
+  );
+}
+
+/* ----------------------------------------------------------- Category chip */
+export function CategoryChip({ category, label }: { category: string; label: string }) {
+  return <span className={`chip chip-${category}`}>{label}</span>;
+}
+
+/* --------------------------------------- Proportion bar + harmonized colors */
+export const HEIR_COLORS = [
+  "#0f8a63", "#3c6fd0", "#8a63c4", "#b98a2e", "#0e9aa0",
+  "#d4694e", "#5a8f3c", "#c2568f", "#4c73c9", "#8a8f2e",
+];
+
+export function colorFor(index: number): string {
+  return HEIR_COLORS[index % HEIR_COLORS.length];
+}
+
+export function ProportionBar({ shares }: { shares: Share[] }) {
+  const total = shares.reduce((a, s) => a + s.share.float, 0) || 1;
+  return (
+    <div className="proportion" role="img" aria-label="Share proportions">
+      {shares.map((s, i) => (
+        <div key={i} className="seg" style={{ width: `${(s.share.float / total) * 100}%`, background: colorFor(i) }}
+          title={`${s.label} — ${s.share.text} (${Math.round((s.share.float / total) * 100)}%)`} />
+      ))}
+    </div>
+  );
+}

@@ -26,14 +26,7 @@ interface NodeData {
 }
 
 function FlowNode({ data }: { data: NodeData }) {
-  const cls =
-    data.variant === "blocked"
-      ? "rf-node rf-blocked"
-      : data.variant === "furud"
-      ? "rf-node rf-furud"
-      : data.variant === "asabah" || data.variant === "radd"
-      ? "rf-node rf-asabah"
-      : "rf-node";
+  const cls = `rf-node rf-${data.variant}`;
   return (
     <div className={cls} title={data.hover}>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />

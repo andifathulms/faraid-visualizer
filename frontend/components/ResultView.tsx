@@ -3,65 +3,57 @@
 import { useState } from "react";
 import { CalculationResult, Share, SourceCitation } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
+import { CategoryChip, Fraction, Icon, ProportionBar, colorFor } from "./ui";
 
 // Data text (labels, categories, reasons, step titles, notes, disclaimer) is server-
-// localized (single source of truth); this component only supplies static UI chrome.
-
-// Renders the full derivation. Personal mode: collapsed "why?" expanders. Professional
-// mode: derivation steps expanded by default (PRD §3). Citations render as footnotes.
+// localized; this component supplies static UI chrome + the visual composition.
 
 function Citation({ id, sources }: { id: string; sources: Record<string, SourceCitation> }) {
   const src = sources[id];
   if (!src) return null;
   return (
-    <span className="footnote-sup" title={`${src.reference}${src.note ? " — " + src.note : ""}`}>
-      [{src.pointer}]
+    <span className="cite" title={`${src.reference}${src.note ? " — " + src.note : ""}`}>
+      <Icon name="book" size={11} /> {src.pointer}
     </span>
   );
 }
 
-function ShareRow({
-  share,
-  sources,
-  defaultOpen,
-}: {
-  share: Share;
-  sources: Record<string, SourceCitation>;
-  defaultOpen: boolean;
+function ShareItem({ share, color, sources, defaultOpen }: {
+  share: Share; color: string; sources: Record<string, SourceCitation>; defaultOpen: boolean;
 }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(defaultOpen);
-  const pillClass =
-    share.category === "furud" ? "pill pill-furud" : share.category === "asabah" ? "pill pill-asabah" : share.category === "radd" ? "pill pill-radd" : "pill";
+  const isHb = share.category === "harta_bersama";
   return (
-    <>
-      <tr>
-        <td>
-          {share.label}
-          {share.count > 1 ? ` ×${share.count}` : ""}
-        </td>
-        <td className="share-frac">
-          {share.category === "harta_bersama" ? "—" : share.share.text}
-        </td>
-        <td>{share.count > 1 && share.category !== "harta_bersama" ? share.per_head.text : "—"}</td>
-        <td><span className={pillClass}>{share.category_label}</span></td>
-        <td>{share.amount ?? "—"}</td>
-        <td>
-          <button className="why-toggle" onClick={() => setOpen((o) => !o)}>
-            {open ? t("hide") : t("why")}
-          </button>
-        </td>
-      </tr>
+    <div className="share-item">
+      <div className="share-main">
+        <span className="share-accent" style={{ background: color }} />
+        <div className="share-id">
+          <div className="share-name">
+            {share.label}
+            {share.count > 1 && <span className="count-tag">×{share.count}</span>}
+          </div>
+          <div className="share-meta">
+            <CategoryChip category={share.category} label={share.category_label} />
+            {share.count > 1 && !isHb && (
+              <span className="per-head">@ <Fraction value={share.per_head} />{" "}{t("th_perhead").toLowerCase()}</span>
+            )}
+          </div>
+        </div>
+        <div className="share-values">
+          {isHb ? <span className="muted small">—</span> : <Fraction value={share.share} className="share-frac-lg" />}
+          {share.amount && <span className="share-amount">{share.amount}</span>}
+        </div>
+        <button className={`why-toggle ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-label="why">
+          <Icon name="chevron" size={16} />
+        </button>
+      </div>
       {open && (
-        <tr>
-          <td colSpan={6}>
-            <p className="why-body">
-              {share.reason} <Citation id={share.source_id} sources={sources} />
-            </p>
-          </td>
-        </tr>
+        <div className="why-body">
+          {share.reason} <Citation id={share.source_id} sources={sources} />
+        </div>
       )}
-    </>
+    </div>
   );
 }
 
@@ -69,95 +61,114 @@ export default function ResultView({ result }: { result: CalculationResult }) {
   const { t } = useI18n();
   const professional = result.mode === "professional";
   const e = result.estate;
+  const awarded = result.shares.filter((s) => s.category !== "harta_bersama");
+  const hb = result.shares.filter((s) => s.category === "harta_bersama");
 
   return (
-    <div>
+    <div className="stack gap-20">
       {result.beta && (
-        <div className="disclaimer" style={{ marginBottom: 16 }}>
-          <span className="badge badge-beta">BETA</span> {t("beta_warn")}
+        <div className="callout callout-warn">
+          <span className="c-ico"><Icon name="alert" size={18} /></span>
+          <span><b>BETA</b> — {t("beta_warn")}</span>
         </div>
       )}
+
+      {/* Summary + proportion */}
+      <div className="result-summary">
+        <div className="summary-badges">
+          <span className="summary-stat">{t("pokok_masalah")} <b>{result.pokok_masalah}</b></span>
+          {result.aul_applied && <span className="badge badge-soft">'aul → {result.aul_base}</span>}
+          {result.radd_applied && <span className="badge badge-soft">radd</span>}
+          <span className="summary-stat"><b>{awarded.length}</b> {t("th_heir").toLowerCase()}</span>
+        </div>
+        {awarded.length > 0 && <ProportionBar shares={awarded} />}
+        {awarded.length > 0 && (
+          <div className="legend">
+            {awarded.map((s, i) => (
+              <span className="legend-item" key={i}>
+                <span className="legend-sw" style={{ background: colorFor(i) }} />
+                <span className="lg-name">{s.label}</span>
+                <span className="lg-val"><Fraction value={s.share} /></span>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       {e && (e.net_divisible !== e.gross_value || Number(e.harta_bersama_deducted) > 0) && (
-        <div className="card" style={{ marginTop: 0 }}>
-          <h3>{t("divisible_estate")}</h3>
-          <p className="small">
-            {e.gross_value} − {e.funeral_costs} − {e.debts} − {e.wasiyya}
-            {Number(e.harta_bersama_deducted) > 0 ? ` − ${e.harta_bersama_deducted}` : ""} ={" "}
-            <strong>{e.net_divisible}</strong>
-          </p>
+        <div className="estate-strip">
+          <Icon name="scroll" size={15} />
+          <span>{t("divisible_estate")}:</span>
+          <span>{e.gross_value} − {e.funeral_costs} − {e.debts} − {e.wasiyya}
+            {Number(e.harta_bersama_deducted) > 0 ? ` − ${e.harta_bersama_deducted}` : ""} =</span>
+          <b>{e.net_divisible}</b>
         </div>
       )}
 
-      <h3>
-        {t("distribution")}{" "}
-        <span className="muted small">
-          ({t("pokok_masalah")} {result.pokok_masalah}
-          {result.aul_applied ? `, 'aul → ${result.aul_base}` : ""}
-          {result.radd_applied ? ", radd" : ""})
-        </span>
-      </h3>
-      <table>
-        <thead>
-          <tr>
-            <th>{t("th_heir")}</th>
-            <th>{t("th_share")}</th>
-            <th>{t("th_perhead")}</th>
-            <th>{t("th_basis")}</th>
-            <th>{t("th_amount")}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.shares.map((s, i) => (
-            <ShareRow key={i} share={s} sources={result.sources} defaultOpen={professional} />
+      {/* Shares */}
+      <div>
+        <div className="res-section-title"><span className="ico"><Icon name="scale" size={17} /></span>{t("distribution")}</div>
+        <div className="share-list">
+          {hb.map((s, i) => (
+            <ShareItem key={`hb-${i}`} share={s} color="var(--gold)" sources={result.sources} defaultOpen={professional} />
           ))}
-        </tbody>
-      </table>
+          {awarded.map((s, i) => (
+            <ShareItem key={i} share={s} color={colorFor(i)} sources={result.sources} defaultOpen={professional} />
+          ))}
+        </div>
+      </div>
 
       {result.blocked.length > 0 && (
-        <>
-          <h3>{t("blocked_title")}</h3>
-          <table>
-            <tbody>
-              {result.blocked.map((b, i) => (
-                <tr className="blocked-row" key={i}>
-                  <td>{b.label}{b.count > 1 ? ` ×${b.count}` : ""}</td>
-                  <td colSpan={5}>
-                    {b.reason} <Citation id={b.source_id} sources={result.sources} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+        <div>
+          <div className="res-section-title"><span className="ico" style={{ color: "var(--blocked)" }}><Icon name="ban" size={16} /></span>{t("blocked_title")}</div>
+          <div className="blocked-list">
+            {result.blocked.map((b, i) => (
+              <div className="blocked-item" key={i}>
+                <span className="b-name">{b.label}{b.count > 1 ? ` ×${b.count}` : ""}</span>
+                <span className="b-why">{b.reason} <Citation id={b.source_id} sources={result.sources} /></span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {professional && (
-        <>
-          <h3>{t("steps_title")}</h3>
-          <ol>
+        <div>
+          <div className="res-section-title"><span className="ico"><Icon name="layers" size={16} /></span>{t("steps_title")}</div>
+          <div className="timeline">
             {result.steps.map((st, i) => (
-              <li key={i} style={{ marginBottom: 6 }}>
-                <strong>{st.title}.</strong> {st.detail}{" "}
-                {st.source_id && <Citation id={st.source_id} sources={result.sources} />}
-              </li>
+              <div className="tl-item" key={i}>
+                <div className="tl-rail">
+                  <div className="tl-dot">{i + 1}</div>
+                  {i < result.steps.length - 1 && <div className="tl-line" />}
+                </div>
+                <div className="tl-body">
+                  <div className="tl-title">{st.title} {st.source_id && <Citation id={st.source_id} sources={result.sources} />}</div>
+                  {st.detail && <div className="tl-detail">{st.detail}</div>}
+                </div>
+              </div>
             ))}
-          </ol>
-        </>
+          </div>
+        </div>
       )}
 
       {result.notes.length > 0 && (
-        <>
-          <h3>{t("notes_title")}</h3>
-          {result.notes.map((n, i) => (
-            <div className="note-item" key={i}>{n}</div>
-          ))}
-        </>
+        <div>
+          <div className="res-section-title"><span className="ico"><Icon name="info" size={16} /></span>{t("notes_title")}</div>
+          <div className="note-stack">
+            {result.notes.map((n, i) => (
+              <div className="callout callout-info" key={i}>
+                <span className="c-ico"><Icon name="info" size={16} /></span>
+                <span>{n}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
-      <div className="disclaimer" style={{ marginTop: 20 }}>
-        {result.disclaimer}
+      <div className="callout callout-warn">
+        <span className="c-ico"><Icon name="alert" size={17} /></span>
+        <span>{result.disclaimer}</span>
       </div>
     </div>
   );

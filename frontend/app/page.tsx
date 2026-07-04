@@ -20,6 +20,7 @@ import ResultView from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
 import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
+import { Icon, Segmented } from "@/components/ui";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
 
@@ -78,21 +79,17 @@ export default function Home() {
   async function runCalc() {
     setLoading(true);
     setError(null);
-    const req: CalculationRequest = buildRequest();
+    const req = buildRequest();
     try {
       if (compareMode) {
-        const entries = await compare(req, ["khi", "syafii"], mode, lang);
-        setComparison(entries);
+        setComparison(await compare(req, ["khi", "syafii"], mode, lang));
         setResult(null);
       } else {
-        const res = await calculate(req, mode, lang);
-        setResult(res);
+        setResult(await calculate(req, mode, lang));
         setComparison(null);
       }
     } catch (err) {
-      const message =
-        err instanceof CalculationError ? err.message : t("server_error");
-      setError(message);
+      setError(err instanceof CalculationError ? err.message : t("server_error"));
       setResult(null);
       setComparison(null);
     } finally {
@@ -108,133 +105,167 @@ export default function Home() {
     runCalc();
   }
 
-  // Re-fetch when the language changes so the server-localized derivation text updates
-  // (the API is the single source of truth for reasons/labels/disclaimer).
+  // Re-fetch when the language changes so the server-localized text updates.
   const didMount = useRef(false);
   useEffect(() => {
-    if (!didMount.current) {
-      didMount.current = true;
-      return;
-    }
+    if (!didMount.current) { didMount.current = true; return; }
     if (disclaimerAccepted && (result || comparison)) runCalc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang]);
 
+  const hasResult = !!result || !!comparison;
+
   return (
-    <div className="container">
-      <div className="header">
-        <div>
-          <h1>{t("app_title")}</h1>
-          <div className="subtitle">{t("app_subtitle")}</div>
-        </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <div className="toggle-group" role="tablist" aria-label="Language">
-            {(["id", "en"] as Lang[]).map((l) => (
-              <button key={l} className={lang === l ? "active" : ""} onClick={() => setLang(l)}>
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-          <div className="toggle-group" role="tablist" aria-label="Mode">
-            <button className={mode === "personal" ? "active" : ""} onClick={() => setMode("personal")}>
-              {t("mode_personal")}
-            </button>
-            <button className={mode === "professional" ? "active" : ""} onClick={() => setMode("professional")}>
-              {t("mode_professional")}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <h2>{t("heirs_card_title")}</h2>
-        <div className="field" style={{ maxWidth: 320 }}>
-          <label>{t("legal_basis")}</label>
-          <select
-            value={ruleset}
-            onChange={(e) => {
-              const r = e.target.value as Ruleset;
-              setRuleset(r);
-              if (r !== "khi") {
-                setHartaBersama(false);
-                setHeirs({ ...heirs, representatives: [] });
-              }
-            }}
-          >
-            {RULESETS.map((r) => (
-              <option key={r} value={r}>
-                {rulesetLabel(r, lang)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <HeirForm
-          heirs={heirs}
-          setHeirs={setHeirs}
-          estate={estate}
-          setEstate={setEstate}
-          ruleset={ruleset}
-          hartaBersama={hartaBersama}
-          setHartaBersama={setHartaBersama}
-        />
-
-        <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-          <button className="btn" onClick={onSubmit} disabled={loading}>
-            {loading ? t("calculating") : compareMode ? t("calc_compare") : t("calc")}
-          </button>
-          <label className="checkbox">
-            <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
-            {t("compare_toggle")}
-          </label>
-        </div>
-      </div>
-
-      {error && (
-        <div className="card">
-          <div className="error-box">
-            <strong>{t("cannot_calc")}</strong> {error}
-          </div>
-        </div>
-      )}
-
-      {result && (
-        <div className="card">
-          <div className="header" style={{ marginBottom: 8 }}>
-            <h2 style={{ margin: 0 }}>{t("result")} — {rulesetLabel(result.ruleset, lang)}</h2>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <div className="toggle-group" role="tablist" aria-label="View">
-                <button className={view === "table" ? "active" : ""} onClick={() => setView("table")}>
-                  {t("view_table")}
-                </button>
-                <button className={view === "diagram" ? "active" : ""} onClick={() => setView("diagram")}>
-                  {t("view_diagram")}
-                </button>
-              </div>
-              {result.mode === "professional" && (
-                <button className="btn btn-secondary" onClick={handleExportPdf} disabled={exportingPdf}>
-                  {exportingPdf ? t("preparing") : t("export_pdf")}
-                </button>
-              )}
+    <>
+      <header className="app-bar">
+        <div className="app-bar-inner">
+          <div className="brand">
+            <div className="brand-mark"><Icon name="scale" size={22} /></div>
+            <div>
+              <div className="brand-name">Faraid<b>Visualizer</b></div>
+              <div className="brand-tag">{t("app_tagline")}</div>
             </div>
           </div>
-          {view === "table" ? (
-            <ResultView result={result} />
-          ) : (
-            <>
-              <DerivationFlow result={result} />
-              <div className="disclaimer" style={{ marginTop: 16 }}>{result.disclaimer}</div>
-            </>
-          )}
+          <Segmented<Lang>
+            ariaLabel="Language"
+            value={lang}
+            onChange={setLang}
+            options={[
+              { value: "id", label: "ID" },
+              { value: "en", label: "EN" },
+            ]}
+          />
         </div>
-      )}
+      </header>
 
-      {comparison && (
-        <div className="card">
-          <h2>{t("comparison_title")}</h2>
-          <ComparisonView entries={comparison} />
-        </div>
-      )}
+      <main className="layout">
+        {/* ---- Input pane ---- */}
+        <aside className="pane-form">
+          <div className="card card-pad">
+            <div className="card-title" style={{ marginBottom: 14 }}>
+              <Icon name="users" size={18} /> {t("form_title")}
+            </div>
+
+            <Segmented<Mode>
+              block
+              ariaLabel="Mode"
+              value={mode}
+              onChange={setMode}
+              options={[
+                { value: "personal", label: t("mode_personal") },
+                { value: "professional", label: t("mode_professional") },
+              ]}
+            />
+            <p className="small muted" style={{ marginTop: 8 }}>
+              {mode === "professional" ? t("mode_hint_professional") : t("mode_hint_personal")}
+            </p>
+
+            <div className="divider" />
+
+            <div className="field">
+              <span className="field-label">{t("legal_basis")}</span>
+              <select
+                value={ruleset}
+                onChange={(e) => {
+                  const r = e.target.value as Ruleset;
+                  setRuleset(r);
+                  if (r !== "khi") {
+                    setHartaBersama(false);
+                    setHeirs({ ...heirs, representatives: [] });
+                  }
+                }}
+              >
+                {RULESETS.map((r) => (
+                  <option key={r} value={r}>{rulesetLabel(r, lang)}</option>
+                ))}
+              </select>
+            </div>
+
+            <HeirForm
+              heirs={heirs} setHeirs={setHeirs} estate={estate} setEstate={setEstate}
+              ruleset={ruleset} hartaBersama={hartaBersama} setHartaBersama={setHartaBersama}
+            />
+
+            <div className="divider" />
+            <button className="btn btn-lg" onClick={onSubmit} disabled={loading}>
+              {loading ? t("calculating") : (<><Icon name="scale" size={17} /> {compareMode ? t("calc_compare") : t("calc")}</>)}
+            </button>
+            <label className="check-line" style={{ marginTop: 12 }}>
+              <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
+              {t("compare_toggle")}
+            </label>
+          </div>
+        </aside>
+
+        {/* ---- Result pane ---- */}
+        <section className="pane-result">
+          {error ? (
+            <div className="card card-pad">
+              <div className="error-box">
+                <Icon name="alert" size={18} />
+                <div><strong>{t("cannot_calc")}</strong><div className="small" style={{ marginTop: 4 }}>{error}</div></div>
+              </div>
+            </div>
+          ) : loading ? (
+            <div className="card card-pad">
+              <div className="skeleton" style={{ height: 22, width: "40%", marginBottom: 16 }} />
+              <div className="skeleton" style={{ height: 34, width: "100%", marginBottom: 20 }} />
+              {[...Array(4)].map((_, i) => (
+                <div className="skeleton" key={i} style={{ height: 58, width: "100%", marginBottom: 8 }} />
+              ))}
+            </div>
+          ) : comparison ? (
+            <div className="card card-pad">
+              <div className="card-title" style={{ marginBottom: 16 }}><Icon name="book" size={18} /> {t("comparison_title")}</div>
+              <ComparisonView entries={comparison} />
+            </div>
+          ) : result ? (
+            <div className="card">
+              <div className="card-head">
+                <div className="card-title">
+                  <Icon name="scale" size={18} /> {t("result")}
+                  <span className="badge badge-primary" style={{ marginLeft: 2 }}>{rulesetLabel(result.ruleset, lang)}</span>
+                </div>
+                <div className="result-toolbar">
+                  <Segmented<"table" | "diagram">
+                    ariaLabel="View" value={view} onChange={setView}
+                    options={[
+                      { value: "table", label: <><Icon name="table" size={14} /> {t("view_table")}</> },
+                      { value: "diagram", label: <><Icon name="sitemap" size={14} /> {t("view_diagram")}</> },
+                    ]}
+                  />
+                  {result.mode === "professional" && (
+                    <button className="btn btn-secondary" onClick={handleExportPdf} disabled={exportingPdf}>
+                      <Icon name="download" size={16} /> {exportingPdf ? t("preparing") : t("export_pdf")}
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="card-pad">
+                {view === "table" ? (
+                  <ResultView result={result} />
+                ) : (
+                  <>
+                    <DerivationFlow result={result} />
+                    <div className="callout callout-warn" style={{ marginTop: 16 }}>
+                      <span className="c-ico"><Icon name="alert" size={17} /></span>
+                      <span>{result.disclaimer}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="card">
+              <div className="empty-state">
+                <div className="empty-emblem"><Icon name="scale" size={38} /></div>
+                <h3>{t("empty_title")}</h3>
+                <p>{t("empty_body")}</p>
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
 
       {pendingCalc && (
         <DisclaimerModal
@@ -245,6 +276,6 @@ export default function Home() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
