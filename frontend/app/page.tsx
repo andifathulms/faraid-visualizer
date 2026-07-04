@@ -7,6 +7,7 @@ import {
   CalculationRequest,
   CalculationResult,
   EstateInput,
+  fetchPdf,
   HeirsInput,
   Mode,
   Ruleset,
@@ -37,16 +38,41 @@ export default function Home() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [pendingCalc, setPendingCalc] = useState(false);
   const [view, setView] = useState<"table" | "diagram">("table");
+  const [exportingPdf, setExportingPdf] = useState(false);
 
-  async function runCalc() {
-    setLoading(true);
-    setError(null);
-    const req: CalculationRequest = {
+  function buildRequest(): CalculationRequest {
+    return {
       heirs,
       ruleset,
       apply_harta_bersama: ruleset === "khi" && hartaBersama,
       estate: cleanEstate(estate),
     };
+  }
+
+  async function handleExportPdf() {
+    setExportingPdf(true);
+    setError(null);
+    try {
+      const blob = await fetchPdf(buildRequest());
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "perhitungan-faraid.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof CalculationError ? err.message : "Gagal membuat PDF.");
+    } finally {
+      setExportingPdf(false);
+    }
+  }
+
+  async function runCalc() {
+    setLoading(true);
+    setError(null);
+    const req: CalculationRequest = buildRequest();
     try {
       const res = await calculate(req, mode);
       setResult(res);
@@ -141,13 +167,20 @@ export default function Home() {
         <div className="card">
           <div className="header" style={{ marginBottom: 8 }}>
             <h2 style={{ margin: 0 }}>Hasil — {RULESET_LABELS[result.ruleset]}</h2>
-            <div className="toggle-group" role="tablist" aria-label="Tampilan">
-              <button className={view === "table" ? "active" : ""} onClick={() => setView("table")}>
-                Tabel
-              </button>
-              <button className={view === "diagram" ? "active" : ""} onClick={() => setView("diagram")}>
-                Diagram
-              </button>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <div className="toggle-group" role="tablist" aria-label="Tampilan">
+                <button className={view === "table" ? "active" : ""} onClick={() => setView("table")}>
+                  Tabel
+                </button>
+                <button className={view === "diagram" ? "active" : ""} onClick={() => setView("diagram")}>
+                  Diagram
+                </button>
+              </div>
+              {result.mode === "professional" && (
+                <button className="btn btn-secondary" onClick={handleExportPdf} disabled={exportingPdf}>
+                  {exportingPdf ? "Menyiapkan…" : "Ekspor PDF"}
+                </button>
+              )}
             </div>
           </div>
           {view === "table" ? (

@@ -162,3 +162,20 @@ export async function calculate(
   }
   return (await res.json()) as CalculationResult;
 }
+
+// Professional-mode PDF export (PRD §7). Returns the PDF as a Blob for download.
+export async function fetchPdf(req: CalculationRequest): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/api/calculate/professional/pdf/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+  if (res.status === 422) {
+    const err = (await res.json()) as ApiError;
+    throw new CalculationError(err.detail, false);
+  }
+  if (!res.ok) {
+    throw new CalculationError(`Gagal membuat PDF (${res.status})`, true);
+  }
+  return await res.blob();
+}

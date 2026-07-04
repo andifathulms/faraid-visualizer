@@ -38,8 +38,32 @@ frontend/             # Next.js UI — input form + derivation visualization (Re
 
 ## Development status
 
-Built in the CLAUDE.md build order. Tier 1 (KHI + Syafi'i) is the v1 gate: 100% pass on
-the validation test bank before any UI work is trusted.
+Built in the CLAUDE.md build order (all 9 steps). Tier 1 (KHI + Syafi'i): 100% pass on
+the validation test bank (the v1 gate). Tier 2 (Hanafi/Maliki/Hanbali): implemented and
+clearly marked **Beta** — the badge stays until a ≥30-example validation pass per madhab.
+
+### API endpoints
+
+- `POST /api/calculate/personal/` — full derivation, Personal mode.
+- `POST /api/calculate/professional/` — full derivation, Professional mode.
+- `POST /api/calculate/professional/pdf/` — Professional-mode PDF (full citation trail).
+- `GET  /api/sources/` — citation registry.
+- `GET  /api/health/`
+
+### Running
+
+```bash
+# Backend
+cd backend && python -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py seed_sources && .venv/bin/python manage.py seed_validation_bank
+.venv/bin/python manage.py runserver          # :8000
+.venv/bin/python -m pytest faraid_engine/tests # engine gate (Django-free)
+.venv/bin/python manage.py test api            # API tests
+
+# Frontend
+cd frontend && npm install && npm run dev      # :3000
+```
 
 ## Running the engine tests
 
