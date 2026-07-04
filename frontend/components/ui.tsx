@@ -29,6 +29,9 @@ const PATHS: Record<string, ReactNode> = {
   scroll: <><path d="M8 3h9a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H8" /><path d="M3 5a2 2 0 0 1 2-2 2 2 0 0 1 2 2v13a3 3 0 0 0 3 3" /><path d="M11 7h5M11 11h5" /></>,
   gift: <><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /><path d="M12 8S10 3 7.5 4.5 12 8 12 8zM12 8s2-5 4.5-3.5S12 8 12 8z" /></>,
   globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z" /></>,
+  sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>,
+  moon: <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />,
+  monitor: <><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" /></>,
 };
 
 export function Icon({ name, size = 18, className }: { name: string; size?: number; className?: string }) {

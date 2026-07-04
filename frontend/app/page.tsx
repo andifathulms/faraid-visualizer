@@ -15,6 +15,7 @@ import {
   Ruleset,
 } from "@/lib/api";
 import { useI18n, rulesetLabel, Lang } from "@/lib/i18n";
+import { ThemeToggle } from "@/lib/theme";
 import HeirForm from "@/components/HeirForm";
 import ResultView from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
@@ -126,15 +127,18 @@ export default function Home() {
               <div className="brand-tag">{t("app_tagline")}</div>
             </div>
           </div>
-          <Segmented<Lang>
-            ariaLabel="Language"
-            value={lang}
-            onChange={setLang}
-            options={[
-              { value: "id", label: "ID" },
-              { value: "en", label: "EN" },
-            ]}
-          />
+          <div className="row gap-10">
+            <ThemeToggle />
+            <Segmented<Lang>
+              ariaLabel="Language"
+              value={lang}
+              onChange={setLang}
+              options={[
+                { value: "id", label: "ID" },
+                { value: "en", label: "EN" },
+              ]}
+            />
+          </div>
         </div>
       </header>
 

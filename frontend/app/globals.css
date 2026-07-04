@@ -57,8 +57,9 @@
   --maxw: 1240px;
 }
 
+/* Dark tokens apply when the OS prefers dark AND the user hasn't forced a theme… */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --bg: #121310;
     --bg-grad-1: #141611;
     --bg-grad-2: #10130f;
@@ -96,6 +97,42 @@
     --shadow-lg: 0 24px 55px -24px rgba(0, 0, 0, 0.7);
     --ring: 0 0 0 3px rgba(51, 195, 152, 0.28);
   }
+}
+
+/* …and always when the user explicitly forces dark (overrides the OS in both directions;
+   forcing light simply falls back to the light :root above). */
+:root[data-theme="dark"] {
+  --bg: #121310;
+  --bg-grad-1: #141611;
+  --bg-grad-2: #10130f;
+  --surface: #1c1e18;
+  --surface-2: #23251e;
+  --surface-inset: #191b15;
+  --border: #31342a;
+  --border-strong: #40432f;
+  --text: #eceadf;
+  --text-muted: #a29c8d;
+  --text-faint: #746f61;
+  --primary: #33c398;
+  --primary-strong: #46d1a7;
+  --primary-soft: rgba(51, 195, 152, 0.12);
+  --primary-softer: rgba(51, 195, 152, 0.07);
+  --on-primary: #08130f;
+  --gold: #d7b35c;
+  --gold-soft: rgba(215, 179, 92, 0.14);
+  --furud: #33c398;
+  --asabah: #7096e6;
+  --radd: #b493df;
+  --dzawil: #34c3c3;
+  --blocked: #e58a74;
+  --danger: #e58a74;
+  --danger-soft: rgba(229, 138, 116, 0.12);
+  --warn: #d7b35c;
+  --warn-soft: rgba(215, 179, 92, 0.12);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 55px -24px rgba(0, 0, 0, 0.7);
+  --ring: 0 0 0 3px rgba(51, 195, 152, 0.28);
 }
 
 * { box-sizing: border-box; }
@@ -147,6 +184,16 @@ a { color: var(--primary); }
   justify-content: space-between;
   gap: 16px;
 }
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--border); background: var(--surface-inset); color: var(--text-muted);
+  border-radius: 999px; padding: 7px 13px; cursor: pointer; font-family: inherit;
+  font-size: 0.82rem; font-weight: 600; transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.theme-toggle:hover { color: var(--text); box-shadow: var(--shadow-sm); }
+.theme-toggle .tt-label { line-height: 1; }
+@media (max-width: 560px) { .theme-toggle .tt-label { display: none; } }
+
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand-mark {
   width: 40px; height: 40px; flex: none;
