@@ -12,8 +12,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { CalculationResult } from "@/lib/api";
-import { useI18n, relationLabel, categoryLabel } from "@/lib/i18n";
-import { explainShare, explainBlocked } from "@/lib/explain";
+import { useI18n } from "@/lib/i18n";
 
 // PRD §7: tree/flow view of the derivation — hajb exclusions, furud assignment, asabah
 // distribution — with citations on hover. The estate flows to each awarded heir (colored
@@ -79,10 +78,10 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
         type: "faraid",
         position: { x: 360, y: i * 92 },
         data: {
-          title: `${relationLabel(s.label_id, lang)}${s.count > 1 ? ` ×${s.count}` : ""}`,
-          sub: `${s.share.text} · ${categoryLabel(s.category, t)}`,
+          title: `${s.label}${s.count > 1 ? ` ×${s.count}` : ""}`,
+          sub: `${s.share.text} · ${s.category_label}`,
           variant,
-          hover: `${explainShare(s, lang)}${cite ? `  [${cite.reference}]` : ""}`,
+          hover: `${s.reason}${cite ? `  [${cite.reference}]` : ""}`,
         },
       });
       edges.push({
@@ -103,10 +102,10 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
         type: "faraid",
         position: { x: 720, y: i * 92 },
         data: {
-          title: `${relationLabel(b.label_id, lang)}${b.count > 1 ? ` ×${b.count}` : ""}`,
+          title: `${b.label}${b.count > 1 ? ` ×${b.count}` : ""}`,
           sub: t("blocked_title"),
           variant: "blocked",
-          hover: `${explainBlocked(b, lang)}${cite ? `  [${cite.reference}]` : ""}`,
+          hover: `${b.reason}${cite ? `  [${cite.reference}]` : ""}`,
         },
       });
       const source = relationToNode[b.blocked_by] ?? "root";

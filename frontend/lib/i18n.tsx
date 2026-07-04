@@ -2,11 +2,11 @@
 
 // Frontend i18n (PRD §7: Bahasa Indonesia primary, English secondary).
 //
-// The engine/API return Indonesian prose (reasons, notes, disclaimer). Rather than
-// refactor the validated engine, English mode regenerates the derivation text on the
-// client from the STRUCTURED fields the API already sends (rule_applied, category,
-// relation, share) — see lib/explain.ts. Fixed UI chrome is translated from the tables
-// below. Indonesian mode uses the engine's own strings.
+// Derivation TEXT (reasons, labels, categories, step titles, notes, disclaimer) is
+// localized server-side and returned already-translated per the `lang` sent with each
+// request (single source of truth in the API layer). This module only supplies the
+// static UI chrome (headings, buttons, form labels) and the form-time relation/ruleset
+// labels shown before a calculation exists.
 
 import { createContext, useContext, useState, ReactNode } from "react";
 

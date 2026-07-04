@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { CalculationResult, Share, SourceCitation } from "@/lib/api";
-import { useI18n, relationLabel, categoryLabel } from "@/lib/i18n";
-import { explainShare, explainBlocked, stepTitle, stepDetail, translateNote } from "@/lib/explain";
+import { useI18n } from "@/lib/i18n";
+
+// Data text (labels, categories, reasons, step titles, notes, disclaimer) is server-
+// localized (single source of truth); this component only supplies static UI chrome.
 
 // Renders the full derivation. Personal mode: collapsed "why?" expanders. Professional
 // mode: derivation steps expanded by default (PRD §3). Citations render as footnotes.
@@ -27,7 +29,7 @@ function ShareRow({
   sources: Record<string, SourceCitation>;
   defaultOpen: boolean;
 }) {
-  const { lang, t } = useI18n();
+  const { t } = useI18n();
   const [open, setOpen] = useState(defaultOpen);
   const pillClass =
     share.category === "furud" ? "pill pill-furud" : share.category === "asabah" ? "pill pill-asabah" : share.category === "radd" ? "pill pill-radd" : "pill";
@@ -35,14 +37,14 @@ function ShareRow({
     <>
       <tr>
         <td>
-          {relationLabel(share.label_id, lang)}
+          {share.label}
           {share.count > 1 ? ` ×${share.count}` : ""}
         </td>
         <td className="share-frac">
           {share.category === "harta_bersama" ? "—" : share.share.text}
         </td>
         <td>{share.count > 1 && share.category !== "harta_bersama" ? share.per_head.text : "—"}</td>
-        <td><span className={pillClass}>{categoryLabel(share.category, t)}</span></td>
+        <td><span className={pillClass}>{share.category_label}</span></td>
         <td>{share.amount ?? "—"}</td>
         <td>
           <button className="why-toggle" onClick={() => setOpen((o) => !o)}>
@@ -54,7 +56,7 @@ function ShareRow({
         <tr>
           <td colSpan={6}>
             <p className="why-body">
-              {explainShare(share, lang)} <Citation id={share.source_id} sources={sources} />
+              {share.reason} <Citation id={share.source_id} sources={sources} />
             </p>
           </td>
         </tr>
@@ -64,7 +66,7 @@ function ShareRow({
 }
 
 export default function ResultView({ result }: { result: CalculationResult }) {
-  const { lang, t } = useI18n();
+  const { t } = useI18n();
   const professional = result.mode === "professional";
   const e = result.estate;
 
@@ -120,9 +122,9 @@ export default function ResultView({ result }: { result: CalculationResult }) {
             <tbody>
               {result.blocked.map((b, i) => (
                 <tr className="blocked-row" key={i}>
-                  <td>{relationLabel(b.label_id, lang)}{b.count > 1 ? ` ×${b.count}` : ""}</td>
+                  <td>{b.label}{b.count > 1 ? ` ×${b.count}` : ""}</td>
                   <td colSpan={5}>
-                    {explainBlocked(b, lang)} <Citation id={b.source_id} sources={result.sources} />
+                    {b.reason} <Citation id={b.source_id} sources={result.sources} />
                   </td>
                 </tr>
               ))}
@@ -137,7 +139,7 @@ export default function ResultView({ result }: { result: CalculationResult }) {
           <ol>
             {result.steps.map((st, i) => (
               <li key={i} style={{ marginBottom: 6 }}>
-                <strong>{stepTitle(st, lang)}.</strong> {stepDetail(st, lang)}{" "}
+                <strong>{st.title}.</strong> {st.detail}{" "}
                 {st.source_id && <Citation id={st.source_id} sources={result.sources} />}
               </li>
             ))}
@@ -149,13 +151,13 @@ export default function ResultView({ result }: { result: CalculationResult }) {
         <>
           <h3>{t("notes_title")}</h3>
           {result.notes.map((n, i) => (
-            <div className="note-item" key={i}>{translateNote(n, lang)}</div>
+            <div className="note-item" key={i}>{n}</div>
           ))}
         </>
       )}
 
       <div className="disclaimer" style={{ marginTop: 20 }}>
-        {professional ? t("disclaimer_professional") : t("disclaimer_personal")}
+        {result.disclaimer}
       </div>
     </div>
   );

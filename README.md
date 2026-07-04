@@ -45,9 +45,12 @@ clearly marked **Beta** — the badge stays until a ≥30-example validation pas
 Post-v1 features: side-by-side KHI-vs-Syafi'i **comparison** (`/api/compare/`),
 **al-jadd wa al-ikhwah** (grandfather + siblings, Zaid's muqasama, for Syafi'i/Maliki/
 Hanbali; the intricate akdariyya/mu'adda sub-cases still raise), and **English/Indonesian
-i18n** (EN/ID toggle; English derivation text is regenerated on the client from the
-engine's structured fields so the validated engine stays untouched — the PDF export
-remains Indonesian).
+i18n**. Localization is a single server-side source of truth: every endpoint accepts a
+`lang` ("id" | "en"); Indonesian uses the engine's authoritative prose, English is
+regenerated from the engine's structured fields in the API layer (`api/explain.py`), so
+the validated engine is never touched. Both the JSON and the **PDF export** honor `lang`
+(English PDF supported). The frontend sends the UI language with each request and renders
+the server-localized text.
 
 ### API endpoints
 

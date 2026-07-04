@@ -3,6 +3,7 @@
 
 export type Ruleset = "khi" | "syafii" | "hanafi" | "maliki" | "hanbali";
 export type Mode = "personal" | "professional";
+type Lang = "id" | "en"; // structurally identical to lib/i18n's Lang
 
 export interface Representative {
   replacing: "son" | "daughter";
@@ -55,13 +56,15 @@ export interface FractionValue {
 export interface Share {
   relation: string;
   label_id: string;
+  label: string; // localized display name (server-rendered per lang)
   count: number;
   share: FractionValue;
   per_head: FractionValue;
   category: "furud" | "asabah" | "radd" | "dzawil_arham" | "harta_bersama";
+  category_label: string; // localized
   asabah_type: string | null;
   rule_applied: string;
-  reason: string;
+  reason: string; // localized derivation prose (server single source of truth)
   source_id: string;
   amount: string | null;
 }
@@ -69,10 +72,11 @@ export interface Share {
 export interface Blocked {
   relation: string;
   label_id: string;
+  label: string; // localized
   count: number;
   blocked_by: string;
   blocked_by_label: string;
-  reason: string;
+  reason: string; // localized
   source_id: string;
   full: boolean;
 }
@@ -138,12 +142,13 @@ export class CalculationError extends Error {
 
 export async function calculate(
   req: CalculationRequest,
-  mode: Mode
+  mode: Mode,
+  lang: Lang = "id"
 ): Promise<CalculationResult> {
   const res = await fetch(`${API_BASE}/api/calculate/${mode}/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(req),
+    body: JSON.stringify({ ...req, lang }),
   });
 
   if (res.status === 422) {
@@ -175,12 +180,13 @@ export interface ComparisonEntry {
 export async function compare(
   req: CalculationRequest,
   rulesets: Ruleset[],
-  mode: Mode
+  mode: Mode,
+  lang: Lang = "id"
 ): Promise<ComparisonEntry[]> {
   const res = await fetch(`${API_BASE}/api/compare/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...req, rulesets, mode }),
+    body: JSON.stringify({ ...req, rulesets, mode, lang }),
   });
   if (res.status === 400) {
     const err = await res.json();
@@ -191,11 +197,11 @@ export async function compare(
 }
 
 // Professional-mode PDF export (PRD §7). Returns the PDF as a Blob for download.
-export async function fetchPdf(req: CalculationRequest): Promise<Blob> {
+export async function fetchPdf(req: CalculationRequest, lang: Lang = "id"): Promise<Blob> {
   const res = await fetch(`${API_BASE}/api/calculate/professional/pdf/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(req),
+    body: JSON.stringify({ ...req, lang }),
   });
   if (res.status === 422) {
     const err = (await res.json()) as ApiError;

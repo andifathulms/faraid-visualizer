@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   calculate,
   CalculationError,
@@ -59,7 +59,7 @@ export default function Home() {
     setExportingPdf(true);
     setError(null);
     try {
-      const blob = await fetchPdf(buildRequest());
+      const blob = await fetchPdf(buildRequest(), lang);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -81,11 +81,11 @@ export default function Home() {
     const req: CalculationRequest = buildRequest();
     try {
       if (compareMode) {
-        const entries = await compare(req, ["khi", "syafii"], mode);
+        const entries = await compare(req, ["khi", "syafii"], mode, lang);
         setComparison(entries);
         setResult(null);
       } else {
-        const res = await calculate(req, mode);
+        const res = await calculate(req, mode, lang);
         setResult(res);
         setComparison(null);
       }
@@ -107,6 +107,18 @@ export default function Home() {
     }
     runCalc();
   }
+
+  // Re-fetch when the language changes so the server-localized derivation text updates
+  // (the API is the single source of truth for reasons/labels/disclaimer).
+  const didMount = useRef(false);
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    if (disclaimerAccepted && (result || comparison)) runCalc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   return (
     <div className="container">
@@ -211,9 +223,7 @@ export default function Home() {
           ) : (
             <>
               <DerivationFlow result={result} />
-              <div className="disclaimer" style={{ marginTop: 16 }}>
-                {result.mode === "professional" ? t("disclaimer_professional") : t("disclaimer_personal")}
-              </div>
+              <div className="disclaimer" style={{ marginTop: 16 }}>{result.disclaimer}</div>
             </>
           )}
         </div>
