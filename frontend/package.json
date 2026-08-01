@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare-python": "node scripts/prepare-python.mjs",
+    "warm-wheels": "node scripts/prepare-python.mjs warm-wheels",
+    "predev": "npm run prepare-python",
     "dev": "next dev",
+    "prebuild": "npm run prepare-python",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,6 +15,7 @@
   },
   "dependencies": {
     "next": "14.2.5",
+    "pyodide": "314.0.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "reactflow": "11.11.4"

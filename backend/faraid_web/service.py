@@ -16,7 +16,6 @@ from faraid_engine import Ruleset, UnsupportedConfiguration, calculate
 from faraid_engine.exceptions import InvalidHeirInput
 from faraid_engine.sources import all_sources
 
-from .pdf import build_pdf
 from .serialize import serialize_result
 from .validate import InvalidInput, build_input, validate_payload
 
@@ -62,7 +61,15 @@ def compare_payload(
 
 
 def pdf_payload(payload: object) -> bytes:
-    """Professional-mode PDF export (PRD §7). Always computes in Professional mode."""
+    """Professional-mode PDF export (PRD §7). Always computes in Professional mode.
+
+    ``reportlab`` is imported lazily: it is the only third-party dependency anywhere in
+    the engine or this layer, and the calculation path must not require it. In the
+    browser build that keeps the ~2 MB PDF library out of the critical path — it is
+    fetched on first export, not on first calculation.
+    """
+    from .pdf import build_pdf
+
     data = validate_payload(payload)
     result = calculate(build_input(data, mode_override="professional"))
     serialized = serialize_result(result, data["lang"])
