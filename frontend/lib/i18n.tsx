@@ -42,12 +42,25 @@ export const STRINGS: Dict = {
   comparison_title: { id: "Perbandingan madzhab", en: "Madhab comparison" },
   not_computable: { id: "Tidak dapat dihitung pada madzhab ini.", en: "Not computable under this school." },
   server_error: {
-    id: "Tidak dapat menghubungi server. Pastikan backend berjalan di :8000.",
-    en: "Could not reach the server. Make sure the backend is running on :8000.",
+    id: "Mesin perhitungan gagal dimuat. Periksa koneksi Anda lalu muat ulang halaman.",
+    en: "The calculation engine failed to load. Check your connection and reload the page.",
   },
   cannot_calc: { id: "Tidak dapat dihitung.", en: "Cannot be calculated." },
   export_pdf: { id: "Ekspor PDF", en: "Export PDF" },
   preparing: { id: "Menyiapkan…", en: "Preparing…" },
+
+  // Engine boot status. The rule engine is real CPython compiled to WebAssembly and runs
+  // in the browser, so the first load is a genuine multi-second download — say so plainly
+  // rather than showing an unexplained spinner.
+  engine_downloading: { id: "Mengunduh mesin perhitungan…", en: "Downloading the calculation engine…" },
+  engine_starting: { id: "Menjalankan mesin perhitungan…", en: "Starting the calculation engine…" },
+  engine_hint: {
+    id: "Perhitungan berjalan sepenuhnya di perangkat Anda. Sekali diunduh, hasilnya seketika dan data Anda tidak pernah dikirim ke mana pun.",
+    en: "Calculations run entirely on your device. Once downloaded it is instant, and your data is never sent anywhere.",
+  },
+  engine_error: { id: "Mesin perhitungan gagal dimuat.", en: "The calculation engine failed to load." },
+  engine_retry: { id: "Coba lagi", en: "Try again" },
+  pdf_preparing: { id: "Menyiapkan PDF…", en: "Preparing PDF…" },
   view_table: { id: "Tabel", en: "Table" },
   view_diagram: { id: "Diagram", en: "Diagram" },
 

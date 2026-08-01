@@ -21,6 +21,8 @@ import ResultView from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
 import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
+import EngineStatus from "@/components/EngineStatus";
+import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
@@ -106,7 +108,15 @@ export default function Home() {
     runCalc();
   }
 
-  // Re-fetch when the language changes so the server-localized text updates.
+  // Start downloading the WebAssembly engine immediately. Entering heirs takes far
+  // longer than the download, so by the time Calculate is pressed it is usually ready.
+  useEffect(() => {
+    void preloadEngine().catch(() => {
+      /* surfaced by <EngineStatus />; a failure here must not break the form */
+    });
+  }, []);
+
+  // Recompute when the language changes so the localized derivation text updates.
   const didMount = useRef(false);
   useEffect(() => {
     if (!didMount.current) { didMount.current = true; return; }
@@ -191,6 +201,7 @@ export default function Home() {
             />
 
             <div className="divider" />
+            <EngineStatus />
             <button className="btn btn-lg" onClick={onSubmit} disabled={loading}>
               {loading ? t("calculating") : (<><Icon name="scale" size={17} /> {compareMode ? t("calc_compare") : t("calc")}</>)}
             </button>

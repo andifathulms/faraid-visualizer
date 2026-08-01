@@ -573,3 +573,34 @@ select {
 .between { justify-content: space-between; }
 .mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; }
 .divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+/* ---- In-browser engine boot status ------------------------------------------------
+   Shown only while the WebAssembly runtime downloads or starts. On a repeat visit the
+   runtime is served from cache and this never appears. */
+.engine-status {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 12px 14px; margin-bottom: 12px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--primary-softer); color: var(--text);
+  font-size: 0.9rem; line-height: 1.45;
+  animation: fadein 0.2s ease-out;
+}
+.engine-status .small { margin-top: 3px; }
+.engine-status-error {
+  background: var(--danger-soft); border-color: var(--danger);
+  align-items: center; justify-content: space-between;
+}
+.btn-sm { padding: 7px 14px; font-size: 0.85rem; border-radius: 9px; flex-shrink: 0; }
+
+.engine-spinner {
+  width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px;
+  border: 2px solid var(--primary-soft); border-top-color: var(--primary);
+  border-radius: 50%; animation: engine-spin 0.7s linear infinite;
+}
+@keyframes engine-spin { to { transform: rotate(360deg); } }
+
+/* Respect reduced-motion: pulse instead of spin. */
+@media (prefers-reduced-motion: reduce) {
+  .engine-spinner { animation: engine-pulse 1.4s ease-in-out infinite; }
+  @keyframes engine-pulse { 50% { opacity: 0.35; } }
+}

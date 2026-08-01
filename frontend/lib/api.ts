@@ -1,5 +1,13 @@
-// Typed client for the Faraid Visualizer DRF backend.
-// Mirrors api/services.py:serialize_result — keep in sync with that shape.
+// Typed client for the Faraid rule engine.
+//
+// The static build has no server: these calls run the real Python engine in the browser
+// via lib/engine.ts (Pyodide). The payload and response shapes are unchanged from the
+// DRF API — faraid_web produces the same wire format in both deployments — so these
+// types describe the hosted API and the static build equally.
+//
+// Mirrors backend/faraid_web/serialize.py:serialize_result — keep in sync with that shape.
+
+import { callEngine, ensurePdfSupport, type Envelope } from "@/lib/engine";
 
 export type Ruleset = "khi" | "syafii" | "hanafi" | "maliki" | "hanbali";
 export type Mode = "personal" | "professional";
@@ -129,9 +137,12 @@ export interface ApiError {
   supported?: boolean;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
-
 export class CalculationError extends Error {
+  /**
+   * False when the engine refused a configuration it does not handle — the user should
+   * be told the case is unsupported, never shown a guessed number. True for input the
+   * form should not have allowed through, which is a bug on our side.
+   */
   supported: boolean;
   constructor(message: string, supported = false) {
     super(message);
@@ -140,32 +151,34 @@ export class CalculationError extends Error {
   }
 }
 
+/** Turn a bridge error envelope into the error the UI already knows how to render. */
+function toError(env: Extract<Envelope<unknown>, { ok: false }>): CalculationError {
+  if (env.kind === "unsupported") {
+    return new CalculationError(String(env.detail), false);
+  }
+  const detail =
+    typeof env.detail === "string" ? env.detail : JSON.stringify(env.detail);
+  return new CalculationError(detail, true);
+}
+
+async function run<T>(
+  action: "calculate" | "compare" | "pdf",
+  request: Record<string, unknown>
+): Promise<T> {
+  const env = await callEngine<T>(action, request);
+  if (!env.ok) throw toError(env);
+  return env.data;
+}
+
 export async function calculate(
   req: CalculationRequest,
   mode: Mode,
   lang: Lang = "id"
 ): Promise<CalculationResult> {
-  const res = await fetch(`${API_BASE}/api/calculate/${mode}/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...req, lang }),
+  return run<CalculationResult>("calculate", {
+    payload: { ...req, lang },
+    mode_override: mode,
   });
-
-  if (res.status === 422) {
-    const err = (await res.json()) as ApiError;
-    throw new CalculationError(err.detail, false);
-  }
-  if (res.status === 400) {
-    const err = await res.json();
-    throw new CalculationError(
-      typeof err === "object" ? JSON.stringify(err) : String(err),
-      true
-    );
-  }
-  if (!res.ok) {
-    throw new CalculationError(`Server error (${res.status})`, true);
-  }
-  return (await res.json()) as CalculationResult;
 }
 
 export interface ComparisonEntry {
@@ -183,32 +196,24 @@ export async function compare(
   mode: Mode,
   lang: Lang = "id"
 ): Promise<ComparisonEntry[]> {
-  const res = await fetch(`${API_BASE}/api/compare/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...req, rulesets, mode, lang }),
+  const data = await run<{ comparison: ComparisonEntry[] }>("compare", {
+    payload: { ...req, lang },
+    rulesets,
+    mode_override: mode,
   });
-  if (res.status === 400) {
-    const err = await res.json();
-    throw new CalculationError(JSON.stringify(err), true);
-  }
-  if (!res.ok) throw new CalculationError(`Server error (${res.status})`, true);
-  return ((await res.json()).comparison as ComparisonEntry[]) ?? [];
+  return data.comparison ?? [];
 }
 
 // Professional-mode PDF export (PRD §7). Returns the PDF as a Blob for download.
+// Pulls in the PDF renderer on first use — it is not part of the engine boot.
 export async function fetchPdf(req: CalculationRequest, lang: Lang = "id"): Promise<Blob> {
-  const res = await fetch(`${API_BASE}/api/calculate/professional/pdf/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...req, lang }),
+  await ensurePdfSupport();
+  const { pdf_base64 } = await run<{ pdf_base64: string }>("pdf", {
+    payload: { ...req, lang },
   });
-  if (res.status === 422) {
-    const err = (await res.json()) as ApiError;
-    throw new CalculationError(err.detail, false);
-  }
-  if (!res.ok) {
-    throw new CalculationError(`Gagal membuat PDF (${res.status})`, true);
-  }
-  return await res.blob();
+
+  const binary = atob(pdf_base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: "application/pdf" });
 }

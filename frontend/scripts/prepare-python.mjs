@@ -42,9 +42,14 @@ const REPORTLAB = {
   sha256: "9d5a3affa84919e1111ede580031266a570e93b1ce388219621347965ff1d93c",
 };
 
-// reportlab's runtime dependencies. These ARE in Pyodide's lock, so they ship with the
-// npm package's resolution and we copy them from there rather than hitting PyPI.
-const REPORTLAB_DEPS = ["pillow", "charset-normalizer"];
+// reportlab imports PIL unconditionally (reportlab/lib/utils.py), so Pillow is required
+// even though we render text and tables only — verified, not assumed. It is a compiled
+// wasm wheel, so unlike reportlab it must go through Pyodide's loader; it IS in the lock,
+// so we copy it out of the npm package rather than hitting PyPI.
+//
+// Nothing else is needed: reportlab is pure Python and gets unpacked directly onto
+// sys.path at runtime, which avoids shipping micropip and its resolver entirely.
+const PDF_WASM_DEPS = ["pillow"];
 
 // Core Pyodide runtime files. Deliberately explicit: the npm package also contains test
 // fixtures and type definitions we have no reason to publish.
@@ -129,10 +134,10 @@ function vendorPyodideCore() {
  * (CI, or a new clone) has none. Booting Pyodide once populates the cache; we do that
  * automatically rather than making the build fail on a missing prerequisite.
  */
-async function vendorReportlabDeps(src, dest) {
+async function vendorPdfDeps(src, dest) {
   const lock = JSON.parse(fs.readFileSync(path.join(src, "pyodide-lock.json"), "utf8"));
 
-  const resolved = REPORTLAB_DEPS.map((dep) => {
+  const resolved = PDF_WASM_DEPS.map((dep) => {
     const pkg = lock.packages[dep];
     if (!pkg) throw new Error(`${dep} is not in pyodide-lock.json — Pyodide version changed?`);
     return { dep, file: pkg.file_name };
@@ -179,7 +184,7 @@ async function warmWheels() {
   const { loadPyodide } = await import("pyodide");
   log("booting Pyodide to cache reportlab's dependency wheels…");
   const py = await loadPyodide();
-  await py.loadPackage(REPORTLAB_DEPS);
+  await py.loadPackage(PDF_WASM_DEPS);
   log("wheel cache warmed");
 }
 
@@ -191,13 +196,13 @@ if (mode === "warm-wheels") {
   const digest = buildPythonBundle();
   const { src, dest } = vendorPyodideCore();
   await vendorReportlab(dest);
-  const deps = await vendorReportlabDeps(src, dest);
+  const deps = await vendorPdfDeps(src, dest);
   log(`vendored PDF dependency wheels: ${deps.join(", ")}`);
 
   // Emit a manifest the app reads at runtime, so filenames are never hardcoded twice.
   fs.writeFileSync(
     path.join(PUBLIC, "py", "runtime.json"),
-    JSON.stringify({ engineVersion: digest, reportlabWheel: REPORTLAB.file, pdfDeps: REPORTLAB_DEPS }, null, 2)
+    JSON.stringify({ engineVersion: digest, reportlabWheel: REPORTLAB.file, pdfPackages: PDF_WASM_DEPS }, null, 2)
   );
   log("done");
 }
