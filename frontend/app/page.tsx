@@ -251,7 +251,7 @@ export default function Home() {
                   />
                   {result.mode === "professional" && (
                     <button className="btn btn-secondary" onClick={handleExportPdf} disabled={exportingPdf}>
-                      <Icon name="download" size={16} /> {exportingPdf ? t("preparing") : t("export_pdf")}
+                      <Icon name="download" size={16} /> {exportingPdf ? t("pdf_preparing") : t("export_pdf")}
                     </button>
                   )}
                 </div>

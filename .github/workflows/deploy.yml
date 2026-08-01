@@ -1,0 +1,126 @@
+# Publish the static calculator to GitHub Pages.
+#
+# The site is self-contained: the rule engine runs in the visitor's browser under Pyodide,
+# so there is nothing to deploy but files. The build bundles the Python sources straight
+# out of backend/, which is why the whole repository is checked out rather than frontend/.
+#
+# The test suites gate the deploy. The engine that ships to users IS the engine under
+# test — a green suite and a published build must never disagree, so a failing test
+# blocks publication rather than merely reporting.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two publishes race. In-progress runs are allowed to finish so a deploy is
+# not left half-applied.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Validation test bank
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Engine + web-layer tests (no Django required)
+        working-directory: backend
+        run: python -m pytest
+
+      - name: API contract tests
+        working-directory: backend
+        run: python manage.py test api
+
+      - name: Assert no LLM/model calls in the calculation path
+        # PRD §7 and CLAUDE.md: the calculation path must contain no AI. This is a
+        # release gate, not a style check — verify it on every deploy rather than once.
+        run: |
+          if grep -rniE '\b(openai|anthropic|langchain|transformers|huggingface|litellm|cohere|google\.generativeai)\b' \
+               backend/faraid_engine backend/faraid_web --include='*.py'; then
+            echo "::error::Model-call import found in the calculation path (PRD §7)."
+            exit 1
+          fi
+          echo "Clean: no model-call imports in faraid_engine or faraid_web."
+
+  build:
+    name: Build static site
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        env:
+          # A project site is served from /<repo>, so every asset URL needs that prefix.
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+        run: npm run build
+
+      - name: Verify the engine actually shipped
+        # A silent asset-pipeline failure would publish a site whose Calculate button
+        # never works. Fail here instead.
+        working-directory: frontend
+        run: |
+          set -e
+          for f in out/py/faraid-python.json out/py/runtime.json \
+                   out/pyodide/pyodide.mjs out/pyodide/pyodide.asm.wasm \
+                   out/pyodide/python_stdlib.zip out/.nojekyll; do
+            [ -s "$f" ] || { echo "::error::Missing or empty build output: $f"; exit 1; }
+          done
+          python3 - <<'PY'
+          import json
+          bundle = json.load(open("out/py/faraid-python.json"))
+          files = bundle["files"]
+          required = ["faraid_engine/pipeline.py", "faraid_web/bridge.py", "faraid_web/validate.py"]
+          missing = [f for f in required if f not in files]
+          if missing:
+              raise SystemExit(f"::error::Engine bundle is missing {missing}")
+          print(f"Engine bundle OK: {len(files)} modules, version {bundle['version']}")
+          PY
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/out
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
