@@ -48,19 +48,33 @@ inevitably drift — so there is only one engine.
 
 <br>
 
-The page itself loads instantly; the engine downloads in the background while you are
-entering heirs, which normally takes longer than the download does.
+The page itself loads immediately and the form is usable straight away; the engine
+downloads in the background while you are entering heirs.
 
-| | Size | When |
+| | Transfer (gzipped) | When |
 |---|---|---|
-| Page shell | ~150 kB | Immediately |
-| Python runtime + engine | ~13 MB | Background, on first visit only (then cached) |
+| Page shell | ~250 kB | Immediately — the form works at once |
+| Python runtime | ~9 MB | Background, first visit only (then cached) |
+| Engine sources | ~40 kB | With the runtime |
 | PDF renderer | ~2.9 MB | Only if you export a PDF |
 
-Measured locally: engine ready ~1s, first calculation ~2s, subsequent calculations ~0.4s.
-Over a real network the first visit is realistically a few seconds; repeat visits are
-served from cache. It also uses ~50–100 MB of RAM, which is unremarkable on a desktop but
-worth knowing on an older phone.
+Measured against the deployed site on a home connection:
+
+| | Cold cache | Warm cache |
+|---|---|---|
+| Engine ready | **~20 s** | **~0.8 s** |
+| First calculation | ~20 s | ~1 s |
+| Further calculations | ~0.4 s | ~0.4 s |
+| First PDF export | ~12 s | ~0.05 s |
+
+So the honest trade is: **one slow first visit**, then an instant, fully offline
+calculator. A visitor who lands and immediately hits Calculate will wait — the status
+banner tells them what is happening and why. It also uses ~50–100 MB of RAM, which is
+unremarkable on a desktop but worth knowing on an older phone.
+
+If that first-visit cost is unacceptable for your audience, the alternative is porting
+the engine to TypeScript — which means re-earning the validation test bank in a second
+language, and keeping two implementations honest forever.
 
 </details>
 
