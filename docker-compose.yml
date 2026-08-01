@@ -3,8 +3,12 @@
 # stack can dodge occupied ports; sane defaults (3000 / 8000) are baked in.
 #
 #   docker compose up --build -d
-#   Frontend → http://localhost:${FRONTEND_HOST_PORT:-3000}
+#   Frontend → http://localhost:${FRONTEND_HOST_PORT:-3000}   (static, self-contained)
 #   Backend  → http://localhost:${BACKEND_HOST_PORT:-8000}/api/health/
+#
+# The frontend no longer depends on the backend: it runs the same rule engine in the
+# browser. The backend still serves the REST API, the Django admin over the citation
+# tables, and the validation bank.
 
 services:
   db:
@@ -35,15 +39,15 @@ services:
     ports:
       - "${BACKEND_HOST_PORT:-8000}:8000"
 
+  # Static site — the rule engine runs in the browser (Pyodide), so this serves plain
+  # files via nginx and does not talk to the backend. The build context is the repo root
+  # because the frontend bundles the Python engine out of backend/.
   frontend:
     build:
-      context: ./frontend
-      args:
-        NEXT_PUBLIC_API_BASE: "http://localhost:${BACKEND_HOST_PORT:-8000}"
-    depends_on:
-      - backend
+      context: .
+      dockerfile: frontend/Dockerfile
     ports:
-      - "${FRONTEND_HOST_PORT:-3000}:3000"
+      - "${FRONTEND_HOST_PORT:-3000}:80"
 
 volumes:
   pgdata:

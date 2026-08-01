@@ -1,0 +1,15 @@
+# Build context is the repository root (the frontend image bundles the Python engine
+# out of backend/), so keep the context small and free of local state.
+.git/
+**/node_modules/
+**/.next/
+**/out/
+**/__pycache__/
+**/*.pyc
+backend/.venv/
+backend/db.sqlite3
+frontend/public/py/
+frontend/public/pyodide/
+exports/
+.env
+*.tsbuildinfo
