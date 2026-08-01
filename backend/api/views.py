@@ -1,9 +1,16 @@
-"""DRF views.
+"""DRF views — a thin HTTP adapter over :mod:`faraid_web`.
 
 One endpoint per mode (CLAUDE.md build step 5): ``/api/calculate/personal/`` and
-``/api/calculate/professional/``. Both return the full structured derivation. Engine
-errors are translated into clean HTTP responses — an unsupported configuration is a 422
-with the engine's explanation, never a wrong number.
+``/api/calculate/professional/``. Both return the full structured derivation.
+
+All validation, calculation, wording and PDF layout live in :mod:`faraid_web`, which has
+no Django dependency and is shipped verbatim to the browser in the static build. These
+views own only transport: mapping the three error kinds onto status codes.
+
+* ``InvalidInput``          — malformed payload            → 400
+* ``InvalidHeirInput`` /
+  ``UnsupportedConfiguration`` — impossible/unhandled fiqh → 422 (never a wrong number)
+* ``EngineInvariantError``  — an engine bug                → 500
 """
 
 from __future__ import annotations
@@ -18,13 +25,32 @@ from faraid_engine import (
     EngineInvariantError,
     InvalidHeirInput,
     UnsupportedConfiguration,
-    calculate,
 )
-from faraid_engine.sources import all_sources
+from faraid_web import (
+    InvalidInput,
+    calculate_payload,
+    compare_payload,
+    pdf_payload,
+    sources_payload,
+)
 
-from .pdf import build_pdf
-from .serializers import CalculationInputSerializer
-from .services import serialize_result
+
+def _error_response(exc: Exception) -> Response:
+    """Map a domain exception onto its HTTP response."""
+    if isinstance(exc, InvalidInput):
+        return Response(exc.errors, status=status.HTTP_400_BAD_REQUEST)
+    if isinstance(exc, (InvalidHeirInput, UnsupportedConfiguration)):
+        return Response(
+            {"error": type(exc).__name__, "detail": str(exc), "supported": False},
+            status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+    return Response(  # pragma: no cover - indicates an engine bug
+        {"error": "EngineInvariantError", "detail": str(exc)},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    )
+
+
+_DOMAIN_ERRORS = (InvalidInput, InvalidHeirInput, UnsupportedConfiguration, EngineInvariantError)
 
 
 class _CalculateView(APIView):
@@ -33,29 +59,13 @@ class _CalculateView(APIView):
     mode: str = "personal"
 
     def post(self, request: Request) -> Response:
-        serializer = CalculationInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        calc_input = serializer.to_calculation_input(mode_override=self.mode)
-
         try:
-            result = calculate(calc_input)
-        except (InvalidHeirInput, UnsupportedConfiguration) as exc:
             return Response(
-                {
-                    "error": type(exc).__name__,
-                    "detail": str(exc),
-                    "supported": False,
-                },
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                calculate_payload(request.data, mode_override=self.mode),
+                status=status.HTTP_200_OK,
             )
-        except EngineInvariantError as exc:  # pragma: no cover - indicates an engine bug
-            return Response(
-                {"error": "EngineInvariantError", "detail": str(exc)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-        lang = serializer.validated_data.get("lang", "id")
-        return Response(serialize_result(result, lang), status=status.HTTP_200_OK)
+        except _DOMAIN_ERRORS as exc:
+            return _error_response(exc)
 
 
 class CalculatePersonalView(_CalculateView):
@@ -70,61 +80,32 @@ class CompareView(APIView):
     """Compare the same heirs across rule sets side by side (KHI vs Syafi'i by default).
 
     Returns one entry per requested ruleset — either the full serialized derivation or a
-    structured error (unsupported/invalid) — so the UI can render both columns and show
-    exactly where the two schools diverge (PRD §4.1).
+    structured error — so the UI can render both columns and show exactly where the two
+    schools diverge (PRD §4.1).
     """
 
     def post(self, request: Request) -> Response:
-        serializer = CalculationInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        requested = request.data.get("rulesets") or ["khi", "syafii"]
-        valid = {r.value for r in __import__("faraid_engine", fromlist=["Ruleset"]).Ruleset}
-        rulesets = [r for r in requested if r in valid] or ["khi", "syafii"]
-
-        mode = request.data.get("mode", "personal")
-        lang = serializer.validated_data.get("lang", "id")
-        results = []
-        for rs in rulesets:
-            calc_input = serializer.to_calculation_input(mode_override=mode, ruleset_override=rs)
-            try:
-                result = calculate(calc_input)
-                results.append({"ruleset": rs, "ok": True, "result": serialize_result(result, lang)})
-            except (InvalidHeirInput, UnsupportedConfiguration) as exc:
-                results.append(
-                    {"ruleset": rs, "ok": False, "error": type(exc).__name__, "detail": str(exc)}
+        try:
+            return Response(
+                compare_payload(
+                    request.data,
+                    request.data.get("rulesets"),
+                    mode_override=request.data.get("mode"),
                 )
-        return Response({"comparison": results})
+            )
+        except _DOMAIN_ERRORS as exc:
+            return _error_response(exc)
 
 
 class CalculateProfessionalPdfView(APIView):
-    """Professional-mode PDF export (PRD §7) — full derivation + citation trail.
-
-    Same input contract as the calculate endpoints; returns application/pdf. Always
-    computes in Professional mode regardless of any ``mode`` in the body.
-    """
+    """Professional-mode PDF export (PRD §7) — full derivation + citation trail."""
 
     def post(self, request: Request) -> HttpResponse | Response:
-        serializer = CalculationInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        calc_input = serializer.to_calculation_input(mode_override="professional")
-
         try:
-            result = calculate(calc_input)
-        except (InvalidHeirInput, UnsupportedConfiguration) as exc:
-            return Response(
-                {"error": type(exc).__name__, "detail": str(exc), "supported": False},
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            )
-        except EngineInvariantError as exc:  # pragma: no cover
-            return Response(
-                {"error": "EngineInvariantError", "detail": str(exc)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            pdf_bytes = pdf_payload(request.data)
+        except _DOMAIN_ERRORS as exc:
+            return _error_response(exc)
 
-        lang = serializer.validated_data.get("lang", "id")
-        payload = serialize_result(result, lang)
-        pdf_bytes = build_pdf(payload, request.data.get("heirs"), lang)
         response = HttpResponse(pdf_bytes, content_type="application/pdf")
         response["Content-Disposition"] = 'attachment; filename="perhitungan-faraid.pdf"'
         return response
@@ -134,17 +115,7 @@ class SourcesListView(APIView):
     """Read-only citation registry — powers the UI references page / footnotes."""
 
     def get(self, request: Request) -> Response:
-        data = [
-            {
-                "id": s.id,
-                "type": s.type.value,
-                "reference": s.reference,
-                "pointer": s.pointer,
-                "note": s.note,
-            }
-            for s in all_sources()
-        ]
-        return Response({"count": len(data), "sources": data})
+        return Response(sources_payload())
 
 
 class HealthView(APIView):

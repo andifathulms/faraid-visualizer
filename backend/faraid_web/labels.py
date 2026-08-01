@@ -4,7 +4,7 @@ The engine emits authoritative Indonesian prose. This module is the SINGLE serve
 source of truth for localized UI text — relation/ruleset/category labels, step titles,
 disclaimers — shared by the JSON serializer and the PDF export so both stay consistent
 and an English PDF is a first-class artifact. English derivation *reasons* are generated
-in :mod:`api.explain` from the engine's structured fields.
+in :mod:`faraid_web.explain` from the engine's structured fields.
 """
 
 from __future__ import annotations

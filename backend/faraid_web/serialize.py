@@ -1,9 +1,12 @@
-"""Bridge between the pure engine and the HTTP layer.
+"""Bridge between the pure engine and whatever renders it.
 
 Serializes a :class:`faraid_engine.CalculationResult` into a JSON-able dict that carries
 the FULL structured derivation (not just final shares) so the frontend can render the
 step-by-step view (CLAUDE.md build step 5). Every cited ``source_id`` is resolved to its
 citation and bundled under ``sources`` so the UI renders footnotes without a second call.
+
+The same dict is produced whether this runs in Django or in the browser under Pyodide —
+it is the single wire format for the derivation.
 """
 
 from __future__ import annotations
@@ -35,7 +38,7 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
     """Serialize the full derivation, localized to ``lang`` ("id" or "en").
 
     Indonesian uses the engine's authoritative prose; English is regenerated from the
-    structured fields via :mod:`api.explain` (the engine is never touched).
+    structured fields via :mod:`faraid_web.explain` (the engine is never touched).
     """
     source_ids: set[str] = set()
 
