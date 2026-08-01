@@ -94,9 +94,11 @@ jobs:
           set -e
           for f in out/py/faraid-python.json out/py/runtime.json \
                    out/pyodide/pyodide.mjs out/pyodide/pyodide.asm.wasm \
-                   out/pyodide/python_stdlib.zip out/.nojekyll; do
+                   out/pyodide/python_stdlib.zip; do
             [ -s "$f" ] || { echo "::error::Missing or empty build output: $f"; exit 1; }
           done
+          # .nojekyll is a zero-byte marker, so presence is the only meaningful check.
+          [ -f out/.nojekyll ] || { echo "::error::Missing out/.nojekyll"; exit 1; }
           python3 - <<'PY'
           import json
           bundle = json.load(open("out/py/faraid-python.json"))
