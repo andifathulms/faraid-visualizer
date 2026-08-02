@@ -34,6 +34,23 @@ def _money(d: Decimal | None) -> str | None:
     return None if d is None else str(d.quantize(Decimal("0.01")))
 
 
+def _per_head_money(result: CalculationResult, per_head: Fraction) -> Decimal | None:
+    """Monetary value of ONE member of a heir group.
+
+    Presentation only — derived from the engine's own ``per_head`` fraction and net
+    divisible estate so the UI never has to divide money itself. Kept in Decimal for the
+    same reason ``CalculationResult.money_for`` is: the group amount and the per-head
+    amount must be rounded from the same exact arithmetic, not from each other.
+    """
+    if result.estate is None:
+        return None
+    return (
+        Decimal(per_head.numerator)
+        / Decimal(per_head.denominator)
+        * result.estate.net_divisible
+    )
+
+
 def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
     """Serialize the full derivation, localized to ``lang`` ("id" or "en").
 
@@ -60,6 +77,7 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
                 "reason": reason_for(s, lang),
                 "source_id": s.source_id,
                 "amount": _money(result.money_for(s)),
+                "per_head_amount": _money(_per_head_money(result, s.per_head)),
             }
         )
 
