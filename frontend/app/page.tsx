@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   calculate,
   CalculationError,
@@ -17,15 +17,22 @@ import {
 import { useI18n, rulesetLabel, Lang } from "@/lib/i18n";
 import { ThemeToggle } from "@/lib/theme";
 import HeirForm from "@/components/HeirForm";
-import ResultView from "@/components/ResultView";
+import ResultView, { InputSummary } from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
 import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import EngineStatus from "@/components/EngineStatus";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
+import { currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
+
+/** Below this width the form stacks above the result, so the action bar detaches. */
+const STACKED_BREAKPOINT = 940;
+
+/** Live recalculation delay. Long enough to coalesce stepper taps, short enough to feel live. */
+const RECALC_DEBOUNCE_MS = 250;
 
 function cleanEstate(e: EstateInput): EstateInput | undefined {
   const entries = Object.entries(e).filter(([, v]) => v !== undefined && v !== "");
@@ -42,22 +49,28 @@ export default function Home() {
 
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [comparison, setComparison] = useState<ComparisonEntry[] | null>(null);
+  const [calculatedHeirs, setCalculatedHeirs] = useState<HeirsInput | null>(null);
   const [compareMode, setCompareMode] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<CalculationError | string | null>(null);
+  // "initial" shows the skeleton; "live" dims the existing result instead of replacing it.
+  const [busy, setBusy] = useState<"idle" | "initial" | "live">("idle");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [pendingCalc, setPendingCalc] = useState(false);
   const [view, setView] = useState<"table" | "diagram">("table");
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  function buildRequest(): CalculationRequest {
-    return {
-      heirs,
-      ruleset,
-      apply_harta_bersama: ruleset === "khi" && hartaBersama,
-      estate: cleanEstate(estate),
-    };
-  }
+  const resultRef = useRef<HTMLElement | null>(null);
+  const hasResult = !!result || !!comparison;
+
+  const shareState: ShareableState = { heirs, estate, ruleset, mode, hartaBersama, compareMode };
+
+  const buildRequest = useCallback((): CalculationRequest => ({
+    heirs,
+    ruleset,
+    apply_harta_bersama: ruleset === "khi" && hartaBersama,
+    estate: cleanEstate(estate),
+  }), [heirs, ruleset, hartaBersama, estate]);
 
   async function handleExportPdf() {
     setExportingPdf(true);
@@ -73,39 +86,70 @@ export default function Home() {
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof CalculationError ? err.message : t("preparing"));
+      setError(err instanceof CalculationError ? err : t("preparing"));
     } finally {
       setExportingPdf(false);
     }
   }
 
-  async function runCalc() {
-    setLoading(true);
+  async function handleCopyLink() {
+    try {
+      await navigator.clipboard.writeText(currentShareUrl(shareState));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* Clipboard denied — the URL is already in the address bar, so nothing is lost. */
+    }
+  }
+
+  // Rapid edits can resolve out of order; only the newest request may write state.
+  const seqRef = useRef(0);
+
+  const runCalc = useCallback(async (kind: "initial" | "live") => {
+    const seq = ++seqRef.current;
+    setBusy(kind);
     setError(null);
     const req = buildRequest();
+    const snapshot = heirs;
     try {
       if (compareMode) {
-        setComparison(await compare(req, ["khi", "syafii"], mode, lang));
+        const data = await compare(req, ["khi", "syafii"], mode, lang);
+        if (seq !== seqRef.current) return;
+        setComparison(data);
         setResult(null);
       } else {
-        setResult(await calculate(req, mode, lang));
+        const data = await calculate(req, mode, lang);
+        if (seq !== seqRef.current) return;
+        setResult(data);
         setComparison(null);
       }
+      setCalculatedHeirs(snapshot);
+      writeStateToUrl({ heirs: snapshot, estate, ruleset, mode, hartaBersama, compareMode });
     } catch (err) {
-      setError(err instanceof CalculationError ? err.message : t("server_error"));
+      if (seq !== seqRef.current) return;
+      setError(err instanceof CalculationError ? err : t("server_error"));
       setResult(null);
       setComparison(null);
     } finally {
-      setLoading(false);
+      if (seq === seqRef.current) setBusy("idle");
     }
-  }
+    // `t` is stable per language and `lang` is already a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buildRequest, compareMode, mode, lang, heirs, estate, ruleset, hartaBersama]);
 
   function onSubmit() {
     if (!disclaimerAccepted) {
       setPendingCalc(true); // gate first calculation behind the disclaimer (PRD §7)
       return;
     }
-    runCalc();
+    void runCalc("initial");
+    scrollToResult();
+  }
+
+  function scrollToResult() {
+    if (typeof window === "undefined" || window.innerWidth > STACKED_BREAKPOINT) return;
+    // Stacked layout: the result sits below the whole form, so bring it into view.
+    requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
   // Start downloading the WebAssembly engine immediately. Entering heirs takes far
@@ -116,15 +160,46 @@ export default function Home() {
     });
   }, []);
 
-  // Recompute when the language changes so the localized derivation text updates.
+  // Restore a shared link. Read after mount, not during render: the page is statically
+  // prerendered, so touching window during render would be a hydration mismatch. Inputs are
+  // restored but NOT auto-calculated — the disclaimer gate still applies to the first run.
+  useEffect(() => {
+    const restored = decodeState(window.location.search);
+    if (!restored) return;
+    setRuleset(restored.ruleset);
+    setMode(restored.mode);
+    setHeirs(restored.heirs);
+    setEstate(restored.estate);
+    setHartaBersama(restored.hartaBersama);
+    setCompareMode(restored.compareMode);
+  }, []);
+
+  // Live recalculation. The engine is local WASM, so re-running on every edit costs a few
+  // milliseconds and removes the scroll-down-to-press-Calculate loop entirely. Only after a
+  // first accepted calculation, so the disclaimer is never bypassed.
   const didMount = useRef(false);
   useEffect(() => {
     if (!didMount.current) { didMount.current = true; return; }
-    if (disclaimerAccepted && (result || comparison)) runCalc();
+    if (!disclaimerAccepted || !hasResult) return;
+    const timer = setTimeout(() => void runCalc("live"), RECALC_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+    // hasResult is deliberately excluded: it flips true on the first result and would
+    // otherwise queue an immediate redundant recalculation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lang]);
+  }, [heirs, estate, ruleset, hartaBersama, mode, compareMode, lang, disclaimerAccepted]);
 
-  const hasResult = !!result || !!comparison;
+  const isUnsupported = error instanceof CalculationError && !error.supported;
+  const errorMessage = error instanceof CalculationError ? error.message : error;
+
+  const actionButton = (
+    <button className="btn btn-lg" onClick={onSubmit} disabled={busy !== "idle"}>
+      {busy !== "idle" ? (
+        busy === "live" ? t("updating") : t("calculating")
+      ) : (
+        <><Icon name="scale" size={17} /> {compareMode ? t("calc_compare") : hasResult ? t("recalculate") : t("calc")}</>
+      )}
+    </button>
+  );
 
   return (
     <>
@@ -155,73 +230,95 @@ export default function Home() {
       <main className="layout">
         {/* ---- Input pane ---- */}
         <aside className="pane-form">
-          <div className="card card-pad">
-            <div className="card-title" style={{ marginBottom: 14 }}>
-              <Icon name="users" size={18} /> {t("form_title")}
+          <div className="card form-card">
+            <div className="form-scroll">
+              <div className="card-title" style={{ marginBottom: 14 }}>
+                <Icon name="users" size={18} /> {t("form_title")}
+              </div>
+
+              <Segmented<Mode>
+                block
+                ariaLabel="Mode"
+                value={mode}
+                onChange={setMode}
+                options={[
+                  { value: "personal", label: t("mode_personal") },
+                  { value: "professional", label: t("mode_professional") },
+                ]}
+              />
+              <p className="small muted" style={{ marginTop: 8 }}>
+                {mode === "professional" ? t("mode_hint_professional") : t("mode_hint_personal")}
+              </p>
+
+              <div className="divider" />
+
+              <div className="field">
+                <span className="field-label">{t("legal_basis")}</span>
+                <select
+                  value={ruleset}
+                  onChange={(e) => {
+                    const r = e.target.value as Ruleset;
+                    setRuleset(r);
+                    if (r !== "khi") {
+                      setHartaBersama(false);
+                      setHeirs({ ...heirs, representatives: [] });
+                    }
+                  }}
+                >
+                  {RULESETS.map((r) => (
+                    <option key={r} value={r}>{rulesetLabel(r, lang)}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="divider" />
+
+              <HeirForm
+                heirs={heirs} setHeirs={setHeirs} estate={estate} setEstate={setEstate}
+                ruleset={ruleset} hartaBersama={hartaBersama} setHartaBersama={setHartaBersama}
+              />
             </div>
 
-            <Segmented<Mode>
-              block
-              ariaLabel="Mode"
-              value={mode}
-              onChange={setMode}
-              options={[
-                { value: "personal", label: t("mode_personal") },
-                { value: "professional", label: t("mode_professional") },
-              ]}
-            />
-            <p className="small muted" style={{ marginTop: 8 }}>
-              {mode === "professional" ? t("mode_hint_professional") : t("mode_hint_personal")}
-            </p>
-
-            <div className="divider" />
-
-            <div className="field">
-              <span className="field-label">{t("legal_basis")}</span>
-              <select
-                value={ruleset}
-                onChange={(e) => {
-                  const r = e.target.value as Ruleset;
-                  setRuleset(r);
-                  if (r !== "khi") {
-                    setHartaBersama(false);
-                    setHeirs({ ...heirs, representatives: [] });
-                  }
-                }}
-              >
-                {RULESETS.map((r) => (
-                  <option key={r} value={r}>{rulesetLabel(r, lang)}</option>
-                ))}
-              </select>
+            <div className="form-actions">
+              <EngineStatus />
+              {actionButton}
+              <label className="check-line" style={{ marginTop: 12 }}>
+                <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
+                {t("compare_toggle")}
+              </label>
+              {hasResult && disclaimerAccepted && (
+                <div className="live-hint">
+                  <Icon name="sparkles" size={13} /> {t("live_hint")}
+                </div>
+              )}
             </div>
-
-            <HeirForm
-              heirs={heirs} setHeirs={setHeirs} estate={estate} setEstate={setEstate}
-              ruleset={ruleset} hartaBersama={hartaBersama} setHartaBersama={setHartaBersama}
-            />
-
-            <div className="divider" />
-            <EngineStatus />
-            <button className="btn btn-lg" onClick={onSubmit} disabled={loading}>
-              {loading ? t("calculating") : (<><Icon name="scale" size={17} /> {compareMode ? t("calc_compare") : t("calc")}</>)}
-            </button>
-            <label className="check-line" style={{ marginTop: 12 }}>
-              <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
-              {t("compare_toggle")}
-            </label>
           </div>
         </aside>
 
         {/* ---- Result pane ---- */}
-        <section className="pane-result">
+        <section className="pane-result" ref={resultRef}>
           {error ? (
             <div className="card card-pad">
-              <div className="error-box">
-                <Icon name="alert" size={18} />
-                <div><strong>{t("cannot_calc")}</strong><div className="small" style={{ marginTop: 4 }}>{error}</div></div>
-              </div>
+              {isUnsupported ? (
+                <div className="unsupported-box">
+                  <span className="c-ico"><Icon name="info" size={18} /></span>
+                  <div>
+                    <strong>{t("unsupported_title")}</strong>
+                    <div className="small" style={{ marginTop: 6 }}>{t("unsupported_body")}</div>
+                    {errorMessage && <div className="u-detail">{errorMessage}</div>}
+                  </div>
+                </div>
+              ) : (
+                <div className="error-box">
+                  <Icon name="alert" size={18} />
+                  <div>
+                    <strong>{t("cannot_calc")}</strong>
+                    <div className="small" style={{ marginTop: 4, whiteSpace: "pre-wrap" }}>{errorMessage}</div>
+                  </div>
+                </div>
+              )}
             </div>
-          ) : loading ? (
+          ) : busy === "initial" ? (
             <div className="card card-pad">
               <div className="skeleton" style={{ height: 22, width: "40%", marginBottom: 16 }} />
               <div className="skeleton" style={{ height: 34, width: "100%", marginBottom: 20 }} />
@@ -230,12 +327,13 @@ export default function Home() {
               ))}
             </div>
           ) : comparison ? (
-            <div className="card card-pad">
+            <div className={`card card-pad ${busy === "live" ? "pane-updating" : ""}`}>
               <div className="card-title" style={{ marginBottom: 16 }}><Icon name="book" size={18} /> {t("comparison_title")}</div>
+              {calculatedHeirs && <div style={{ marginBottom: 16 }}><InputSummary heirs={calculatedHeirs} /></div>}
               <ComparisonView entries={comparison} />
             </div>
           ) : result ? (
-            <div className="card">
+            <div className={`card ${busy === "live" ? "pane-updating" : ""}`}>
               <div className="card-head">
                 <div className="card-title">
                   <Icon name="scale" size={18} /> {t("result")}
@@ -249,6 +347,9 @@ export default function Home() {
                       { value: "diagram", label: <><Icon name="sitemap" size={14} /> {t("view_diagram")}</> },
                     ]}
                   />
+                  <button className="btn btn-secondary" onClick={handleCopyLink} title={t("copy_link_hint")}>
+                    <Icon name={copied ? "info" : "branch"} size={16} /> {copied ? t("copied") : t("copy_link")}
+                  </button>
                   {result.mode === "professional" && (
                     <button className="btn btn-secondary" onClick={handleExportPdf} disabled={exportingPdf}>
                       <Icon name="download" size={16} /> {exportingPdf ? t("pdf_preparing") : t("export_pdf")}
@@ -257,6 +358,9 @@ export default function Home() {
                 </div>
               </div>
               <div className="card-pad">
+                {calculatedHeirs && (
+                  <div style={{ marginBottom: 18 }}><InputSummary heirs={calculatedHeirs} /></div>
+                )}
                 {view === "table" ? (
                   <ResultView result={result} />
                 ) : (
@@ -282,12 +386,23 @@ export default function Home() {
         </section>
       </main>
 
+      {/* Stacked layout only — the desktop action bar lives inside the form card. */}
+      <div className="mobile-actions">
+        {actionButton}
+        {hasResult && (
+          <button className="btn btn-secondary" onClick={scrollToResult}>
+            <Icon name="arrow" size={16} /> {t("view_result")}
+          </button>
+        )}
+      </div>
+
       {pendingCalc && (
         <DisclaimerModal
           onAccept={() => {
             setDisclaimerAccepted(true);
             setPendingCalc(false);
-            runCalc();
+            void runCalc("initial");
+            scrollToResult();
           }}
         />
       )}
