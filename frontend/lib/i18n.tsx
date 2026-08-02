@@ -8,9 +8,11 @@
 // static UI chrome (headings, buttons, form labels) and the form-time relation/ruleset
 // labels shown before a calculation exists.
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export type Lang = "id" | "en";
+
+const LANG_KEY = "fv-lang";
 
 type Dict = Record<string, { id: string; en: string }>;
 
@@ -27,7 +29,8 @@ export const STRINGS: Dict = {
   mode_hint_personal: { id: "Bahasa sederhana dengan penjelasan “kenapa”.", en: "Plain language with why-explanations." },
   mode_hint_professional: { id: "Derivasi lengkap, rujukan, ekspor PDF.", en: "Full derivation, citations, PDF export." },
   empty_title: { id: "Siap menghitung", en: "Ready to calculate" },
-  empty_body: { id: "Isi ahli waris di sebelah kiri lalu tekan Hitung untuk melihat pembagian beserta alasan dan rujukannya.", en: "Fill in the heirs on the left, then press Calculate to see the shares with their reasoning and sources." },
+  // Layout-agnostic: the form sits beside the result on desktop but above it on mobile.
+  empty_body: { id: "Isi ahli waris dan harta peninggalan, lalu tekan Hitung untuk melihat pembagian beserta alasan dan rujukannya.", en: "Fill in the heirs and the estate, then press Calculate to see the shares with their reasoning and sources." },
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },
@@ -48,6 +51,41 @@ export const STRINGS: Dict = {
   cannot_calc: { id: "Tidak dapat dihitung.", en: "Cannot be calculated." },
   export_pdf: { id: "Ekspor PDF", en: "Export PDF" },
   preparing: { id: "Menyiapkan…", en: "Preparing…" },
+
+  // Unsupported configuration (CLAUDE.md: an unhandled case surfaces as an explicit
+  // refusal, never a silently wrong number). Deliberately worded as a limit of the tool,
+  // not as a user mistake, and visually distinct from a real error.
+  unsupported_title: { id: "Konfigurasi ini belum didukung", en: "This configuration isn't supported yet" },
+  unsupported_body: {
+    id: "Mesin perhitungan sengaja berhenti daripada menebak. Kasus ini memerlukan kaidah yang belum diimplementasikan dan dirujuk. Silakan konsultasikan dengan ustadz atau Pengadilan Agama.",
+    en: "The engine deliberately stops rather than guessing. This case needs a rule that has not yet been implemented and cited. Please consult an ustadz or the Religious Court.",
+  },
+  invalid_input_title: { id: "Masukan tidak valid", en: "Invalid input" },
+  detail_technical: { id: "Detail teknis", en: "Technical detail" },
+
+  // Live recalculation
+  live_hint: { id: "Hasil diperbarui otomatis saat Anda mengubah masukan.", en: "Results update automatically as you change the inputs." },
+  recalculate: { id: "Hitung ulang", en: "Recalculate" },
+  updating: { id: "Memperbarui…", en: "Updating…" },
+  view_result: { id: "Lihat hasil", en: "View result" },
+
+  // Sharing
+  copy_link: { id: "Salin tautan", en: "Copy link" },
+  copied: { id: "Tersalin", en: "Copied" },
+  copy_link_hint: {
+    id: "Menyalin tautan berisi ahli waris dan harta yang Anda masukkan — perhitungan tetap berjalan di perangkat penerima.",
+    en: "Copies a link containing the heirs and estate you entered — the calculation still runs on the recipient's device.",
+  },
+
+  // Money
+  per_person: { id: "per orang", en: "per person" },
+  rounding_note: {
+    id: "Setiap bagian dibulatkan ke sen secara terpisah, sehingga totalnya berbeda {diff} dari harta yang dibagi. Selisih ini tidak dibagikan ulang secara otomatis.",
+    en: "Each share is rounded to the cent separately, so the total differs from the divisible estate by {diff}. This remainder is not redistributed automatically.",
+  },
+  inputs_used: { id: "Ahli waris yang dihitung", en: "Heirs calculated" },
+  no_heirs_yet: { id: "Belum ada ahli waris", en: "No heirs yet" },
+  section_empty: { id: "Tidak ada", en: "None" },
 
   // Engine boot status. The rule engine is real CPython compiled to WebAssembly and runs
   // in the browser, so the first load is a genuine multi-second download — say so plainly
@@ -186,7 +224,30 @@ interface I18nCtx {
 const Ctx = createContext<I18nCtx | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("id");
+  const [lang, setLangState] = useState<Lang>("id");
+
+  // Read after mount, not in the useState initializer: the page is statically prerendered
+  // (next.config.js `output: "export"`), so touching localStorage during render would be a
+  // hydration mismatch. Mirrors lib/theme.tsx.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (saved === "id" || saved === "en") setLangState(saved);
+    } catch {}
+  }, []);
+
+  // Keep <html lang> honest for screen readers and browser translation prompts.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    try {
+      localStorage.setItem(LANG_KEY, l);
+    } catch {}
+  };
+
   const t = (key: keyof typeof STRINGS) => STRINGS[key]?.[lang] ?? String(key);
   return <Ctx.Provider value={{ lang, setLang, t }}>{children}</Ctx.Provider>;
 }
