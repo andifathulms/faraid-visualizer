@@ -69,6 +69,19 @@ export const STRINGS: Dict = {
   updating: { id: "Memperbarui…", en: "Updating…" },
   view_result: { id: "Lihat hasil", en: "View result" },
 
+  // Clearing the case. Worded as starting a new case rather than "reset"/"clear", which
+  // reads as wiping the app; what it actually discards is one family's data.
+  new_case: { id: "Kasus baru", en: "New case" },
+  new_case_hint: {
+    id: "Kosongkan ahli waris dan harta. Madzhab, mode, dan bahasa tetap.",
+    en: "Empties the heirs and estate. Madhab, mode and language are kept.",
+  },
+  go_home: { id: "Beranda — mulai dari awal", en: "Home — start over" },
+  need_heirs: {
+    id: "Tambahkan minimal satu ahli waris untuk menghitung.",
+    en: "Add at least one heir to calculate.",
+  },
+
   // Sharing
   copy_link: { id: "Salin tautan", en: "Copy link" },
   copied: { id: "Tersalin", en: "Copied" },

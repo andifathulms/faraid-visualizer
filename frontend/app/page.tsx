@@ -24,9 +24,22 @@ import DisclaimerModal from "@/components/DisclaimerModal";
 import EngineStatus from "@/components/EngineStatus";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
-import { currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
+import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
+import { totalHeirs } from "@/lib/summary";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
+
+/**
+ * A real navigation to the bare URL, which is what clicking a wordmark is expected to do.
+ * Unlike an in-app reset it leaves a history entry, so Back recovers the case — and unlike
+ * next/link it does not client-side navigate to the same route, which would preserve the
+ * very state the click is meant to discard. Plain <a href> is not basePath-rewritten by
+ * Next, so the prefix is applied by hand (same as lib/engine.ts).
+ */
+const HOME_HREF = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/`;
+
+/** Seed case shown on a first visit — a worked example, not the user's data. */
+const SEED_HEIRS: HeirsInput = { husband: true, sons: 2, daughters: 1 };
 
 /** Below this width the form stacks above the result, so the action bar detaches. */
 const STACKED_BREAKPOINT = 940;
@@ -43,7 +56,7 @@ export default function Home() {
   const { lang, setLang, t } = useI18n();
   const [mode, setMode] = useState<Mode>("personal");
   const [ruleset, setRuleset] = useState<Ruleset>("khi");
-  const [heirs, setHeirs] = useState<HeirsInput>({ husband: true, sons: 2, daughters: 1 });
+  const [heirs, setHeirs] = useState<HeirsInput>(SEED_HEIRS);
   const [estate, setEstate] = useState<EstateInput>({});
   const [hartaBersama, setHartaBersama] = useState(false);
 
@@ -137,6 +150,29 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buildRequest, compareMode, mode, lang, heirs, estate, ruleset, hartaBersama]);
 
+  /**
+   * Clear the case: heirs, estate, result and the URL. Madhab, mode, language and theme
+   * survive — those are preferences, not case data, and silently dropping a professional
+   * back to Personal/KHI mid-session would be its own bug.
+   *
+   * The disclaimer stays accepted: it has been read, and re-gating it would punish the
+   * user for starting a second case.
+   */
+  function resetCase() {
+    // Invalidate any in-flight calculation so a late response cannot repopulate the pane
+    // we are in the middle of emptying.
+    seqRef.current += 1;
+    setHeirs({});
+    setEstate({});
+    setHartaBersama(false);
+    setResult(null);
+    setComparison(null);
+    setCalculatedHeirs(null);
+    setError(null);
+    setBusy("idle");
+    clearStateFromUrl();
+  }
+
   function onSubmit() {
     if (!disclaimerAccepted) {
       setPendingCalc(true); // gate first calculation behind the disclaimer (PRD §7)
@@ -188,11 +224,29 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heirs, estate, ruleset, hartaBersama, mode, compareMode, lang, disclaimerAccepted]);
 
+  // Only offer to clear when there is something to clear, so the control never reads as a
+  // live destructive action on an already-empty form.
+  const isDirty =
+    totalHeirs(heirs) > 0 || Object.values(estate).some(Boolean) || hasResult || !!error;
+
+  /**
+   * An empty heir set comes back from the engine as `unsupported` ("No heirs provided"),
+   * which would render the "this fiqh configuration isn't supported yet — consult an
+   * ustadz" panel at someone who has simply not filled the form in. Block the calculation
+   * instead of explaining it away afterwards.
+   */
+  const canCalculate = totalHeirs(heirs) > 0;
+
   const isUnsupported = error instanceof CalculationError && !error.supported;
   const errorMessage = error instanceof CalculationError ? error.message : error;
 
   const actionButton = (
-    <button className="btn btn-lg" onClick={onSubmit} disabled={busy !== "idle"}>
+    <button
+      className="btn btn-lg"
+      onClick={onSubmit}
+      disabled={busy !== "idle" || !canCalculate}
+      title={!canCalculate ? t("need_heirs") : undefined}
+    >
       {busy !== "idle" ? (
         busy === "live" ? t("updating") : t("calculating")
       ) : (
@@ -205,13 +259,13 @@ export default function Home() {
     <>
       <header className="app-bar">
         <div className="app-bar-inner">
-          <div className="brand">
+          <a className="brand" href={HOME_HREF} title={t("go_home")} aria-label={t("go_home")}>
             <div className="brand-mark"><Icon name="scale" size={22} /></div>
             <div>
               <div className="brand-name">Faraid<b>Visualizer</b></div>
               <div className="brand-tag">{t("app_tagline")}</div>
             </div>
-          </div>
+          </a>
           <div className="row gap-10">
             <ThemeToggle />
             <Segmented<Lang>
@@ -286,9 +340,18 @@ export default function Home() {
                 <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
                 {t("compare_toggle")}
               </label>
-              {hasResult && disclaimerAccepted && (
+              {!canCalculate ? (
+                <div className="live-hint">{t("need_heirs")}</div>
+              ) : hasResult && disclaimerAccepted ? (
                 <div className="live-hint">
                   <Icon name="sparkles" size={13} /> {t("live_hint")}
+                </div>
+              ) : null}
+              {isDirty && (
+                <div className="reset-row">
+                  <button className="btn-reset" type="button" onClick={resetCase} title={t("new_case_hint")}>
+                    <Icon name="refresh" size={14} /> {t("new_case")}
+                  </button>
                 </div>
               )}
             </div>

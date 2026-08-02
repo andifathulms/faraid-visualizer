@@ -187,6 +187,20 @@ export function writeStateToUrl(state: ShareableState): void {
   }
 }
 
+/**
+ * Drop the case from the address bar without navigating, so a cleared calculator does not
+ * leave the previous family's heirs and estate sitting in a URL the user may then share,
+ * bookmark, or hand to someone across a desk.
+ */
+export function clearStateFromUrl(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.history.replaceState(null, "", window.location.pathname);
+  } catch {
+    /* Non-fatal: the in-memory state is cleared regardless. */
+  }
+}
+
 export function currentShareUrl(state: ShareableState): string {
   if (typeof window === "undefined") return "";
   const query = encodeState(state);
