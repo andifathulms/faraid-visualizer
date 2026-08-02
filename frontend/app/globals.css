@@ -273,7 +273,9 @@ a { color: var(--primary); }
 .mobile-actions { display: none; }
 
 @media (max-width: 940px) {
-  .layout { grid-template-columns: 1fr; padding-bottom: 120px; }
+  /* Clearance for the fixed action bar lives on the footer below, not here — otherwise the
+     gap would sit between the content and the footer instead of under everything. */
+  .layout { grid-template-columns: 1fr; padding-bottom: 28px; }
   .pane-form { position: static; }
   /* Internal scrolling is a desktop affordance — nested scroll areas on touch are worse
      than a long page. Let the card grow and pin the action bar to the viewport instead. */
@@ -760,6 +762,71 @@ select {
   border-radius: 50%; animation: engine-spin 0.7s linear infinite;
 }
 @keyframes engine-spin { to { transform: rotate(360deg); } }
+
+/* ---- Site footer / maker's mark ---------------------------------------------------
+   One divider for the whole footer: the top border here is the only seam. The mark is a
+   personal credit, not a legal notice — if a data/licence attribution is ever added it
+   goes on the left of `.site-footer-inner`, opposite the mark, never merged into it. */
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
+}
+.site-footer-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 16px 24px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* becomes space-between once an attribution sits on the left */
+  gap: 10px 20px;
+  flex-wrap: wrap;
+}
+.maker-mark {
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.maker-line {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.maker-name {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--border-strong);
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.maker-name:hover { color: var(--primary); text-decoration-color: var(--primary); }
+/* No monospace face in this design — tabular figures keep the year from shifting instead. */
+.maker-year { font-variant-numeric: tabular-nums; }
+
+.maker-links { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.maker-link {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-xs);
+  color: var(--text-faint);
+  transition: color 0.15s, background 0.15s;
+}
+.maker-link:hover { color: var(--primary); background: var(--surface-inset); }
+.maker-link:focus-visible { outline: none; box-shadow: var(--ring); }
+
+@media (max-width: 940px) {
+  /* The stacked layout's action bar is fixed to the bottom of the viewport, so the footer
+     — not <main> — is what has to clear it. */
+  .site-footer-inner { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 560px) {
+  .maker-mark { flex-direction: column; align-items: center; gap: 6px; }
+  .site-footer-inner { justify-content: center; text-align: center; }
+}
 
 /* Respect reduced-motion: pulse instead of spin. */
 @media (prefers-reduced-motion: reduce) {

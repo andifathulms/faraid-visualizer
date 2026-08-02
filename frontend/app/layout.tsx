@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
+import MakerSignature from "@/components/MakerSignature";
 
 const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -33,7 +34,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
-          <I18nProvider>{children}</I18nProvider>
+          <I18nProvider>
+            {children}
+            {/* Shared footer — one seam for the whole site. The maker's mark sits on the
+                right; a legal/data attribution, if one is ever added, belongs on the left
+                of this same bar rather than in a second divided row. */}
+            <footer className="site-footer">
+              <div className="site-footer-inner">
+                <MakerSignature />
+              </div>
+            </footer>
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>
