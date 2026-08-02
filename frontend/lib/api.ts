@@ -74,7 +74,14 @@ export interface Share {
   rule_applied: string;
   reason: string; // localized derivation prose (server single source of truth)
   source_id: string;
+  /**
+   * Group total against the net divisible estate. Note an omitted estate serializes as a
+   * ZERO estate, not null, so this is "0.00" rather than null in that case — decide
+   * whether money is meaningful from `estate.net_divisible`, not from this being set.
+   */
   amount: string | null;
+  /** Value of one member of the group. Derived server-side so the UI never divides money. */
+  per_head_amount: string | null;
 }
 
 export interface Blocked {
@@ -144,21 +151,38 @@ export class CalculationError extends Error {
    * form should not have allowed through, which is a bug on our side.
    */
   supported: boolean;
-  constructor(message: string, supported = false) {
+  /** Raw bridge detail, kept for Professional mode / debugging. Never shown verbatim. */
+  detail: unknown;
+  constructor(message: string, supported = false, detail: unknown = null) {
     super(message);
     this.name = "CalculationError";
     this.supported = supported;
+    this.detail = detail;
   }
+}
+
+/**
+ * Render a validation detail as readable lines rather than dumping JSON at the user.
+ * `invalid_input` details are a {field: [messages]} dict from validate.py.
+ */
+function describeInvalidInput(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (!detail || typeof detail !== "object") return String(detail);
+
+  const lines = Object.entries(detail as Record<string, unknown>).map(([field, msgs]) => {
+    const text = Array.isArray(msgs) ? msgs.join("; ") : String(msgs);
+    return field === "__all__" ? text : `${field}: ${text}`;
+  });
+  return lines.join("\n");
 }
 
 /** Turn a bridge error envelope into the error the UI already knows how to render. */
 function toError(env: Extract<Envelope<unknown>, { ok: false }>): CalculationError {
   if (env.kind === "unsupported") {
-    return new CalculationError(String(env.detail), false);
+    // The engine refused to guess. This is correct behaviour, not a failure.
+    return new CalculationError(String(env.detail), false, env.detail);
   }
-  const detail =
-    typeof env.detail === "string" ? env.detail : JSON.stringify(env.detail);
-  return new CalculationError(detail, true);
+  return new CalculationError(describeInvalidInput(env.detail), true, env.detail);
 }
 
 async function run<T>(
