@@ -1,7 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useId } from "react";
 import { FractionValue, Share } from "@/lib/api";
+import { formatMoneyInput, parseMoneyInput } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 
 /* ------------------------------------------------------------------ Icons */
 // Inline, stroke-based icons (self-contained — no icon package / network needed).
@@ -111,19 +113,86 @@ export function SwitchRow({ label, checked, onChange }: { label: string; checked
   );
 }
 
+/* --------------------------------------------------------------- Money input */
+/**
+ * Currency field for estate amounts. Groups digits as you type and shows a "Rp" adornment,
+ * but stores the RAW unformatted string — that is what CalculationRequest.estate expects,
+ * and the engine parses it as a Decimal.
+ */
+export function MoneyInput({
+  label, value, onChange, placeholder = "0",
+}: { label: string; value: string; onChange: (raw: string) => void; placeholder?: string }) {
+  const { lang } = useI18n();
+  const id = useId();
+  return (
+    <div className="field">
+      <label className="field-label" htmlFor={id}>{label}</label>
+      <div className="money-input">
+        <span className="money-prefix" aria-hidden>Rp</span>
+        <input
+          id={id}
+          type="text"
+          inputMode="decimal"
+          autoComplete="off"
+          value={formatMoneyInput(value, lang)}
+          placeholder={placeholder}
+          onChange={(e) => onChange(parseMoneyInput(e.target.value, lang))}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------ Heir section */
+/**
+ * Collapsible form section. Collapsed sections still report what they hold, so the form can
+ * be scanned in one screen instead of scrolled — which is the point: the Calculate button
+ * used to sit ~29 controls below the fold.
+ */
+export function HeirSection({
+  icon, title, summary, count, open, onToggle, children,
+}: {
+  icon: string;
+  title: string;
+  summary: string;
+  count: number;
+  open: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  const id = useId();
+  return (
+    <div className={`heir-section ${open ? "open" : ""} ${count > 0 ? "filled" : ""}`}>
+      <button
+        type="button"
+        className="heir-section-head"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-controls={id}
+      >
+        <span className="hs-ico"><Icon name={icon} size={16} /></span>
+        <span className="hs-title">{title}</span>
+        {!open && summary && <span className="hs-summary">{summary}</span>}
+        {count > 0 && <span className="hs-count">{count}</span>}
+        <span className="hs-chevron"><Icon name="chevron" size={16} /></span>
+      </button>
+      {open && <div className="heir-section-body" id={id}>{children}</div>}
+    </div>
+  );
+}
+
 /* ----------------------------------------------------------- Category chip */
 export function CategoryChip({ category, label }: { category: string; label: string }) {
   return <span className={`chip chip-${category}`}>{label}</span>;
 }
 
 /* --------------------------------------- Proportion bar + harmonized colors */
-export const HEIR_COLORS = [
-  "#0f8a63", "#3c6fd0", "#8a63c4", "#b98a2e", "#0e9aa0",
-  "#d4694e", "#5a8f3c", "#c2568f", "#4c73c9", "#8a8f2e",
-];
+// Defined as CSS custom properties (globals.css) rather than literals so they can be
+// re-tuned for dark mode along with every other surface colour.
+export const HEIR_COLOR_COUNT = 10;
 
 export function colorFor(index: number): string {
-  return HEIR_COLORS[index % HEIR_COLORS.length];
+  return `var(--heir-${(index % HEIR_COLOR_COUNT) + 1})`;
 }
 
 export function ProportionBar({ shares }: { shares: Share[] }) {
