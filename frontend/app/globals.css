@@ -752,10 +752,10 @@ select {
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
   gap: 14px; padding: 70px 30px; min-height: 380px;
 }
+/* The brand mark supplies its own plate, so no tinted tile or border behind it. */
 .empty-emblem {
-  width: 78px; height: 78px; border-radius: 22px; display: grid; place-items: center;
-  color: var(--primary); background: var(--primary-soft);
-  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  width: 78px; height: 78px; border-radius: 22px; display: block;
+  box-shadow: var(--shadow-md);
 }
 .empty-state h3 { font-family: var(--font-serif); font-weight: 600; font-size: 1.25rem; }
 .empty-state p { color: var(--text-muted); max-width: 340px; }

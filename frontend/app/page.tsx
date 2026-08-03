@@ -38,6 +38,9 @@ const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
  */
 const HOME_HREF = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/`;
 
+/** Brand mark. Plain <img>, so the basePath is applied by hand as above. */
+const BRAND_ICON = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/brand/faraidvisualizer-icon.svg`;
+
 /** Seed case shown on a first visit — a worked example, not the user's data. */
 const SEED_HEIRS: HeirsInput = { husband: true, sons: 2, daughters: 1 };
 
@@ -263,8 +266,7 @@ export default function Home() {
             {/* Plain <img>: Next only rewrites basePath for next/image, and images are
                 unoptimized in a static export anyway. The mark carries its own rounded
                 dark plate, so it needs no tile behind it. */}
-            <img className="brand-mark" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/brand/faraidvisualizer-icon.svg`}
-              width={40} height={40} alt="" />
+            <img className="brand-mark" src={BRAND_ICON} width={40} height={40} alt="" />
 
             <div>
               <div className="brand-name">Faraid<b>Visualizer</b></div>
@@ -445,7 +447,9 @@ export default function Home() {
           ) : (
             <div className="card">
               <div className="empty-state">
-                <div className="empty-emblem"><Icon name="scale" size={38} /></div>
+                {/* The brand mark, not the generic scales glyph — this is the one moment
+                    the empty pane is standing in for the product itself. */}
+                <img className="empty-emblem" src={BRAND_ICON} width={78} height={78} alt="" />
                 <h3>{t("empty_title")}</h3>
                 <p>{t("empty_body")}</p>
               </div>

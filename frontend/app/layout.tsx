@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
@@ -24,6 +24,19 @@ export const metadata: Metadata = {
   title: "FaraidVisualizer — kalkulator waris Islam yang menjelaskan alasannya",
   description:
     "Islamic inheritance (faraid) calculator that shows the reason for every share, with cited sources (KHI, Syafi'i).",
+  // Set by hand: Next prefixes basePath onto the icon links but NOT onto the manifest one,
+  // which would emit href="/manifest.webmanifest" while the file is published under
+  // /<repo>/ — a 404, and a manifest that 404s fails silently.
+  manifest: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/manifest.webmanifest`,
+};
+
+// Tints the browser/OS chrome around the page. Follows the theme so an installed window
+// does not sit in a light bar above a dark page.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f1e9" },
+    { media: "(prefers-color-scheme: dark)", color: "#121310" },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

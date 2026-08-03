@@ -1,0 +1,19 @@
+{
+  "name": "FaraidVisualizer — kalkulator waris Islam",
+  "short_name": "FaraidVisualizer",
+  "description": "Kalkulator waris Islam (faraid) yang menunjukkan alasan setiap bagian, beserta rujukannya. Perhitungan berjalan sepenuhnya di perangkat Anda.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f1e9",
+  "theme_color": "#0f2c21",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["education", "finance", "utilities"],
+  "icons": [
+    { "src": "brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "brand/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
