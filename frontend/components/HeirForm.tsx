@@ -193,7 +193,7 @@ export default function HeirForm({ heirs, setHeirs, estate, setEstate, ruleset, 
         onToggle={() => toggle("estate")}
       >
         <p className="form-note">{t("estate_section_note")}</p>
-        <div className="heir-grid">
+        <div className="heir-grid estate-grid">
           <MoneyInput label={t("gross_value")} hint={t("hint_gross")} value={estate.gross_value ?? ""}
             onChange={(v) => setEstate({ ...estate, gross_value: v })} />
           <MoneyInput label={t("funeral_costs")} hint={t("hint_funeral")} value={estate.funeral_costs ?? ""}

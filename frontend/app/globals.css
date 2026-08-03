@@ -240,13 +240,13 @@ a { color: var(--primary); }
 }
 .brand:hover { opacity: 0.82; }
 .brand:focus-visible { outline: none; box-shadow: var(--ring); }
+/* The brand icon is a finished mark with its own plate — it gets a shadow to sit on the
+   bar, but no gradient tile or inner highlight of its own. */
 .brand-mark {
   width: 40px; height: 40px; flex: none;
-  display: grid; place-items: center;
   border-radius: 12px;
-  background: linear-gradient(150deg, var(--primary), var(--primary-strong));
-  color: var(--on-primary);
-  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: var(--shadow-md);
+  display: block;
 }
 .brand-name { font-family: var(--font-serif); font-weight: 600; font-size: 1.18rem; letter-spacing: -0.02em; }
 .brand-name b { color: var(--primary); font-weight: 600; }
@@ -451,12 +451,32 @@ select {
 /* These estate amounts are not interchangeable, and putting the total in the wrong one
    yields a result with no rupiah in it and no clue why. The help sits above the input so
    it is read before typing, not after. */
+.field-label-row { display: flex; align-items: center; gap: 6px; }
+.field-info {
+  display: inline-grid; place-items: center;
+  width: 18px; height: 18px; flex: none;
+  border: none; background: transparent; padding: 0; cursor: pointer;
+  color: var(--text-faint); border-radius: 50%;
+  transition: color 0.15s, background 0.15s;
+}
+.field-info:hover { color: var(--primary); background: var(--primary-soft); }
+.field-info.on { color: var(--primary); background: var(--primary-soft); }
+.field-info:focus-visible { outline: none; box-shadow: var(--ring); }
+
 .field-hint {
   font-size: 0.73rem;
   line-height: 1.4;
-  color: var(--text-faint);
-  margin-top: -2px;
+  color: var(--text-muted);
+  padding: 7px 9px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-inset);
+  border: 1px solid var(--border);
+  animation: fadein 0.16s ease;
 }
+
+/* Inputs bottom-align, so opening the help on one field cannot drag its neighbour's
+   input out of line. */
+.estate-grid { align-items: end; }
 .form-note {
   margin: 0 0 12px;
   font-size: 0.78rem;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useId } from "react";
+import { ReactNode, useId, useState } from "react";
 import { FractionValue, Share } from "@/lib/api";
 import { formatMoneyInput, parseMoneyInput } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
@@ -128,13 +128,32 @@ export function MoneyInput({
   /** Shown above the field. These amounts mean different things and are not interchangeable. */
   hint?: string;
 }) {
-  const { lang } = useI18n();
+  const { lang, t } = useI18n();
   const id = useId();
   const hintId = `${id}-hint`;
+  // Collapsed by default: five fields of permanent help turned this section into a wall of
+  // grey text and knocked the inputs out of alignment. The contextual warnings below stay
+  // visible regardless — those, not this prose, are what actually catch a wrong entry.
+  const [showHint, setShowHint] = useState(false);
   return (
     <div className="field">
-      <label className="field-label" htmlFor={id}>{label}</label>
-      {hint && <span className="field-hint" id={hintId}>{hint}</span>}
+      <div className="field-label-row">
+        <label className="field-label" htmlFor={id}>{label}</label>
+        {hint && (
+          <button
+            type="button"
+            className={`field-info ${showHint ? "on" : ""}`}
+            onClick={() => setShowHint((v) => !v)}
+            aria-expanded={showHint}
+            aria-controls={hintId}
+            aria-label={`${t("what_is_this")} — ${label}`}
+            title={hint}
+          >
+            <Icon name="info" size={13} />
+          </button>
+        )}
+      </div>
+      {hint && showHint && <span className="field-hint" id={hintId}>{hint}</span>}
       <div className="money-input">
         <span className="money-prefix" aria-hidden>Rp</span>
         <input

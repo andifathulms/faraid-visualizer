@@ -145,6 +145,7 @@ export const STRINGS: Dict = {
   // a user who puts the estate total into the wrong one gets a result with no rupiah in
   // it at all and no indication why. Wording follows what the engine actually does
   // (faraid_engine/rules/debts.py) and cites the sources it already cites.
+  what_is_this: { id: "Apa ini?", en: "What is this?" },
   estate_section_note: {
     id: "Opsional. Kosongkan jika Anda hanya ingin melihat pecahan bagian, bukan nominal rupiah.",
     en: "Optional. Leave empty if you only want the fractions rather than rupiah amounts.",

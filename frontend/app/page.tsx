@@ -260,7 +260,12 @@ export default function Home() {
       <header className="app-bar">
         <div className="app-bar-inner">
           <a className="brand" href={HOME_HREF} title={t("go_home")} aria-label={t("go_home")}>
-            <div className="brand-mark"><Icon name="scale" size={22} /></div>
+            {/* Plain <img>: Next only rewrites basePath for next/image, and images are
+                unoptimized in a static export anyway. The mark carries its own rounded
+                dark plate, so it needs no tile behind it. */}
+            <img className="brand-mark" src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/brand/faraidvisualizer-icon.svg`}
+              width={40} height={40} alt="" />
+
             <div>
               <div className="brand-name">Faraid<b>Visualizer</b></div>
               <div className="brand-tag">{t("app_tagline")}</div>
