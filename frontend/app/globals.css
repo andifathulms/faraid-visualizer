@@ -447,6 +447,37 @@ select {
 .heir-section.open .hs-chevron { transform: rotate(180deg); color: var(--primary); }
 .heir-section-body { padding: 2px 2px 16px; animation: fadein 0.18s ease; }
 
+/* ------------------------------------------------- Field help & inline warnings */
+/* These estate amounts are not interchangeable, and putting the total in the wrong one
+   yields a result with no rupiah in it and no clue why. The help sits above the input so
+   it is read before typing, not after. */
+.field-hint {
+  font-size: 0.73rem;
+  line-height: 1.4;
+  color: var(--text-faint);
+  margin-top: -2px;
+}
+.form-note {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+.form-warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: var(--radius-xs);
+  background: var(--warn-soft);
+  border: 1px solid color-mix(in srgb, var(--warn) 32%, transparent);
+  color: color-mix(in srgb, var(--warn) 82%, var(--text));
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+.form-warn svg { flex: none; margin-top: 1px; }
+
 /* ------------------------------------------------------------- Money input */
 .money-input { position: relative; display: flex; align-items: center; }
 .money-input .money-prefix {

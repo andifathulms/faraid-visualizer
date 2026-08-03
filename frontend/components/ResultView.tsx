@@ -166,6 +166,16 @@ export default function ResultView({ result }: { result: CalculationResult }) {
         )}
       </div>
 
+      {/* An estate was entered but nothing survives the deductions, so the shares carry no
+          rupiah. Say why rather than quietly rendering fractions only — the usual cause is
+          an amount typed into the wrong field. */}
+      {!showMoney && e && (toCents(e.harta_bersama_deducted) ?? 0n) > 0n && (
+        <div className="callout callout-warn">
+          <span className="c-ico"><Icon name="alert" size={17} /></span>
+          <span>{t("no_divisible_estate")}</span>
+        </div>
+      )}
+
       {showMoney && e && (e.net_divisible !== e.gross_value || (toCents(e.harta_bersama_deducted) ?? 0n) > 0n) && (
         <div className="estate-strip">
           <Icon name="scroll" size={15} />

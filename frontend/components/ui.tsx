@@ -121,13 +121,20 @@ export function SwitchRow({ label, checked, onChange }: { label: string; checked
  * and the engine parses it as a Decimal.
  */
 export function MoneyInput({
-  label, value, onChange, placeholder = "0",
-}: { label: string; value: string; onChange: (raw: string) => void; placeholder?: string }) {
+  label, value, onChange, placeholder = "0", hint,
+}: {
+  label: string; value: string; onChange: (raw: string) => void;
+  placeholder?: string;
+  /** Shown above the field. These amounts mean different things and are not interchangeable. */
+  hint?: string;
+}) {
   const { lang } = useI18n();
   const id = useId();
+  const hintId = `${id}-hint`;
   return (
     <div className="field">
       <label className="field-label" htmlFor={id}>{label}</label>
+      {hint && <span className="field-hint" id={hintId}>{hint}</span>}
       <div className="money-input">
         <span className="money-prefix" aria-hidden>Rp</span>
         <input
@@ -135,6 +142,7 @@ export function MoneyInput({
           type="text"
           inputMode="decimal"
           autoComplete="off"
+          aria-describedby={hint ? hintId : undefined}
           value={formatMoneyInput(value, lang)}
           placeholder={placeholder}
           onChange={(e) => onChange(parseMoneyInput(e.target.value, lang))}

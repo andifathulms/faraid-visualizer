@@ -37,6 +37,12 @@ export default function HeirForm({ heirs, setHeirs, estate, setEstate, ruleset, 
   const repHeads = reps.reduce((n, r) => n + (r.sons || 0) + (r.daughters || 0), 0);
   const estateEntered = Object.values(estate).filter(Boolean).length;
 
+  // A money field holds a non-zero amount. "0" is treated as unset: it deducts nothing and
+  // divides nothing, so warning about it would be noise.
+  const isSet = (v?: string) => !!v && /[1-9]/.test(v);
+  const hasGross = isSet(estate.gross_value);
+  const hasJointAssets = isSet(estate.joint_assets);
+
   // Open/closed is DERIVED from the data, with explicit user toggles layered on top —
   // not initialized once. A shared link restores its heirs after this component has
   // already mounted, and an initializer would leave that restored data hidden inside
@@ -186,21 +192,33 @@ export default function HeirForm({ heirs, setHeirs, estate, setEstate, ruleset, 
         open={isOpen("estate")}
         onToggle={() => toggle("estate")}
       >
+        <p className="form-note">{t("estate_section_note")}</p>
         <div className="heir-grid">
-          <MoneyInput label={t("gross_value")} value={estate.gross_value ?? ""}
+          <MoneyInput label={t("gross_value")} hint={t("hint_gross")} value={estate.gross_value ?? ""}
             onChange={(v) => setEstate({ ...estate, gross_value: v })} />
-          <MoneyInput label={t("funeral_costs")} value={estate.funeral_costs ?? ""}
+          <MoneyInput label={t("funeral_costs")} hint={t("hint_funeral")} value={estate.funeral_costs ?? ""}
             onChange={(v) => setEstate({ ...estate, funeral_costs: v })} />
-          <MoneyInput label={t("debts")} value={estate.debts ?? ""}
+          <MoneyInput label={t("debts")} hint={t("hint_debts")} value={estate.debts ?? ""}
             onChange={(v) => setEstate({ ...estate, debts: v })} />
-          <MoneyInput label={t("wasiyya")} value={estate.wasiyya ?? ""}
+          <MoneyInput label={t("wasiyya")} hint={t("hint_wasiyya")} value={estate.wasiyya ?? ""}
             onChange={(v) => setEstate({ ...estate, wasiyya: v })} />
         </div>
 
         {isKhi && (
           <div className="mt-16 stack gap-10">
-            <MoneyInput label={t("joint_assets")} value={estate.joint_assets ?? ""}
+            <MoneyInput label={t("joint_assets")} hint={t("hint_joint_assets")}
+              value={estate.joint_assets ?? ""}
               onChange={(v) => setEstate({ ...estate, joint_assets: v })} />
+
+            {/* Both ways this field silently does nothing, caught before the user
+                calculates and wonders where the rupiah went. */}
+            {hasJointAssets && !hasGross && (
+              <p className="form-warn"><Icon name="alert" size={14} /> {t("warn_joint_without_gross")}</p>
+            )}
+            {hasJointAssets && !hartaBersama && (
+              <p className="form-warn"><Icon name="alert" size={14} /> {t("warn_joint_not_applied")}</p>
+            )}
+
             <label className="check-line">
               <input type="checkbox" checked={hartaBersama} onChange={(e) => setHartaBersama(e.target.checked)} />
               {t("harta_bersama_toggle")}

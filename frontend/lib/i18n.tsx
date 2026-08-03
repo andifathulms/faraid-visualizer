@@ -139,7 +139,51 @@ export const STRINGS: Dict = {
   funeral_costs: { id: "Biaya pemakaman", en: "Funeral costs" },
   debts: { id: "Utang", en: "Debts" },
   wasiyya: { id: "Wasiat (maks 1/3)", en: "Bequest (max 1/3)" },
-  joint_assets: { id: "Total harta bersama", en: "Total joint assets" },
+  joint_assets: { id: "Total harta bersama (gono-gini)", en: "Total joint marital assets" },
+
+  // Per-field help. These amounts mean different things and are NOT interchangeable —
+  // a user who puts the estate total into the wrong one gets a result with no rupiah in
+  // it at all and no indication why. Wording follows what the engine actually does
+  // (faraid_engine/rules/debts.py) and cites the sources it already cites.
+  estate_section_note: {
+    id: "Opsional. Kosongkan jika Anda hanya ingin melihat pecahan bagian, bukan nominal rupiah.",
+    en: "Optional. Leave empty if you only want the fractions rather than rupiah amounts.",
+  },
+  hint_gross: {
+    id: "Seluruh harta yang ditinggalkan, sebelum dikurangi apa pun. Semua nominal rupiah di hasil dihitung dari angka ini.",
+    en: "Everything the deceased left, before any deduction. Every rupiah figure in the result is derived from this.",
+  },
+  hint_funeral: {
+    id: "Biaya pengurusan jenazah. Dikurangkan paling awal.",
+    en: "Cost of preparing and burying the deceased. Deducted first.",
+  },
+  hint_debts: {
+    id: "Utang almarhum yang belum lunas. Dikurangkan setelah biaya pemakaman.",
+    en: "The deceased's unpaid debts. Deducted after funeral costs.",
+  },
+  hint_wasiyya: {
+    id: "Wasiat untuk penerima yang bukan ahli waris. Otomatis dibatasi maksimal 1/3 dari sisa setelah utang (KHI Pasal 175).",
+    en: "A bequest to someone who is not an heir. Automatically capped at 1/3 of what remains after debts (KHI Art. 175).",
+  },
+  hint_joint_assets: {
+    id: "Harta yang diperoleh selama pernikahan — bukan total warisan. Setengahnya adalah hak pasangan yang masih hidup dan dipisahkan sebelum faraid (KHI Pasal 96–97).",
+    en: "Property acquired during the marriage — not the total estate. Half belongs to the surviving spouse and is separated before faraid (KHI Art. 96–97).",
+  },
+
+  no_divisible_estate: {
+    id: "Nominal rupiah tidak ditampilkan karena harta yang dibagi bernilai 0 setelah semua pengurangan. Periksa kembali “Nilai kotor”.",
+    en: "No rupiah amounts are shown because the divisible estate is 0 after all deductions. Check “Gross value”.",
+  },
+
+  // Guards for the two ways this section silently produces nothing.
+  warn_joint_without_gross: {
+    id: "“Nilai kotor” masih kosong, jadi hasil tidak akan menampilkan nominal rupiah sama sekali. Isi total harta peninggalan di “Nilai kotor”.",
+    en: "“Gross value” is still empty, so the result will show no rupiah amounts at all. Put the total estate into “Gross value”.",
+  },
+  warn_joint_not_applied: {
+    id: "Harta bersama baru diperhitungkan setelah kotak di bawah dicentang.",
+    en: "Joint assets are only applied once the box below is ticked.",
+  },
   harta_bersama_toggle: {
     id: "Pisahkan harta bersama (1/2) sebelum faraid",
     en: "Separate joint property (1/2) before faraid",
