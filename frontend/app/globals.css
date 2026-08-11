@@ -307,6 +307,63 @@ a { color: var(--primary); }
 .brand-name b { color: var(--primary); font-weight: 700; }
 .brand-tag { font-size: var(--fs-2xs); color: var(--text-muted); margin-top: -2px; }
 
+/* ------------------------------------------------------------------- Hero
+   The one place on the page that states what this is. It occupies the top of
+   the type scale precisely because nothing else does — a headline is only a
+   headline if there is a clear step above everything around it.
+
+   No background plate, no border: it reads as the page's own first paragraph
+   rather than as another card competing with the two panes below it. */
+.hero {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--sp-10) var(--sp-6) 0;
+}
+.hero-inner { max-width: 62ch; }
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-3xl);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.hero-lede {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-md);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+/* The three points answer the three objections a stranger brings: black box,
+   authority, privacy. Kept to one line each — they are labels, not copy. */
+.hero-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hero-points li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-15);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.hero-points svg { color: var(--primary); flex: none; }
+
+@media (max-width: 940px) {
+  .hero { padding-top: var(--sp-6); }
+  .hero-title { font-size: var(--fs-2xl); }
+  .hero-lede { font-size: var(--fs-base); }
+}
+@media (max-width: 420px) {
+  .hero { padding-left: var(--sp-3); padding-right: var(--sp-3); }
+}
+
 .layout {
   max-width: var(--maxw);
   margin: 0 auto;

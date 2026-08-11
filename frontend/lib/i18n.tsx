@@ -22,6 +22,24 @@ export const STRINGS: Dict = {
     id: "Kalkulator waris Islam yang menunjukkan alasan setiap bagian, dengan rujukan.",
     en: "An Islamic inheritance calculator that shows the reason for every share, with sources.",
   },
+
+  // Landing headline. The proposition has to survive a five-second read by someone who
+  // has never heard of this tool, so it names the job (dividing an estate) before the
+  // differentiator (the reasoning), and the lede carries the differentiator in full.
+  // The three points below answer, in order, the three objections a stranger has to any
+  // calculator that touches money and religion: is it a black box, on whose authority,
+  // and where does my family's data go.
+  hero_title: {
+    id: "Hitung pembagian waris Islam — lengkap dengan alasan dan rujukannya",
+    en: "Work out an Islamic inheritance — with the reasoning and the sources",
+  },
+  hero_lede: {
+    id: "Bukan sekadar angka. Setiap bagian ditelusuri langkah demi langkah, dan setiap kaidah yang dipakai disertai rujukan ke Qur'an, hadits, atau Kompilasi Hukum Islam.",
+    en: "Not just a number. Every share is traced step by step, and every rule applied carries a citation to the Qur'an, hadith, or Indonesian Islamic law (KHI).",
+  },
+  hero_pt_reasoning: { id: "Penurunan langkah demi langkah", en: "Step-by-step derivation" },
+  hero_pt_cited: { id: "Setiap kaidah ada rujukannya", en: "Every rule cited" },
+  hero_pt_private: { id: "Berjalan di perangkat Anda", en: "Runs on your device" },
   mode_personal: { id: "Personal", en: "Personal" },
   mode_professional: { id: "Profesional", en: "Professional" },
   app_tagline: { id: "Waris Islam, beserta alasannya", en: "Islamic inheritance, with the reasoning" },

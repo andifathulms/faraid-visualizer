@@ -288,6 +288,22 @@ export default function Home() {
         </div>
       </header>
 
+      {/* The proposition, stated once, above the fold. Before this existed the only
+          explanation of the product was the 12px tagline under the wordmark — sized, in
+          this design system, for de-emphasised metadata. A stranger read the page as a
+          data-entry form and never learned that the derivation is the point. */}
+      <section className="hero">
+        <div className="hero-inner">
+          <h1 className="hero-title">{t("hero_title")}</h1>
+          <p className="hero-lede">{t("hero_lede")}</p>
+          <ul className="hero-points">
+            <li><Icon name="sitemap" size={15} /> {t("hero_pt_reasoning")}</li>
+            <li><Icon name="book" size={15} /> {t("hero_pt_cited")}</li>
+            <li><Icon name="shield" size={15} /> {t("hero_pt_private")}</li>
+          </ul>
+        </div>
+      </section>
+
       <main className="layout">
         {/* ---- Input pane ---- */}
         <aside className="pane-form">
