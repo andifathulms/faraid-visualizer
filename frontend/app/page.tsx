@@ -463,10 +463,61 @@ export default function Home() {
           ) : (
             <div className="card">
               <div className="empty-state">
-                {/* The brand mark, not the generic scales glyph — this is the one moment
-                    the empty pane is standing in for the product itself. */}
-                <img className="empty-emblem" src={BRAND_ICON} width={78} height={78} alt="" />
                 <h3>{t("empty_title")}</h3>
+
+                {/* A static illustration of the result vocabulary, built from the same
+                    classes the real result uses so it is a true preview rather than an
+                    artist's impression. aria-hidden: a screen reader must not hear a
+                    result the user never asked for — the heading above and the caption
+                    below carry the meaning. Nothing here touches the engine. */}
+                <div className="preview-mock" aria-hidden="true">
+                  <div className="share-list">
+                    <div className="share-item">
+                      <div className="share-main">
+                        <span className="share-accent" style={{ background: "var(--heir-1)" }} />
+                        <div className="share-id">
+                          <span className="share-name">{t("preview_heir_husband")}</span>
+                          <span className="share-meta">
+                            <span className="chip chip-furud">{t("cat_furud")}</span>
+                            <span className="cite">QS 4:12</span>
+                          </span>
+                        </div>
+                        <div className="share-values">
+                          <span className="share-frac-lg">
+                            <span className="frac"><span className="n">1</span><span className="s">/</span><span className="d">4</span></span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="share-item">
+                      <div className="share-main">
+                        <span className="share-accent" style={{ background: "var(--heir-2)" }} />
+                        <div className="share-id">
+                          <span className="share-name">{t("preview_heir_sons")}</span>
+                          <span className="share-meta">
+                            <span className="chip chip-asabah">{t("cat_asabah")}</span>
+                            <span className="cite">QS 4:11</span>
+                          </span>
+                        </div>
+                        <div className="share-values">
+                          <span className="share-frac-lg muted">{t("preview_residue")}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="timeline preview-step">
+                    <div className="tl-item">
+                      <div className="tl-rail"><div className="tl-dot">3</div></div>
+                      <div className="tl-body">
+                        <div className="tl-title">{t("preview_step_title")}</div>
+                        <div className="tl-detail">{t("preview_step_detail")}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="preview-caption">{t("preview_caption")}</p>
                 <p>{t("empty_body")}</p>
               </div>
             </div>

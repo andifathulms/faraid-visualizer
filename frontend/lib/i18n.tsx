@@ -46,9 +46,33 @@ export const STRINGS: Dict = {
   form_title: { id: "Ahli waris & harta", en: "Heirs & estate" },
   mode_hint_personal: { id: "Bahasa sederhana dengan penjelasan “kenapa”.", en: "Plain language with why-explanations." },
   mode_hint_professional: { id: "Derivasi lengkap, rujukan, ekspor PDF.", en: "Full derivation, citations, PDF export." },
-  empty_title: { id: "Siap menghitung", en: "Ready to calculate" },
+  // The result pane is the largest thing on screen on a first visit. It used to say
+  // "Ready to calculate" and repeat an instruction the adjacent form already implies —
+  // procedure, in the one place with room to actually demonstrate the product. It now
+  // shows a small worked sample instead, and the instruction sits under it.
+  empty_title: { id: "Beginilah bentuk hasilnya", en: "This is what you'll get" },
   // Layout-agnostic: the form sits beside the result on desktop but above it on mobile.
   empty_body: { id: "Isi ahli waris dan harta peninggalan, lalu tekan Hitung untuk melihat pembagian beserta alasan dan rujukannya.", en: "Fill in the heirs and the estate, then press Calculate to see the shares with their reasoning and sources." },
+
+  // Sample shown in the empty result pane. Not engine output — a static illustration of
+  // the result vocabulary (category chip, fraction, gold citation chip, derivation step)
+  // so none of it is a cold read when the real result arrives. The figures are a real,
+  // correctly cited case (husband with children takes 1/4, QS 4:12; sons take the residue
+  // as asabah, QS 4:11), because an illustration of a fiqh tool must not show fiqh that
+  // is merely plausible. It is marked aria-hidden and captioned as a sample so it can
+  // never be mistaken for a calculation the user asked for.
+  preview_caption: {
+    id: "Contoh tampilan, bukan hasil perhitungan Anda.",
+    en: "A sample view, not your calculation.",
+  },
+  preview_heir_husband: { id: "Suami", en: "Husband" },
+  preview_heir_sons: { id: "Anak laki-laki", en: "Sons" },
+  preview_residue: { id: "sisa", en: "residue" },
+  preview_step_title: { id: "Bagian tetap (furud) ditetapkan", en: "Fixed shares (furud) assigned" },
+  preview_step_detail: {
+    id: "Suami mendapat 1/4 karena almarhumah meninggalkan anak.",
+    en: "The husband takes 1/4 because the deceased left children.",
+  },
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },
