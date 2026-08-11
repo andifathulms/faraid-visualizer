@@ -25,7 +25,7 @@ export default function ComparisonView({ entries }: { entries: ComparisonEntry[]
               <Icon name="ban" size={18} />
               <div>
                 <strong>{t("not_computable")}</strong>
-                <div className="small" style={{ marginTop: 4 }}>{entry.detail}</div>
+                <div className="small" style={{ marginTop: "var(--sp-1)" }}>{entry.detail}</div>
               </div>
             </div>
           )}

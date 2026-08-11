@@ -44,6 +44,24 @@ const BRAND_ICON = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/brand/faraidvisua
 /** Seed case shown on a first visit — a worked example, not the user's data. */
 const SEED_HEIRS: HeirsInput = { husband: true, sons: 2, daughters: 1 };
 
+/**
+ * Whether the form still holds the untouched seed case, so it can be labelled as the
+ * example it is. Purely a labelling question — nothing about the calculation branches on
+ * this. Absent, false, 0 and [] are all treated as "not entered", which is how the rest of
+ * the form already reads them, so a heir toggled on and back off does not count as an edit.
+ */
+function isSeedCase(heirs: HeirsInput): boolean {
+  const empty = (v: unknown) => v === undefined || v === false || v === 0 || (Array.isArray(v) && v.length === 0);
+  const keys = new Set([...Object.keys(heirs), ...Object.keys(SEED_HEIRS)]);
+  for (const key of keys) {
+    const a = (heirs as Record<string, unknown>)[key];
+    const b = (SEED_HEIRS as Record<string, unknown>)[key];
+    if (empty(a) && empty(b)) continue;
+    if (a !== b) return false;
+  }
+  return true;
+}
+
 /** Below this width the form stacks above the result, so the action bar detaches. */
 const STACKED_BREAKPOINT = 940;
 
@@ -78,6 +96,10 @@ export default function Home() {
 
   const resultRef = useRef<HTMLElement | null>(null);
   const hasResult = !!result || !!comparison;
+
+  // A shared link can restore heirs that happen to equal the seed. Those are the sender's
+  // real case, not our example, so the label must not claim otherwise.
+  const restoredFromUrl = useRef(false);
 
   const shareState: ShareableState = { heirs, estate, ruleset, mode, hartaBersama, compareMode };
 
@@ -205,6 +227,7 @@ export default function Home() {
   useEffect(() => {
     const restored = decodeState(window.location.search);
     if (!restored) return;
+    restoredFromUrl.current = true;
     setRuleset(restored.ruleset);
     setMode(restored.mode);
     setHeirs(restored.heirs);
@@ -309,9 +332,20 @@ export default function Home() {
         <aside className="pane-form">
           <div className="card form-card">
             <div className="form-scroll">
-              <div className="card-title" style={{ marginBottom: 14 }}>
+              <div className="card-title" style={{ marginBottom: "var(--sp-3)" }}>
                 <Icon name="users" size={18} /> {t("form_title")}
               </div>
+
+              {/* Says out loud what the pre-filled values are. Disappears the moment the
+                  heirs differ from the seed, so it never lingers over the user's own data. */}
+              {!restoredFromUrl.current && isSeedCase(heirs) && (
+                <div className="seed-note">
+                  <Icon name="info" size={15} />
+                  <span>
+                    <b>{t("seed_badge")}</b> — {t("seed_badge_hint")}
+                  </span>
+                </div>
+              )}
 
               <Segmented<Mode>
                 block
@@ -323,7 +357,7 @@ export default function Home() {
                   { value: "professional", label: t("mode_professional") },
                 ]}
               />
-              <p className="small muted" style={{ marginTop: 8 }}>
+              <p className="small muted" style={{ marginTop: "var(--sp-2)" }}>
                 {mode === "professional" ? t("mode_hint_professional") : t("mode_hint_personal")}
               </p>
 
@@ -359,7 +393,7 @@ export default function Home() {
             <div className="form-actions">
               <EngineStatus />
               {actionButton}
-              <label className="check-line" style={{ marginTop: 12 }}>
+              <label className="check-line" style={{ marginTop: "var(--sp-3)" }}>
                 <input type="checkbox" checked={compareMode} onChange={(e) => setCompareMode(e.target.checked)} />
                 {t("compare_toggle")}
               </label>
@@ -390,7 +424,7 @@ export default function Home() {
                   <span className="c-ico"><Icon name="info" size={18} /></span>
                   <div>
                     <strong>{t("unsupported_title")}</strong>
-                    <div className="small" style={{ marginTop: 6 }}>{t("unsupported_body")}</div>
+                    <div className="small" style={{ marginTop: "var(--sp-15)" }}>{t("unsupported_body")}</div>
                     {errorMessage && <div className="u-detail">{errorMessage}</div>}
                   </div>
                 </div>
@@ -399,23 +433,23 @@ export default function Home() {
                   <Icon name="alert" size={18} />
                   <div>
                     <strong>{t("cannot_calc")}</strong>
-                    <div className="small" style={{ marginTop: 4, whiteSpace: "pre-wrap" }}>{errorMessage}</div>
+                    <div className="small" style={{ marginTop: "var(--sp-1)", whiteSpace: "pre-wrap" }}>{errorMessage}</div>
                   </div>
                 </div>
               )}
             </div>
           ) : busy === "initial" ? (
             <div className="card card-pad">
-              <div className="skeleton" style={{ height: 22, width: "40%", marginBottom: 16 }} />
-              <div className="skeleton" style={{ height: 34, width: "100%", marginBottom: 20 }} />
+              <div className="skeleton" style={{ height: 22, width: "40%", marginBottom: "var(--sp-4)" }} />
+              <div className="skeleton" style={{ height: 34, width: "100%", marginBottom: "var(--sp-5)" }} />
               {[...Array(4)].map((_, i) => (
-                <div className="skeleton" key={i} style={{ height: 58, width: "100%", marginBottom: 8 }} />
+                <div className="skeleton" key={i} style={{ height: 58, width: "100%", marginBottom: "var(--sp-2)" }} />
               ))}
             </div>
           ) : comparison ? (
             <div className={`card card-pad ${busy === "live" ? "pane-updating" : ""}`}>
-              <div className="card-title" style={{ marginBottom: 16 }}><Icon name="book" size={18} /> {t("comparison_title")}</div>
-              {calculatedHeirs && <div style={{ marginBottom: 16 }}><InputSummary heirs={calculatedHeirs} /></div>}
+              <div className="card-title" style={{ marginBottom: "var(--sp-4)" }}><Icon name="book" size={18} /> {t("comparison_title")}</div>
+              {calculatedHeirs && <div style={{ marginBottom: "var(--sp-4)" }}><InputSummary heirs={calculatedHeirs} /></div>}
               <ComparisonView entries={comparison} />
             </div>
           ) : result ? (
@@ -423,7 +457,7 @@ export default function Home() {
               <div className="card-head">
                 <div className="card-title">
                   <Icon name="scale" size={18} /> {t("result")}
-                  <span className="badge badge-primary" style={{ marginLeft: 2 }}>{rulesetLabel(result.ruleset, lang)}</span>
+                  <span className="badge badge-primary" style={{ marginLeft: "var(--sp-05)" }}>{rulesetLabel(result.ruleset, lang)}</span>
                 </div>
                 <div className="result-toolbar">
                   <Segmented<"table" | "diagram">
@@ -445,14 +479,14 @@ export default function Home() {
               </div>
               <div className="card-pad">
                 {calculatedHeirs && (
-                  <div style={{ marginBottom: 18 }}><InputSummary heirs={calculatedHeirs} /></div>
+                  <div style={{ marginBottom: "var(--sp-4)" }}><InputSummary heirs={calculatedHeirs} /></div>
                 )}
                 {view === "table" ? (
                   <ResultView result={result} />
                 ) : (
                   <>
                     <DerivationFlow result={result} />
-                    <div className="callout callout-warn" style={{ marginTop: 16 }}>
+                    <div className="callout callout-warn" style={{ marginTop: "var(--sp-4)" }}>
                       <span className="c-ico"><Icon name="alert" size={17} /></span>
                       <span>{result.disclaimer}</span>
                     </div>

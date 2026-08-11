@@ -15,7 +15,7 @@ export default function DisclaimerModal({ onAccept }: { onAccept: () => void }) 
         <h2>{t("disc_modal_title")}</h2>
         <p>{t("disc_modal_body1")}</p>
         <p>{t("disc_modal_body2")}</p>
-        <button className="btn btn-lg" onClick={onAccept} style={{ marginTop: 8 }}>
+        <button className="btn btn-lg" onClick={onAccept} style={{ marginTop: "var(--sp-2)" }}>
           {t("disc_modal_accept")}
         </button>
       </div>

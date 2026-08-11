@@ -146,10 +146,10 @@ export default function HeirForm({ heirs, setHeirs, estate, setEstate, ruleset, 
           open={isOpen("pengganti")}
           onToggle={() => toggle("pengganti")}
         >
-          <p className="small muted" style={{ marginBottom: 10 }}>{t("pengganti_hint")}</p>
+          <p className="small muted" style={{ marginBottom: "var(--sp-2)" }}>{t("pengganti_hint")}</p>
           {reps.map((rep, i) => (
-            <div key={i} className="card card-pad" style={{ marginBottom: 10, background: "var(--surface-2)" }}>
-              <div className="field" style={{ marginBottom: 10 }}>
+            <div key={i} className="card card-pad" style={{ marginBottom: "var(--sp-2)", background: "var(--surface-2)" }}>
+              <div className="field" style={{ marginBottom: "var(--sp-2)" }}>
                 <span className="field-label">{t("replacing")}</span>
                 <select
                   value={rep.replacing}
@@ -171,7 +171,7 @@ export default function HeirForm({ heirs, setHeirs, estate, setEstate, ruleset, 
                   const next = reps.slice(); next[i] = { ...next[i], daughters: n }; set({ representatives: next });
                 }} />
               </div>
-              <button className="btn btn-ghost" type="button" style={{ marginTop: 10 }}
+              <button className="btn btn-ghost" type="button" style={{ marginTop: "var(--sp-2)" }}
                 onClick={() => set({ representatives: reps.filter((_, j) => j !== i) })}>
                 <Icon name="minus" size={15} /> {t("remove")}
               </button>

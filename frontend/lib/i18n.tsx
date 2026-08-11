@@ -73,6 +73,16 @@ export const STRINGS: Dict = {
     id: "Suami mendapat 1/4 karena almarhumah meninggalkan anak.",
     en: "The husband takes 1/4 because the deceased left children.",
   },
+  // The form arrives pre-filled with a worked example. Unlabelled, a first-time visitor
+  // reads it as either someone else's saved data or data they are expected to correct —
+  // both cost seconds and trust on a page about a family's money. Labelled, the same seed
+  // becomes the fastest possible onboarding: a case you can just press the button on.
+  seed_badge: { id: "Contoh kasus", en: "Example case" },
+  seed_badge_hint: {
+    id: "Ubah sesuai keadaan Anda, atau tekan “Kasus baru” untuk mengosongkan.",
+    en: "Edit it to match your situation, or press “New case” to start empty.",
+  },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },

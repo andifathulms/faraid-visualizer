@@ -401,6 +401,20 @@ a { color: var(--primary); }
   margin-top: var(--sp-2); font-size: var(--fs-xs); color: var(--text-faint); text-align: center;
 }
 
+/* The form arrives pre-filled with a worked example; this says so. Informational tint,
+   not a warning — the seed is a feature, and the note exists to stop it reading as
+   someone else's leftover data. Removes itself as soon as the heirs are edited. */
+.seed-note {
+  display: flex; align-items: flex-start; gap: var(--sp-15);
+  margin-bottom: var(--sp-3); padding: var(--sp-2) var(--sp-3);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-radius: var(--radius-xs);
+  background: var(--primary-softer);
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+}
+.seed-note b { color: var(--text); font-weight: 700; }
+.seed-note svg { flex: none; margin-top: 1px; color: var(--primary); }
+
 /* Mobile bar: on a stacked layout the form is taller than the screen, so the primary
    action detaches and follows the user instead. */
 .mobile-actions { display: none; }
