@@ -497,12 +497,27 @@ a { color: var(--primary); }
 }
 .card-pad { padding: var(--sp-5); }
 .card + .card { margin-top: var(--sp-5); }
+/* Professional mode adds a third control (Ekspor PDF) to this row, which used to push
+   the ruleset badge into wrapping mid-phrase ("KHI (Kompilasi Hukum / Islam)") and strand
+   the PDF button on a second line under the others. The head now wraps as a unit: the
+   title keeps its line, and the toolbar drops to a full-width row aligned to the same
+   right edge rather than breaking up. */
 .card-head {
-  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-2) var(--sp-3); flex-wrap: wrap;
   padding: var(--sp-4) var(--sp-5);
   border-bottom: 1px solid var(--border);
 }
-.card-title { font-size: var(--fs-md); font-weight: 700; display: flex; align-items: center; gap: var(--sp-2); }
+.card-title {
+  font-size: var(--fs-md); font-weight: 700;
+  display: flex; align-items: center; gap: var(--sp-2);
+  flex: 1 1 auto; min-width: 0;
+}
+/* The ruleset name is a label, not a sentence — breaking it across lines reads as a
+   layout fault. It ellipsises instead if the row genuinely runs out of room. */
+.card-title .badge {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
 
 /* ---------------------------------------------------------------- Typography helpers */
 .eyebrow {
@@ -981,16 +996,18 @@ select {
 }
 
 .ref-list { list-style: none; margin: var(--sp-3) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+/* Chip above, content below. Side by side, the pointer chips have wildly different
+   widths — "4:11" next to "Bukhari 6732; Muslim 1615" — so every card started its text
+   at a different x and the list read as ragged. Stacking gives all of them one left edge
+   regardless of how long the pointer is. */
 .ref-item {
-  display: flex; align-items: flex-start; gap: var(--sp-3);
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2);
   padding: var(--sp-3);
   border: 1px solid var(--border); border-radius: var(--radius-xs);
   background: var(--surface);
 }
-/* The citation chip is the page's organising mark, so it holds its own column rather
-   than trailing the text as it does inside a result. */
-.ref-item .cite { flex: none; margin-left: 0; margin-top: var(--sp-05); }
-.ref-body { min-width: 0; }
+.ref-item .cite { flex: none; margin-left: 0; }
+.ref-body { min-width: 0; width: 100%; }
 .ref-ref { font-size: var(--fs-sm); font-weight: 600; }
 .ref-note {
   margin-top: var(--sp-1);
@@ -999,7 +1016,6 @@ select {
 
 @media (max-width: 560px) {
   .doc-page { padding-left: var(--sp-3); padding-right: var(--sp-3); }
-  .ref-item { flex-direction: column; gap: var(--sp-2); }
 }
 
 /* ------------------------------------------------------------ Coverage gaps
@@ -1193,7 +1209,18 @@ select {
 .modal p { color: var(--text-muted); margin-bottom: var(--sp-3); font-size: var(--fs-sm); }
 
 /* Toolbar for result view */
-.result-toolbar { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+/* Sticks to the right edge, and when it needs a second line it takes the full width and
+   keeps that alignment instead of hanging under the middle of the row. */
+.result-toolbar {
+  display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap;
+  flex: 0 1 auto; justify-content: flex-end; margin-left: auto;
+}
+@media (max-width: 720px) {
+  /* Below this the toolbar always needs its own line; left-align it with the title so
+     the card has one edge rather than two. */
+  .card-head { align-items: flex-start; }
+  .result-toolbar { flex: 1 0 100%; justify-content: flex-start; margin-left: 0; }
+}
 
 /* ---------------------------------------------------- React Flow node styling */
 .flow-wrap { height: 560px; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: var(--sp-15); background: var(--surface-2); }
