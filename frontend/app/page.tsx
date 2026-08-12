@@ -28,6 +28,7 @@ import ResultAnnouncer from "@/components/ResultAnnouncer";
 import SensitivityPanel from "@/components/SensitivityPanel";
 import WorkedExample, { EXAMPLE_CASE } from "@/components/WorkedExample";
 import EstateScale from "@/components/EstateScale";
+import MoreExamples from "@/components/MoreExamples";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
@@ -574,6 +575,10 @@ export default function Home() {
           )}
         </section>
       </main>
+
+      {/* Ordinary page content below the tool: two more cases, worked. Static prose, so
+          it is the same whether a visitor reads it or a crawler does. */}
+      <MoreExamples />
 
       {/* Stacked layout only — the desktop action bar lives inside the form card. */}
       <div className="mobile-actions">

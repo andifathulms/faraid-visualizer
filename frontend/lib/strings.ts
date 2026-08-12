@@ -176,6 +176,62 @@ export const STRINGS: Dict = {
   },
   scale_apply: { id: "Pakai nilai ini", en: "Use this value" },
 
+  // Two further worked cases, as ordinary page content. Every figure is the engine's own
+  // output, pinned in backend/faraid_web/tests/test_more_examples.py — including the
+  // claims, not just the numbers. Phrasing deliberately mirrors how the question is
+  // asked ("pembagian warisan istri dan anak", "warisan anak perempuan tunggal").
+  ex_heading: { id: "Contoh kasus lain", en: "Two more worked cases" },
+  ex_lede: {
+    id: "Dua kasus yang paling sering ditanyakan, dihitung dengan cara yang sama. Semua angka di bawah dihasilkan oleh mesin yang sama dengan kalkulator di atas.",
+    en: "The two cases people ask about most, worked the same way. Every figure below comes from the same engine as the calculator above.",
+  },
+
+  // Case B — wife + children. The commonest shape of a real estate.
+  ex_b_title: { id: "Pembagian warisan untuk istri dan anak", en: "An estate divided between a wife and children" },
+  ex_b_lede: {
+    id: "Almarhum meninggalkan istri, satu anak laki-laki, dan dua anak perempuan. Harta yang dibagi Rp 200.000.000.",
+    en: "The deceased leaves a wife, one son and two daughters. The estate to divide is Rp 200,000,000.",
+  },
+  ex_b_s1: {
+    id: "Istri mendapat 1/8 karena ada anak — tanpa anak bagiannya 1/4. 1/8 × Rp 200.000.000 = Rp 25.000.000.",
+    en: "The wife takes 1/8 because there are children — without them it would be 1/4. 1/8 × Rp 200,000,000 = Rp 25,000,000.",
+  },
+  ex_b_s2: {
+    id: "Sisa 7/8 = Rp 175.000.000 dibagi kepada anak dengan perbandingan 2:1. Satu anak laki-laki dan dua anak perempuan berarti 1×2 + 2×1 = 4 bagian: anak laki-laki mengambil 2 bagian, setiap anak perempuan 1 bagian.",
+    en: "The residue 7/8 = Rp 175,000,000 goes to the children 2:1. One son and two daughters make 1×2 + 2×1 = 4 parts: the son takes 2, each daughter 1.",
+  },
+  ex_b_r1: { id: "Istri", en: "Wife" },
+  ex_b_r2: { id: "1 anak laki-laki", en: "1 son" },
+  ex_b_r3: { id: "2 anak perempuan (Rp 43.750.000 masing-masing)", en: "2 daughters (Rp 43,750,000 each)" },
+
+  // Case C — only daughter + parents. Shows a heir taking furud AND the residue, which
+  // no other example on the site demonstrates.
+  ex_c_title: { id: "Warisan anak perempuan tunggal bersama orang tua", en: "An only daughter inheriting alongside both parents" },
+  ex_c_lede: {
+    id: "Almarhum meninggalkan ayah, ibu, dan satu anak perempuan. Harta yang dibagi Rp 120.000.000.",
+    en: "The deceased leaves a father, a mother and one daughter. The estate to divide is Rp 120,000,000.",
+  },
+  ex_c_s1: {
+    id: "Anak perempuan tunggal mendapat 1/2 = Rp 60.000.000. Bila ada dua anak perempuan atau lebih, mereka berbagi 2/3.",
+    en: "An only daughter takes 1/2 = Rp 60,000,000. Two or more daughters would share 2/3 instead.",
+  },
+  ex_c_s2: {
+    id: "Ibu mendapat 1/6 = Rp 20.000.000, karena almarhum meninggalkan keturunan.",
+    en: "The mother takes 1/6 = Rp 20,000,000, because the deceased left a descendant.",
+  },
+  ex_c_s3: {
+    id: "Ayah mendapat 1/6 sebagai bagian tetap — lalu mengambil sisanya juga. Setelah 1/2 + 1/6 + 1/6 dibagikan, masih tersisa 1/6, dan ayah menerimanya sebagai asabah: 1/6 + 1/6 = 1/3 = Rp 40.000.000.",
+    en: "The father takes 1/6 as a fixed share — and then takes what is left as well. After 1/2 + 1/6 + 1/6, one sixth remains, and the father receives it as residuary: 1/6 + 1/6 = 1/3 = Rp 40,000,000.",
+  },
+  ex_c_r1: { id: "1 anak perempuan", en: "1 daughter" },
+  ex_c_r2: { id: "Ayah (1/6 tetap + 1/6 sisa)", en: "Father (1/6 fixed + 1/6 residue)" },
+  ex_c_r3: { id: "Ibu", en: "Mother" },
+
+  ex_caveat: {
+    id: "Kedua contoh memakai KHI, tanpa utang, biaya pemakaman, atau wasiat, dan tidak ada ahli waris yang terhalang. Masukkan keadaan Anda sendiri di kalkulator untuk hasil yang sesuai.",
+    en: "Both examples use KHI, with no debts, funeral costs or bequest, and nobody blocked. Enter your own situation in the calculator above for a result that fits it.",
+  },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },
