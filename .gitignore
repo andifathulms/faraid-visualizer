@@ -31,3 +31,6 @@ node_modules/
 
 # Local exports (generated artifacts)
 /exports/
+
+# Internal case-study prep — deliberately untracked (see history rewrite of b1a7bfc).
+PORTFOLIO_CONTEXT.md
