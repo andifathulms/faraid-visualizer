@@ -73,6 +73,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body>
+        {/* Structured data, so a crawler is told what this is rather than inferring it
+            from 414 words of prose. Built from lib/site.ts — the same constants the
+            <title>, description and OG tags use — so it cannot describe the page
+            differently from the page.
+
+            isAccessibleForFree and the zero-price offer are the honest facts and are what
+            distinguishes this from the paid calculators it competes with; browserRequirements
+            names the real constraint (the rule engine is WebAssembly). */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: SITE.name,
+              url: SITE_URL,
+              description: SITE.description,
+              applicationCategory: "UtilitiesApplication",
+              operatingSystem: "Any",
+              browserRequirements: "Requires JavaScript and WebAssembly",
+              inLanguage: ["id", "en"],
+              isAccessibleForFree: true,
+              offers: { "@type": "Offer", price: "0", priceCurrency: "IDR" },
+            }),
+          }}
+        />
         <ThemeProvider>
           <I18nProvider>
             {children}
