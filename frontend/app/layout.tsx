@@ -4,6 +4,7 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
 import MakerSignature from "@/components/MakerSignature";
+import { BASE_PATH, OG_IMAGE, SITE, SITE_URL } from "@/lib/site";
 
 // Only the weights the stylesheet actually references. Measured across globals.css:
 // 600 (33 uses), 700 (26), 500 (5), plus 400 as the body default. 800 was declared and
@@ -26,13 +27,34 @@ const serif = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "FaraidVisualizer — kalkulator waris Islam yang menjelaskan alasannya",
-  description:
-    "Islamic inheritance (faraid) calculator that shows the reason for every share, with cited sources (KHI, Syafi'i).",
+  // metadataBase is what makes the relative OG/Twitter image URLs below resolve to
+  // absolute ones. Without it Next emits a relative path and every scraper ignores it.
+  metadataBase: new URL(SITE_URL),
+  title: SITE.title,
+  description: SITE.description,
+  alternates: { canonical: "/" },
+  // The app's whole sharing model is a URL carrying the case — "Salin tautan", encoded
+  // state, links pasted into WhatsApp. Every one of those previewed as a bare URL with no
+  // title, description or image, because none of these tags existed.
+  openGraph: {
+    type: "website",
+    siteName: SITE.name,
+    title: SITE.title,
+    description: SITE.description,
+    url: SITE_URL,
+    locale: SITE.locale,
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: SITE.title,
+    description: SITE.description,
+    images: [OG_IMAGE.url],
+  },
   // Set by hand: Next prefixes basePath onto the icon links but NOT onto the manifest one,
   // which would emit href="/manifest.webmanifest" while the file is published under
   // /<repo>/ — a 404, and a manifest that 404s fails silently.
-  manifest: `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/manifest.webmanifest`,
+  manifest: `${BASE_PATH}/manifest.webmanifest`,
 };
 
 // Tints the browser/OS chrome around the page. Follows the theme so an installed window
@@ -46,7 +68,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
+    <html lang={SITE.lang} className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
