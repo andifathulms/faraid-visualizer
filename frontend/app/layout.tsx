@@ -5,19 +5,24 @@ import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
 import MakerSignature from "@/components/MakerSignature";
 
+// Only the weights the stylesheet actually references. Measured across globals.css:
+// 600 (33 uses), 700 (26), 500 (5), plus 400 as the body default. 800 was declared and
+// never used, so it was a font file downloaded and never painted.
 const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
+// The serif is used only for display text — the wordmark, headings, fractions — at
+// weights 500/600/700. `font-style: italic` appears zero times in globals.css, so the
+// entire italic family was dead weight.
 const serif = Fraunces({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
