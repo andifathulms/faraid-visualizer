@@ -754,6 +754,16 @@ select {
   border-radius: 999px; padding: var(--sp-1) var(--sp-3); font-size: var(--fs-xs); color: var(--text-muted);
 }
 .summary-stat b { color: var(--text); font-variant-numeric: tabular-nums; }
+/* The result header put "pokok masalah 20" in a .summary-stat and "'aul → 7" in a
+   .badge-soft, side by side: same job, two paddings, two sizes, two weights. Inside this
+   row they take the stat metrics. .badge-soft keeps its own smaller metrics everywhere
+   else, where it genuinely is a badge annotating a heading rather than a figure. */
+.summary-badges .badge-soft {
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0;
+}
 
 .proportion {
   display: flex; width: 100%; height: var(--sp-8); border-radius: var(--sp-2); overflow: hidden;
