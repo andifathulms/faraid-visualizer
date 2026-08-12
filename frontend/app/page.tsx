@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   calculate,
   CalculationError,
@@ -19,7 +20,6 @@ import { useI18n, rulesetLabel, Lang } from "@/lib/i18n";
 import { ThemeToggle } from "@/lib/theme";
 import HeirForm from "@/components/HeirForm";
 import ResultView, { InputSummary } from "@/components/ResultView";
-import DerivationFlow from "@/components/DerivationFlow";
 import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import DivergenceNotice from "@/components/DivergenceNotice";
@@ -32,6 +32,20 @@ import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
 import { totalHeirs } from "@/lib/summary";
+
+/**
+ * React Flow and its dependency graph are 45.8 KB gz — measured — and the diagram is
+ * unreachable until a result exists AND the user switches away from the default table
+ * view. Statically imported, every visitor paid for it whether or not they ever opened it.
+ *
+ * ssr:false because the component is client-only anyway (it measures the DOM to lay out
+ * nodes), and because a static export would otherwise prerender a canvas nobody sees.
+ * The fallback keeps the container's height so switching views does not jump the page.
+ */
+const DerivationFlow = dynamic(() => import("@/components/DerivationFlow"), {
+  ssr: false,
+  loading: () => <div className="flow-wrap flow-loading" />,
+});
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
 

@@ -1514,3 +1514,7 @@ select {
   grid-column: 1 / -1; margin: 0;
   font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
 }
+
+/* Placeholder while the diagram chunk loads. Same box as .flow-wrap so switching from
+   the table view does not shift the page under the user. */
+.flow-loading { background: var(--surface-2); }
