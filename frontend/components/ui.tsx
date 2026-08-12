@@ -232,7 +232,10 @@ export function HeirSection({
         className="heir-section-head"
         onClick={onToggle}
         aria-expanded={open}
-        aria-controls={id}
+        // Only claim to control the panel while the panel exists: aria-controls pointing
+        // at an id that is not in the document is invalid. aria-expanded carries the
+        // state either way, so nothing is lost while collapsed.
+        aria-controls={open ? id : undefined}
       >
         <span className="hs-ico"><Icon name={icon} size={16} /></span>
         <span className="hs-title">{title}</span>
