@@ -24,6 +24,7 @@ import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import DivergenceNotice from "@/components/DivergenceNotice";
 import EngineStatus from "@/components/EngineStatus";
+import ResultAnnouncer from "@/components/ResultAnnouncer";
 import SensitivityPanel from "@/components/SensitivityPanel";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
@@ -429,6 +430,9 @@ export default function Home() {
 
         {/* ---- Result pane ---- */}
         <section className="pane-result" ref={resultRef}>
+          {/* Visually hidden; the only thing that tells a non-sighted user the live
+              recalculation produced a new answer. */}
+          <ResultAnnouncer result={result} comparison={comparison} error={error} busy={busy} />
           {error ? (
             <div className="card card-pad">
               {isUnsupported ? (

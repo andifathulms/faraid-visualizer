@@ -88,6 +88,21 @@ export const STRINGS: Dict = {
   stepper_more: { id: "Tambah", en: "Add" },
   stepper_less: { id: "Kurangi", en: "Remove" },
 
+  // Screen-reader announcement for a recalculated result. Deliberately a SUMMARY: the
+  // app re-runs on a 250 ms debounce, and announcing the whole derivation on every
+  // keystroke would be worse than the silence it replaces. Enough to say "the answer
+  // moved, and here is its shape" — the detail is already in the pane to navigate to.
+  announce_result: {
+    id: "Hasil diperbarui. {heirs} ahli waris, pokok masalah {base}, dasar hukum {ruleset}.",
+    en: "Result updated. {heirs} heirs, base {base}, legal basis {ruleset}.",
+  },
+  announce_comparison: {
+    id: "Perbandingan diperbarui untuk {n} dasar hukum.",
+    en: "Comparison updated for {n} legal bases.",
+  },
+  announce_error: { id: "Perhitungan gagal. {msg}", en: "Calculation failed. {msg}" },
+  announce_calculating: { id: "Menghitung…", en: "Calculating…" },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },
