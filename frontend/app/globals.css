@@ -259,6 +259,13 @@ p { margin: 0; }
 a { color: var(--primary); }
 ::selection { background: var(--primary-soft); }
 
+/* Available to assistive tech, absent from the visual design. Used where a visible
+   heading sits outside the element that semantically needs the name. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
 .serif { font-family: var(--serif); }
 .muted { color: var(--text-muted); }
 .faint { color: var(--text-faint); }
@@ -1051,7 +1058,18 @@ select {
    The tabular form a practitioner checks a hand calculation against. Figures are
    tabular-nums throughout so the siham column reads as a column — the sum against
    the base is the thing being verified, and misaligned digits defeat that. */
-.working-scroll { overflow-x: auto; }
+ /* Horizontally scrollable on a narrow screen — Professional mode is the mode most
+    likely to be read on a phone in a courthouse corridor, and a table that scrolls with
+    no sign it does looks truncated. The same fade the form's scroll edge uses. */
+.working-scroll {
+  overflow-x: auto;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--sp-6)), transparent 100%);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--sp-6)), transparent 100%);
+}
+/* Once the table fits, the fade would dim the last column for no reason. */
+@media (min-width: 720px) {
+  .working-scroll { -webkit-mask-image: none; mask-image: none; }
+}
 .working {
   width: 100%; border-collapse: collapse;
   font-size: var(--fs-sm); font-variant-numeric: tabular-nums;

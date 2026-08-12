@@ -141,6 +141,12 @@ function WorkingTable({ working }: { working: Working }) {
 
       <div className="working-scroll">
         <table className="working">
+          {/* The visible heading is a div outside the table, so without this a screen
+              reader reaches an uncaptioned grid of numbers. Visually hidden rather than
+              shown: the heading above already says it sighted. */}
+          <caption className="sr-only">
+            {t("working_title")} — {t("pokok_masalah")} {working.base}
+          </caption>
           <thead>
             <tr>
               <th>{t("th_heir")}</th>
