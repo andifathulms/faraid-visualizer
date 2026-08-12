@@ -300,6 +300,11 @@ a { color: var(--primary); }
 .theme-toggle .tt-label { line-height: 1; }
 @media (max-width: 560px) { .theme-toggle .tt-label { display: none; } }
 
+/* Reflow to 320 CSS px without two-dimensional scrolling (WCAG 1.4.10). The app bar's
+   right-hand cluster did not wrap, forcing the document to 439px. */
+.app-bar-inner { flex-wrap: wrap; }
+.app-bar-inner > .row { flex-wrap: wrap; justify-content: flex-end; }
+
 /* The wordmark is a real link to the bare URL (a fresh case), but it should read as a
    wordmark, not as body copy that happens to be clickable. */
 .brand {
@@ -528,6 +533,11 @@ a { color: var(--primary); }
   transition: color 0.15s, background 0.15s, box-shadow 0.15s;
   white-space: nowrap;
 }
+/* A five-option picker cannot fit 320px on one line. Let the group wrap rather than push
+   the whole document sideways; the pill shape survives because each button keeps its own
+   radius. */
+.segmented { flex-wrap: wrap; }
+.segmented.block { flex-wrap: nowrap; }
 .segmented button:hover { color: var(--text); }
 .segmented button.active {
   background: var(--surface); color: var(--primary);
