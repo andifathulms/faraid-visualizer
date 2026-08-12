@@ -103,6 +103,12 @@ export const STRINGS: Dict = {
   announce_error: { id: "Perhitungan gagal. {msg}", en: "Calculation failed. {msg}" },
   announce_calculating: { id: "Menghitung…", en: "Calculating…" },
 
+  flow_alt: { id: "Diagram penurunan", en: "Derivation diagram" },
+  flow_alt_detail: {
+    id: "Diagram ini menyajikan ulang isi tampilan Tabel secara visual. Untuk membacanya sebagai teks, gunakan tampilan Tabel.",
+    en: "This diagram restates the Table view visually. To read the same content as text, switch to the Table view.",
+  },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },

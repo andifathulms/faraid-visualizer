@@ -262,7 +262,11 @@ export function colorFor(index: number): string {
 export function ProportionBar({ shares }: { shares: Share[] }) {
   const total = shares.reduce((a, s) => a + s.share.float, 0) || 1;
   return (
-    <div className="proportion" role="img" aria-label="Share proportions">
+    /* aria-hidden, not labelled: the legend directly beneath names every heir and
+       fraction, so any label here would restate it — and the one that was here was
+       hardcoded English ("Share proportions") that never translated, and conveyed no
+       proportion anyway. The data is already available as text. */
+    <div className="proportion" aria-hidden="true">
       {shares.map((s, i) => (
         <div key={i} className="seg" style={{ width: `${(s.share.float / total) * 100}%`, background: colorFor(i) }}
           title={`${s.label} — ${s.share.text} (${Math.round((s.share.float / total) * 100)}%)`} />

@@ -117,7 +117,14 @@ export default function DerivationFlow({ result }: { result: CalculationResult }
   }, [result, lang, t]);
 
   return (
-    <div className="flow-wrap">
+    <div className="flow-wrap" role="group" aria-label={t("flow_alt")}>
+      {/* The diagram is a canvas of divs with drag-only interaction and no text
+          equivalent of its own. The table view is the accessible equivalent and already
+          exists — this says so, rather than leaving a screen reader user at an
+          unexplained dead end. role="group" so the name is announced on entry; there is
+          no native element that names a non-interactive region without implying a
+          landmark. */}
+      <p className="sr-only">{t("flow_alt_detail")}</p>
       <ReactFlow
         nodes={nodes}
         edges={edges}
