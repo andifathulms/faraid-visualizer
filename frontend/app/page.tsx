@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   calculate,
   CalculationError,
@@ -298,6 +299,11 @@ export default function Home() {
             </div>
           </a>
           <div className="row gap-10">
+            {/* The citation registry is the substrate the results stand on, so it gets a
+                permanent way in — not only a hover on a chip inside a result. */}
+            <Link className="bar-link" href="/references">
+              <Icon name="book" size={15} /> <span className="bar-link-label">{t("ref_title")}</span>
+            </Link>
             <ThemeToggle />
             <Segmented<Lang>
               ariaLabel="Language"

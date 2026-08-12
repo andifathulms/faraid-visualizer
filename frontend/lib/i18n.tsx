@@ -253,6 +253,56 @@ export const STRINGS: Dict = {
   th_amount: { id: "Jumlah", en: "Amount" },
   why: { id: "kenapa?", en: "why?" },
   hide: { id: "sembunyikan", en: "hide" },
+  // References page. sources.py was the first engine commit by design — uncited rules
+  // don't ship — so the citations are the substrate results stand on, not decoration on
+  // them. This page is where that substrate is legible without triggering a rule.
+  ref_title: { id: "Rujukan & cakupan", en: "Sources & coverage" },
+  ref_lede: {
+    id: "Setiap kaidah yang dijalankan mesin ini memiliki rujukan. Berikut seluruh rujukan yang mendasarinya, beserta batas cakupannya.",
+    en: "Every rule this engine fires carries a citation. Here is the whole basis it rests on, and where that basis stops.",
+  },
+  ref_back: { id: "Kembali ke kalkulator", en: "Back to the calculator" },
+  ref_stat_sources: { id: "rujukan", en: "sources" },
+  ref_gaps_lede: {
+    id: "Batas cakupan per dasar hukum. Yang ditandai “tidak termasuk” tidak akan memberi peringatan otomatis saat menghitung.",
+    en: "Coverage limits per legal basis. Anything marked “not included” will not warn you automatically at calculation time.",
+  },
+  // PRD §5.3 in one sentence, on the page where it matters most.
+  ref_policy: {
+    id: "Ayat Qur'an dan hadits dirujuk sebagai penunjuk (surah:ayat, perawi) — teksnya tidak pernah direproduksi di sini. Rujukan fiqh klasik dipakai untuk memeriksa isi kaidah, bukan untuk mengutip isinya.",
+    en: "Qur'anic verses and hadith are cited as pointers (surah:ayah, narrator) — their text is never reproduced here. Classical fiqh references are used to cross-check the content of a rule, never to quote it.",
+  },
+  ref_type_quran: { id: "Qur'an", en: "Qur'an" },
+  ref_type_hadith: { id: "Hadits", en: "Hadith" },
+  ref_type_ijma: { id: "Ijma", en: "Consensus (ijma)" },
+  ref_type_khi: { id: "KHI", en: "KHI" },
+  ref_type_classical: { id: "Fiqh klasik & kontemporer", en: "Classical & contemporary fiqh" },
+  ref_type_case_law: { id: "Praktik peradilan", en: "Court practice" },
+  ref_type_note_quran: {
+    id: "Tiga ayat al-mawarits, dirujuk sebagai penunjuk surah:ayat.",
+    en: "The three ayat al-mawarith, cited as surah:ayah pointers.",
+  },
+  ref_type_note_hadith: {
+    id: "Dirujuk beserta perawinya; matan tidak direproduksi.",
+    en: "Cited with their narrator; the matn is not reproduced.",
+  },
+  ref_type_note_ijma: {
+    id: "Titik yang disepakati lintas madzhab.",
+    en: "Points settled across the schools.",
+  },
+  ref_type_note_khi: {
+    id: "Kompilasi Hukum Islam, Inpres No. 1/1991, Buku II — hukum negara Indonesia.",
+    en: "Kompilasi Hukum Islam, Inpres No. 1/1991, Book II — Indonesian state law.",
+  },
+  ref_type_note_classical: {
+    id: "Dipakai untuk memeriksa isi kaidah, bukan untuk dikutip.",
+    en: "Used to cross-check the content of a rule, not to quote it.",
+  },
+  ref_type_note_case_law: {
+    id: "Praktik Pengadilan Agama yang membedakan penerapan KHI dari fiqh klasik.",
+    en: "Religious Court practice where applied KHI departs from classical fiqh.",
+  },
+
   // Coverage gaps. The engine raising on a shape it cannot resolve is visible; a doctrine
   // missing from an otherwise complete answer is not, and that is the one a user can never
   // discover by using the app. Worded as a limit of the tool, never as a caveat that

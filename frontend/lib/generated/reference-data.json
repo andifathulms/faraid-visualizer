@@ -1,0 +1,756 @@
+{
+  "_generated_by": "backend/scripts/export_reference_data.py",
+  "sources": [
+    {
+      "id": "quran-nisa-11",
+      "type": "quran",
+      "reference": "QS An-Nisa 4:11",
+      "pointer": "4:11",
+      "note": "Children shares (son:daughter 2:1; a single daughter 1/2; two or more daughters 2/3) and each parent 1/6 when the deceased has a child; mother 1/3 when no child and no multiple siblings."
+    },
+    {
+      "id": "quran-nisa-12",
+      "type": "quran",
+      "reference": "QS An-Nisa 4:12",
+      "pointer": "4:12",
+      "note": "Spouse shares (husband 1/2 without child, 1/4 with child; wife 1/4 without child, 1/8 with child) and maternal (uterine) siblings — one gets 1/6, two or more share 1/3 collectively."
+    },
+    {
+      "id": "quran-nisa-176",
+      "type": "quran",
+      "reference": "QS An-Nisa 4:176",
+      "pointer": "4:176",
+      "note": "Kalalah: full/paternal sister 1/2 (single) or 2/3 (two or more); a brother takes the residue in the 2:1 male:female ratio with sisters."
+    },
+    {
+      "id": "hadith-asabah-ibn-abbas",
+      "type": "hadith",
+      "reference": "Sahih al-Bukhari 6732 / Sahih Muslim 1615, narrated Ibn 'Abbas",
+      "pointer": "Bukhari 6732; Muslim 1615",
+      "note": "\"Give the fixed shares (fara'id) to those entitled to them; whatever remains goes to the nearest male ('asabah).\" Basis of the residuary rule."
+    },
+    {
+      "id": "hadith-grandmother-sixth",
+      "type": "hadith",
+      "reference": "Sunan Abi Dawud 2894 / Sunan al-Tirmidhi 2101, narrated al-Mughirah ibn Shu'bah",
+      "pointer": "Abu Dawud 2894; Tirmidhi 2101",
+      "note": "The grandmother is assigned one sixth (1/6)."
+    },
+    {
+      "id": "hadith-grandfather-asabah",
+      "type": "hadith",
+      "reference": "Athar of the Sahabah on al-jadd (grandfather); Fiqh al-Mawarith consensus",
+      "pointer": "al-jadd",
+      "note": "In the absence of the father, the paternal grandfather substitutes for him (1/6 with a descendant, otherwise residuary), per the majority position adopted by KHI and classical Syafi'i for the common cases modeled here."
+    },
+    {
+      "id": "khi-171",
+      "type": "khi",
+      "reference": "KHI Pasal 171",
+      "pointer": "Pasal 171",
+      "note": "Definitions: pewaris, ahli waris, harta warisan, harta bersama."
+    },
+    {
+      "id": "khi-174",
+      "type": "khi",
+      "reference": "KHI Pasal 174",
+      "pointer": "Pasal 174",
+      "note": "Enumeration of heirs by blood (nasab) and by marriage."
+    },
+    {
+      "id": "khi-175",
+      "type": "khi",
+      "reference": "KHI Pasal 175",
+      "pointer": "Pasal 175",
+      "note": "Ordering of obligations on the estate: funeral costs, then debts, then wasiat (max 1/3), then division among heirs."
+    },
+    {
+      "id": "khi-176",
+      "type": "khi",
+      "reference": "KHI Pasal 176",
+      "pointer": "Pasal 176",
+      "note": "Daughter: 1/2 if sole; 2/3 if two or more; with a son the ratio is 2:1 male:female (asabah bi ghairihi)."
+    },
+    {
+      "id": "khi-177",
+      "type": "khi",
+      "reference": "KHI Pasal 177 (as interpreted per Mahkamah Agung jurisprudence)",
+      "pointer": "Pasal 177",
+      "note": "Literal text assigns the father 1/3 when there is no child, which conflicts with the fara'id system; Mahkamah Agung jurisprudence and mainstream KHI practice read the father as 1/6 when a descendant exists and residuary ('asabah) otherwise — the interpretation applied by this engine. UI must surface this caveat in Professional mode."
+    },
+    {
+      "id": "khi-178",
+      "type": "khi",
+      "reference": "KHI Pasal 178",
+      "pointer": "Pasal 178",
+      "note": "Mother: 1/6 if there is a child or two or more siblings; otherwise 1/3."
+    },
+    {
+      "id": "khi-179",
+      "type": "khi",
+      "reference": "KHI Pasal 179",
+      "pointer": "Pasal 179",
+      "note": "Widower (duda): 1/2 without child, 1/4 with child."
+    },
+    {
+      "id": "khi-180",
+      "type": "khi",
+      "reference": "KHI Pasal 180",
+      "pointer": "Pasal 180",
+      "note": "Widow (janda): 1/4 without child, 1/8 with child."
+    },
+    {
+      "id": "khi-181",
+      "type": "khi",
+      "reference": "KHI Pasal 181",
+      "pointer": "Pasal 181",
+      "note": "Maternal (uterine) siblings: one gets 1/6, two or more share 1/3 collectively; blocked by a child or the father."
+    },
+    {
+      "id": "khi-182",
+      "type": "khi",
+      "reference": "KHI Pasal 182",
+      "pointer": "Pasal 182",
+      "note": "Full/paternal sister: 1/2 if sole, 2/3 if two or more; with a full/paternal brother the 2:1 ratio applies. Blocked by descendants and the father."
+    },
+    {
+      "id": "khi-185",
+      "type": "khi",
+      "reference": "KHI Pasal 185",
+      "pointer": "Pasal 185",
+      "note": "Ahli waris pengganti (representation): children of an heir who predeceased the deceased may step into that heir's position, capped at the share the replaced heir would have received. NO classical Syafi'i equivalent (PRD §4.1)."
+    },
+    {
+      "id": "khi-192",
+      "type": "khi",
+      "reference": "KHI Pasal 192",
+      "pointer": "Pasal 192",
+      "note": "'Aul: when fixed shares exceed the estate, shares are reduced proportionally."
+    },
+    {
+      "id": "khi-193",
+      "type": "khi",
+      "reference": "KHI Pasal 193",
+      "pointer": "Pasal 193",
+      "note": "Radd: when fixed shares total less than the estate and no residuary heir exists, the surplus is returned proportionally to the fixed-share heirs."
+    },
+    {
+      "id": "khi-209",
+      "type": "khi",
+      "reference": "KHI Pasal 209",
+      "pointer": "Pasal 209",
+      "note": "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted child and their adoptive parents, who do not inherit from one another under faraid. NOT implemented — see faraid_engine.coverage."
+    },
+    {
+      "id": "classical-fiqh-mawarith",
+      "type": "classical",
+      "reference": "Fiqh al-Mawarith (science of inheritance shares), general treatment",
+      "pointer": "Fiqh al-Mawarith",
+      "note": "Standard treatment of the fara'id pipeline used for content cross-check."
+    },
+    {
+      "id": "classical-zuhaili",
+      "type": "classical",
+      "reference": "al-Fiqh al-Islami wa Adillatuhu — Wahbah az-Zuhaili",
+      "pointer": "al-Fiqh al-Islami wa Adillatuhu",
+      "note": "Cross-reference for rule content and madhab divergence; text not reproduced."
+    },
+    {
+      "id": "classical-aul-umar",
+      "type": "ijma",
+      "reference": "'Aul doctrine, attributed to 'Umar ibn al-Khattab; Sahabah consensus",
+      "pointer": "'aul",
+      "note": "Proportional reduction of shares when the pokok masalah is over-subscribed. Valid bases: 6→7/8/9/10, 12→13/15/17, 24→27."
+    },
+    {
+      "id": "classical-radd-syafii",
+      "type": "classical",
+      "reference": "Radd doctrine — classical position; spouse excluded from radd (majority Sunni)",
+      "pointer": "radd",
+      "note": "In classical Syafi'i, when no ashabul furud remain to absorb the surplus and no asabah exist, the surplus historically routes to baitul mal rather than to the spouse. Rule-set dependent (PRD §5.2 step 7)."
+    },
+    {
+      "id": "classical-dzawil-arham",
+      "type": "classical",
+      "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+      "pointer": "dzawil arham",
+      "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+    },
+    {
+      "id": "khi-practice-baitul-mal",
+      "type": "case_law",
+      "reference": "Pengadilan Agama practice commentary on radd/dzawil arham vs. baitul mal",
+      "pointer": "KHI practice",
+      "note": "In current Indonesian practice a functioning baitul mal claim mechanism does not exist, so PA generally applies radd to fixed-share heirs (including the spouse where no other heir remains) rather than escheating to baitul mal. Flagged as a KHI-practice note, NOT classical Syafi'i doctrine (PRD §4.1)."
+    },
+    {
+      "id": "madhab-hanafi",
+      "type": "classical",
+      "reference": "Hanafi fiqh al-mawarith — Ibn 'Abidin, Radd al-Muhtar; az-Zuhaili (Hanafi positions)",
+      "pointer": "Hanafi",
+      "note": "General reference for Hanafi inheritance positions; text not reproduced."
+    },
+    {
+      "id": "madhab-maliki",
+      "type": "classical",
+      "reference": "Maliki fiqh al-mawarith — az-Zuhaili (Maliki positions); Mukhtasar Khalil tradition",
+      "pointer": "Maliki",
+      "note": "General reference for Maliki inheritance positions; text not reproduced."
+    },
+    {
+      "id": "madhab-hanbali",
+      "type": "classical",
+      "reference": "Hanbali fiqh al-mawarith — Ibn Qudamah, al-Mughni; az-Zuhaili (Hanbali positions)",
+      "pointer": "Hanbali",
+      "note": "General reference for Hanbali inheritance positions; text not reproduced."
+    },
+    {
+      "id": "jadd-muqasama-zaid",
+      "type": "classical",
+      "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+      "pointer": "muqasama (Zaid)",
+      "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+    },
+    {
+      "id": "hanafi-jadd-blocks-siblings",
+      "type": "classical",
+      "reference": "Abu Hanifa: the grandfather blocks siblings (treated like the father)",
+      "pointer": "al-jadd (Hanafi)",
+      "note": "Unlike the majority (Maliki/Syafi'i/Hanbali, who apply Zaid's muqasama), Abu Hanifa gives the grandfather the father's blocking power over siblings."
+    },
+    {
+      "id": "radd-hanafi-hanbali",
+      "type": "classical",
+      "reference": "Radd accepted (Hanafi & Hanbali) — surplus returned to non-spouse ashabul furud",
+      "pointer": "radd (Hanafi/Hanbali)",
+      "note": "Spouse excluded from radd in the majority view."
+    },
+    {
+      "id": "maliki-no-radd",
+      "type": "classical",
+      "reference": "Maliki: no radd — surplus escheats to baitul mal, which is treated as an heir",
+      "pointer": "baitul mal (Maliki)",
+      "note": "The Maliki school does not apply radd; when fixed shares are under-subscribed and no asabah exist, the remainder goes to baitul mal."
+    },
+    {
+      "id": "khi-harta-bersama",
+      "type": "case_law",
+      "reference": "KHI Pasal 96–97 (harta bersama) applied before faraid",
+      "pointer": "Pasal 96–97",
+      "note": "The surviving spouse's community-property share (typically 1/2 of joint assets) is separated BEFORE faraid applies to the remainder. An Indonesian civil-law concept with no classical-fiqh equivalent; off by default in classical Syafi'i mode (PRD §4.1)."
+    },
+    {
+      "id": "ijma-debts-first",
+      "type": "ijma",
+      "reference": "Consensus on netting the estate (funeral, debts, wasiat) before faraid",
+      "pointer": "tajhiz → dain → wasiat → mirath",
+      "note": "Cross-referenced with KHI Pasal 175 for the Indonesian sequence."
+    }
+  ],
+  "gaps": {
+    "id": {
+      "khi": [
+        {
+          "key": "wasiat_wajibah",
+          "kind": "silent",
+          "kind_label": "Tidak termasuk dalam hasil",
+          "title": "Wasiat wajibah untuk anak angkat",
+          "detail": "Anak angkat dan orang tua angkat tidak saling mewarisi secara faraid, namun KHI mewajibkan wasiat maksimal 1/3 di antara mereka. Aturan ini TIDAK dihitung di sini — hasil di atas tidak memuatnya sama sekali. Jika ada anak angkat dalam keluarga ini, hasil ini belum lengkap.",
+          "source_id": "khi-209",
+          "source": {
+            "id": "khi-209",
+            "type": "khi",
+            "reference": "KHI Pasal 209",
+            "pointer": "Pasal 209",
+            "note": "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted child and their adoptive parents, who do not inherit from one another under faraid. NOT implemented — see faraid_engine.coverage."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Tidak dapat dimasukkan",
+          "title": "Ahli waris dzawil arham",
+          "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        },
+        {
+          "key": "representation_scope",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Ahli waris pengganti selain anak yang wafat",
+          "detail": "Hanya penggantian untuk anak laki-laki atau anak perempuan yang wafat lebih dulu yang didukung (KHI Pasal 185); selainnya ditolak.",
+          "source_id": "khi-185",
+          "source": {
+            "id": "khi-185",
+            "type": "khi",
+            "reference": "KHI Pasal 185",
+            "pointer": "Pasal 185",
+            "note": "Ahli waris pengganti (representation): children of an heir who predeceased the deceased may step into that heir's position, capped at the share the replaced heir would have received. NO classical Syafi'i equivalent (PRD §4.1)."
+          }
+        }
+      ],
+      "syafii": [
+        {
+          "key": "jadd_muadda",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudara kandung DAN saudara seayah (mu'adda)",
+          "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_akdariyya",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudari (tanpa saudara laki-laki) dan pasangan (akdariyya)",
+          "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_with_descendant",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudara sekaligus keturunan",
+          "detail": "Kombinasi ini tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Tidak dapat dimasukkan",
+          "title": "Ahli waris dzawil arham",
+          "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ],
+      "hanafi": [
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Tidak dapat dimasukkan",
+          "title": "Ahli waris dzawil arham",
+          "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ],
+      "maliki": [
+        {
+          "key": "jadd_muadda",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudara kandung DAN saudara seayah (mu'adda)",
+          "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_akdariyya",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudari (tanpa saudara laki-laki) dan pasangan (akdariyya)",
+          "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_with_descendant",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudara sekaligus keturunan",
+          "detail": "Kombinasi ini tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Tidak dapat dimasukkan",
+          "title": "Ahli waris dzawil arham",
+          "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ],
+      "hanbali": [
+        {
+          "key": "jadd_muadda",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudara kandung DAN saudara seayah (mu'adda)",
+          "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_akdariyya",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudari (tanpa saudara laki-laki) dan pasangan (akdariyya)",
+          "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_with_descendant",
+          "kind": "raises",
+          "kind_label": "Ditolak, tidak ditebak",
+          "title": "Kakek bersama saudara sekaligus keturunan",
+          "detail": "Kombinasi ini tidak diimplementasikan; mesin menolak menghitung.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Tidak dapat dimasukkan",
+          "title": "Ahli waris dzawil arham",
+          "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ]
+    },
+    "en": {
+      "khi": [
+        {
+          "key": "wasiat_wajibah",
+          "kind": "silent",
+          "kind_label": "Not included in the result",
+          "title": "Obligatory bequest (wasiat wajibah) for an adopted child",
+          "detail": "An adopted child and their adoptive parents do not inherit from one another under faraid, but KHI requires a bequest of up to 1/3 between them. That rule is NOT computed here — the result above omits it entirely. If this family includes an adopted child, this result is incomplete.",
+          "source_id": "khi-209",
+          "source": {
+            "id": "khi-209",
+            "type": "khi",
+            "reference": "KHI Pasal 209",
+            "pointer": "Pasal 209",
+            "note": "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted child and their adoptive parents, who do not inherit from one another under faraid. NOT implemented — see faraid_engine.coverage."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Cannot be entered",
+          "title": "Distant kindred (dzawil arham)",
+          "detail": "Relatives such as a maternal grandfather, a daughter's children or a sister's children cannot be entered on this form, so a case involving only them cannot be calculated.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        },
+        {
+          "key": "representation_scope",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Substitute heirs other than a predeceased child",
+          "detail": "Only substitution for a predeceased son or daughter is supported (KHI Art. 185); anything else is refused.",
+          "source_id": "khi-185",
+          "source": {
+            "id": "khi-185",
+            "type": "khi",
+            "reference": "KHI Pasal 185",
+            "pointer": "Pasal 185",
+            "note": "Ahli waris pengganti (representation): children of an heir who predeceased the deceased may step into that heir's position, capped at the share the replaced heir would have received. NO classical Syafi'i equivalent (PRD §4.1)."
+          }
+        }
+      ],
+      "syafii": [
+        {
+          "key": "jadd_muadda",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with both full and paternal siblings (mu'adda)",
+          "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_akdariyya",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with sisters (no brothers) and a spouse (akdariyya)",
+          "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_with_descendant",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with siblings and a descendant",
+          "detail": "This combination is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Cannot be entered",
+          "title": "Distant kindred (dzawil arham)",
+          "detail": "Relatives such as a maternal grandfather, a daughter's children or a sister's children cannot be entered on this form, so a case involving only them cannot be calculated.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ],
+      "hanafi": [
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Cannot be entered",
+          "title": "Distant kindred (dzawil arham)",
+          "detail": "Relatives such as a maternal grandfather, a daughter's children or a sister's children cannot be entered on this form, so a case involving only them cannot be calculated.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ],
+      "maliki": [
+        {
+          "key": "jadd_muadda",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with both full and paternal siblings (mu'adda)",
+          "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_akdariyya",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with sisters (no brothers) and a spouse (akdariyya)",
+          "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_with_descendant",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with siblings and a descendant",
+          "detail": "This combination is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Cannot be entered",
+          "title": "Distant kindred (dzawil arham)",
+          "detail": "Relatives such as a maternal grandfather, a daughter's children or a sister's children cannot be entered on this form, so a case involving only them cannot be calculated.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ],
+      "hanbali": [
+        {
+          "key": "jadd_muadda",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with both full and paternal siblings (mu'adda)",
+          "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_akdariyya",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with sisters (no brothers) and a spouse (akdariyya)",
+          "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "jadd_with_descendant",
+          "kind": "raises",
+          "kind_label": "Refused, not guessed",
+          "title": "Grandfather with siblings and a descendant",
+          "detail": "This combination is not implemented; the engine refuses to calculate.",
+          "source_id": "jadd-muqasama-zaid",
+          "source": {
+            "id": "jadd-muqasama-zaid",
+            "type": "classical",
+            "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+            "pointer": "muqasama (Zaid)",
+            "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing."
+          }
+        },
+        {
+          "key": "dzawil_arham_capture",
+          "kind": "uncapturable",
+          "kind_label": "Cannot be entered",
+          "title": "Distant kindred (dzawil arham)",
+          "detail": "Relatives such as a maternal grandfather, a daughter's children or a sister's children cannot be entered on this form, so a case involving only them cannot be calculated.",
+          "source_id": "classical-dzawil-arham",
+          "source": {
+            "id": "classical-dzawil-arham",
+            "type": "classical",
+            "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+            "pointer": "dzawil arham",
+            "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1)."
+          }
+        }
+      ]
+    }
+  }
+}
