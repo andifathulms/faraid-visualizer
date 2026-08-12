@@ -42,10 +42,23 @@ def deduct_debts(
         capped = True
     after_wasiyya = after_debts - wasiyya
 
-    detail = (
-        f"Kotor {estate.gross_value} − biaya pemakaman {estate.funeral_costs} − utang "
-        f"{estate.debts} − wasiat {wasiyya} = {after_wasiyya}."
-    )
+    # With no estate entered this rendered "Kotor 0 − biaya pemakaman 0 − utang 0 −
+    # wasiat 0 = 0" — a first derivation step that is an equation of zeros, occupying the
+    # position where the framing belongs: the estate is settled BEFORE anyone inherits.
+    # State the rule instead of performing it on nothing.
+    if estate.gross_value == 0:
+        detail = (
+            "Belum ada nilai harta yang dimasukkan, sehingga hasil di bawah hanya berupa "
+            "pecahan bagian. Bila nilai harta diisi, urutannya: biaya pengurusan jenazah "
+            "dibayar lebih dulu, lalu utang almarhum, lalu wasiat (maksimal 1/3 dari sisa) "
+            "— baru sisanya dibagi kepada ahli waris."
+        )
+    else:
+        detail = (
+            f"Kotor {estate.gross_value} − biaya pemakaman {estate.funeral_costs} − utang "
+            f"{estate.debts} − wasiat {wasiyya} = {after_wasiyya}. Urutan ini tetap: "
+            f"jenazah, utang, wasiat, baru waris."
+        )
     if capped:
         detail += (
             f" Wasiat dibatasi maksimal 1/3 ({wasiyya_cap}) dari sisa setelah utang; "

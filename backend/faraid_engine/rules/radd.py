@@ -86,15 +86,22 @@ def apply_radd(
 
     # Redistribute surplus to non-spouse fixed-share heirs, proportional to their shares.
     base_total = sum((a.share for a in non_spouse), Fraction(0))
+    # Captured before the loop mutates the shares — the reader needs the BEFORE figures
+    # to see what was redistributed and in what proportion.
+    before = [(a.relation.display, _frac(a.share)) for a in non_spouse]
     for a in non_spouse:
         addition = surplus * (a.share / base_total)
         a.share = a.share + addition
         a.category = ShareCategory.RADD
         a.reason += f" Ditambah radd proporsional menjadi {_frac(a.share)}."
         a.rule_applied += "|radd"
+    # Show the shortfall and the proportion it is shared in, not only the outcome.
     detail = (
-        f"Sisa {_frac(surplus)} dikembalikan (radd) secara proporsional kepada ahli waris "
-        f"ashabul furud selain pasangan."
+        f"Bagian tetap berjumlah {' + '.join(f for _, f in before)} = {_frac(base_total)}, "
+        f"kurang dari harta yang ada, dan tidak ada ahli waris asabah yang mengambil "
+        f"sisanya. Sisa {_frac(surplus)} dikembalikan (radd) kepada ahli waris berbagian "
+        f"tetap selain pasangan, dibagi menurut perbandingan bagian mereka "
+        f"({' : '.join(f for _, f in before)})."
     )
     if spouse:
         detail += " Bagian pasangan tetap dan tidak ikut radd."

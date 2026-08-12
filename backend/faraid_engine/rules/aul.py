@@ -57,12 +57,17 @@ def apply_aul(
     step = DerivationStep(
         step="aul",
         title="'Aul — pengurangan proporsional",
+        # The arithmetic, not just the outcome. "Pokok masalah dinaikkan menjadi 7"
+        # states what happened; the reader still cannot see WHY 7 without the sum that
+        # overshot the base, which is the whole content of 'aul.
         detail=(
-            f"Jumlah bagian tetap melebihi harta (pokok masalah {base}). Pokok masalah "
-            f"dinaikkan menjadi {aul_base}; setiap bagian dihitung ulang atas {aul_base} "
-            f"sehingga total kembali menjadi 1."
+            f"Atas pokok masalah {base}, bagian-bagian tetap berjumlah "
+            f"{' + '.join(str(n) for n in numerators)} = {aul_base} bagian — lebih besar "
+            f"dari {base}, sehingga harta tidak cukup. Pokok masalah dinaikkan menjadi "
+            f"{aul_base}: setiap ahli waris tetap memegang jumlah bagian yang sama, tetapi "
+            f"kini dihitung atas {aul_base}, sehingga totalnya kembali menjadi 1."
         ),
         source_id=source,
-        data={"pokok_masalah": base, "aul_base": aul_base},
+        data={"pokok_masalah": base, "aul_base": aul_base, "siham": numerators},
     )
     return awards, base, aul_base, step
