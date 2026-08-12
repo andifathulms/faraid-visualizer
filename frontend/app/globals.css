@@ -387,7 +387,20 @@ a { color: var(--primary); }
 /* The form card is the full height of the viewport: its sections scroll internally while
    the action bar stays pinned, so Calculate is never below the fold. */
 .form-card { display: flex; flex-direction: column; max-height: calc(100vh - 108px); }
-.form-scroll { overflow-y: auto; padding: var(--sp-5) var(--sp-5) var(--sp-1); flex: 1; min-height: 0; overscroll-behavior: contain; }
+/* The scroll area cuts the last visible section horizontally through its text, which
+   reads as a rendering fault rather than "there is more below". A mask fades the bottom
+   edge instead, so the cut becomes an affordance. `scroll-timeline`-free and
+   `mask-image`-only: no JS, and a browser without mask support simply gets the old hard
+   edge rather than a broken layout. */
+.form-scroll {
+  overflow-y: auto;
+  padding: var(--sp-5) var(--sp-5) var(--sp-1);
+  flex: 1;
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--sp-6)), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--sp-6)), transparent 100%);
+}
 .form-actions {
   flex: none; padding: var(--sp-3) var(--sp-5) var(--sp-5); border-top: 1px solid var(--border);
   background: var(--surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg);
@@ -436,7 +449,8 @@ a { color: var(--primary); }
   /* Internal scrolling is a desktop affordance — nested scroll areas on touch are worse
      than a long page. Let the card grow and pin the action bar to the viewport instead. */
   .form-card { max-height: none; }
-  .form-scroll { overflow: visible; }
+  /* Nothing is clipped here, so the fade would dim real content for no reason. */
+  .form-scroll { overflow: visible; -webkit-mask-image: none; mask-image: none; }
   .form-actions .btn-lg { display: none; }
 
   .mobile-actions {
