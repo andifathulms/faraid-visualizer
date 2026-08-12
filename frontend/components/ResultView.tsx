@@ -188,6 +188,12 @@ function WorkingTable({ working }: { working: Working }) {
         <span className="badge badge-soft">{t("pokok_masalah")} {working.base}</span>
       </div>
       <p className="small muted" style={{ marginBottom: "var(--sp-2)" }}>{t("working_hint")}</p>
+      {/* Two terms this table cannot be read without. Visible text, beside the table
+          that uses them. */}
+      <dl className="defs">
+        <div><dt>{t("pokok_masalah")}</dt><dd>{t("def_pokok_masalah")}</dd></div>
+        <div><dt>{t("th_siham")}</dt><dd>{t("def_siham")}</dd></div>
+      </dl>
 
       <div className="working-scroll">
         <table className="working">
@@ -234,6 +240,8 @@ function WorkingTable({ working }: { working: Working }) {
       </div>
 
       <div className="working-notes">
+        {working.aul_applied && <p className="term-def">{t("def_aul")}</p>}
+        {working.radd_applied && <p className="term-def">{t("def_radd")}</p>}
         {working.aul_applied && working.aul_base !== null && (
           <p>
             {t("working_aul_note")
@@ -347,6 +355,11 @@ export default function ResultView({ result }: { result: CalculationResult }) {
       {/* Shares */}
       <div>
         <div className="res-section-title"><span className="ico"><Icon name="scale" size={17} /></span>{t("distribution")}</div>
+        {/* The two category names every row is tagged with. */}
+        <dl className="defs">
+          <div><dt>{t("cat_furud")}</dt><dd>{t("def_furud")}</dd></div>
+          <div><dt>{t("cat_asabah")}</dt><dd>{t("def_asabah")}</dd></div>
+        </dl>
         <div className="share-list">
           {hb.map((s, i) => (
             <ShareItem key={`hb-${i}`} share={s} color="var(--gold)" sources={result.sources}
@@ -373,6 +386,7 @@ export default function ResultView({ result }: { result: CalculationResult }) {
       {result.blocked.length > 0 && (
         <div>
           <div className="res-section-title"><span className="ico" style={{ color: "var(--blocked)" }}><Icon name="ban" size={16} /></span>{t("blocked_title")}</div>
+          <p className="term-def">{t("def_hajb")}</p>
           <div className="blocked-list">
             {result.blocked.map((b, i) => (
               <div className="blocked-item" key={i}>

@@ -134,6 +134,40 @@ export const STRINGS: Dict = {
     en: "Change one number in the form and the result follows — try removing the daughter, or adding a father.",
   },
 
+  // Inline definitions for the technical vocabulary the UI uses. PRD §3 says Personal
+  // mode speaks informal language, yet the app said furud, asabah, hajb, 'aul, radd,
+  // pokok masalah and siham without defining any of them anywhere. Rendered as visible
+  // text beside the term the first time it appears — not tooltips (invisible on touch,
+  // unsearchable) and not a glossary page (explanation belongs next to the thing).
+  def_hajb: {
+    id: "Ahli waris yang lebih dekat menutup yang lebih jauh — yang tertutup tidak mendapat apa pun.",
+    en: "A nearer heir shuts out a more distant one — the blocked heir receives nothing.",
+  },
+  def_furud: {
+    id: "Bagian yang besarnya sudah ditetapkan (1/2, 1/4, 1/8, 2/3, 1/3, 1/6) dan dibagikan lebih dulu.",
+    en: "Shares whose size is fixed in advance (1/2, 1/4, 1/8, 2/3, 1/3, 1/6), handed out first.",
+  },
+  def_asabah: {
+    id: "Ahli waris yang mengambil apa pun yang tersisa setelah bagian tetap dibagikan.",
+    en: "The heirs who take whatever is left after the fixed shares have been paid.",
+  },
+  def_pokok_masalah: {
+    id: "Penyebut bersama yang dipakai supaya semua bagian bisa dinyatakan sebagai bilangan bulat.",
+    en: "The common denominator that lets every share be written as a whole number of parts.",
+  },
+  def_siham: {
+    id: "Jumlah bagian bulat yang dipegang tiap ahli waris atas pokok masalah.",
+    en: "The whole parts each heir holds, counted against the base.",
+  },
+  def_aul: {
+    id: "Bila jumlah bagian tetap melebihi harta, penyebutnya dinaikkan sehingga semua bagian menyusut sebanding.",
+    en: "When the fixed shares add up to more than the estate, the denominator is raised so every share shrinks in proportion.",
+  },
+  def_radd: {
+    id: "Bila bagian tetap belum menghabiskan harta dan tidak ada asabah, sisanya dikembalikan kepada mereka.",
+    en: "When the fixed shares do not use up the estate and there is no residuary heir, the remainder returns to them.",
+  },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },

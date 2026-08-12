@@ -1476,3 +1476,23 @@ select {
   font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
 }
 .worked-try { color: var(--text-muted); font-weight: 600; }
+
+/* ------------------------------------------------------ Inline definitions
+   The app used furud, asabah, hajb, 'aul, radd, pokok masalah and siham without ever
+   defining them. These sit beside the term, as visible text — a tooltip would be
+   invisible on touch and unsearchable, and a glossary page would move the explanation
+   away from the thing being explained. Quiet enough to skip once known. */
+.defs { margin: 0 0 var(--sp-3); display: flex; flex-direction: column; gap: var(--sp-1); }
+.defs > div { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.defs dt {
+  font-size: var(--fs-2xs); font-weight: 700; color: var(--text-muted);
+  white-space: nowrap;
+}
+.defs dd {
+  margin: 0; flex: 1; min-width: 200px;
+  font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
+}
+.term-def {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
+}
