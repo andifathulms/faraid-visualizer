@@ -21,7 +21,10 @@ export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
  */
 export const SITE = {
   name: "FaraidVisualizer",
-  title: "FaraidVisualizer — kalkulator waris Islam yang menjelaskan alasannya",
+  // 62 characters. The previous title was 68 and truncated in search results, and it led
+  // with the product name — which nobody searches for — instead of the phrase people
+  // actually type. The brand still appears in og:siteName, the manifest and the wordmark.
+  title: "Kalkulator Waris Islam (Faraid) — dengan alasan dan rujukannya",
   description:
     "Kalkulator waris Islam (faraid) yang menunjukkan alasan setiap bagian, beserta " +
     "rujukannya. Perhitungan berjalan sepenuhnya di perangkat Anda.",
