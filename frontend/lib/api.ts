@@ -11,7 +11,7 @@ import { callEngine, ensurePdfSupport, type EngineAction, type Envelope } from "
 
 export type Ruleset = "khi" | "syafii" | "hanafi" | "maliki" | "hanbali";
 export type Mode = "personal" | "professional";
-type Lang = "id" | "en"; // structurally identical to lib/i18n's Lang
+export type Lang = "id" | "en"; // structurally identical to lib/i18n's Lang
 
 export interface Representative {
   replacing: "son" | "daughter";
@@ -109,7 +109,23 @@ export interface SourceCitation {
   type: string;
   reference: string;
   pointer: string;
+  /** Canonical English editorial note. Always present. */
   note: string;
+  /** Bahasa Indonesia rendering of `note`. May be empty on an older payload. */
+  note_id?: string;
+}
+
+/**
+ * The editorial note for a citation in the reader's language.
+ *
+ * PRD §7 makes Indonesian primary, but the notes were authored in English as
+ * engineer-facing documentation and rendered as-is — so the references page, whose whole
+ * job is to show an Indonesian professional what this tool rests on, addressed half its
+ * audience in a second language. English stays canonical and is the fallback, so a
+ * payload without note_id degrades to the old behaviour rather than to blank.
+ */
+export function citationNote(src: SourceCitation, lang: Lang): string {
+  return (lang === "id" && src.note_id) || src.note;
 }
 
 /**

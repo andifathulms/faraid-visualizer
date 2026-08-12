@@ -24,7 +24,7 @@ import data from "@/lib/generated/reference-data.json";
 import { useI18n, rulesetLabel, type Lang } from "@/lib/i18n";
 import { ThemeToggle } from "@/lib/theme";
 import { Icon, Segmented } from "@/components/ui";
-import type { CoverageGap, Ruleset, SourceCitation } from "@/lib/api";
+import { citationNote, type CoverageGap, type Ruleset, type SourceCitation } from "@/lib/api";
 
 const HOME_HREF = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/`;
 const BRAND_ICON = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/brand/faraidvisualizer-icon.svg`;
@@ -111,7 +111,7 @@ export default function References() {
                   </span>
                   <div className="ref-body">
                     <div className="ref-ref">{s.reference}</div>
-                    {s.note && <p className="ref-note">{s.note}</p>}
+                    {citationNote(s, lang) && <p className="ref-note">{citationNote(s, lang)}</p>}
                   </div>
                 </li>
               ))}

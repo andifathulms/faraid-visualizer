@@ -40,6 +40,12 @@ class Source:
     ``reference`` is the human-facing citation string rendered as a footnote.
     ``note`` optionally records a divergence/interpretation caveat that the UI must
     surface (e.g. the KHI Pasal 177 literal-vs-jurisprudence issue).
+
+    ``note`` is the canonical English text and remains the fallback; ``note_id`` is its
+    Bahasa Indonesia rendering. PRD §7 makes Indonesian the primary language, and the
+    references page — whose entire job is to show an Indonesian professional what this
+    tool rests on — was presenting all 35 notes in English. Both are emitted so nothing
+    downstream loses the canonical text.
     """
 
     id: str
@@ -47,6 +53,7 @@ class Source:
     reference: str
     pointer: str
     note: str = ""
+    note_id: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -55,6 +62,12 @@ class Source:
 _QURAN = [
     Source(
         id="quran-nisa-11",
+        note_id=(
+            "Bagian anak (anak laki-laki : anak perempuan 2:1; anak perempuan tunggal 1/2; "
+            "dua atau lebih 2/3) serta masing-masing orang tua 1/6 bila pewaris "
+            "meninggalkan anak; ibu mendapat 1/3 bila tidak ada anak dan tidak ada beberapa "
+            "saudara."
+        ),
         type=SourceType.QURAN,
         reference="QS An-Nisa 4:11",
         pointer="4:11",
@@ -66,6 +79,11 @@ _QURAN = [
     ),
     Source(
         id="quran-nisa-12",
+        note_id=(
+            "Bagian pasangan (suami 1/2 tanpa anak, 1/4 dengan anak; istri 1/4 tanpa anak, "
+            "1/8 dengan anak) serta saudara seibu — seorang mendapat 1/6, dua atau lebih "
+            "berbagi 1/3 secara kolektif."
+        ),
         type=SourceType.QURAN,
         reference="QS An-Nisa 4:12",
         pointer="4:12",
@@ -77,6 +95,11 @@ _QURAN = [
     ),
     Source(
         id="quran-nisa-176",
+        note_id=(
+            "Kalalah: saudari kandung/seayah 1/2 (tunggal) atau 2/3 (dua atau lebih); "
+            "saudara laki-laki mengambil sisa dengan perbandingan 2:1 laki-laki:perempuan "
+            "bersama saudari."
+        ),
         type=SourceType.QURAN,
         reference="QS An-Nisa 4:176",
         pointer="4:176",
@@ -93,6 +116,10 @@ _QURAN = [
 _HADITH = [
     Source(
         id="hadith-asabah-ibn-abbas",
+        note_id=(
+            "Dasar kaidah asabah: bagian-bagian tetap (fara'id) diberikan lebih dulu kepada "
+            "yang berhak, dan sisanya menjadi hak kerabat laki-laki terdekat ('asabah)."
+        ),
         type=SourceType.HADITH,
         reference="Sahih al-Bukhari 6732 / Sahih Muslim 1615, narrated Ibn 'Abbas",
         pointer="Bukhari 6732; Muslim 1615",
@@ -103,6 +130,7 @@ _HADITH = [
     ),
     Source(
         id="hadith-grandmother-sixth",
+        note_id="Nenek mendapat bagian seperenam (1/6).",
         type=SourceType.HADITH,
         reference="Sunan Abi Dawud 2894 / Sunan al-Tirmidhi 2101, narrated al-Mughirah ibn Shu'bah",
         pointer="Abu Dawud 2894; Tirmidhi 2101",
@@ -110,6 +138,11 @@ _HADITH = [
     ),
     Source(
         id="hadith-grandfather-asabah",
+        note_id=(
+            "Bila ayah tidak ada, kakek dari pihak ayah menggantikan kedudukannya (1/6 bila "
+            "ada keturunan, selebihnya sebagai asabah), menurut pendapat mayoritas yang "
+            "dianut KHI dan Syafi'i klasik untuk kasus-kasus umum yang dimodelkan di sini."
+        ),
         type=SourceType.HADITH,
         reference="Athar of the Sahabah on al-jadd (grandfather); Fiqh al-Mawarith consensus",
         pointer="al-jadd",
@@ -127,6 +160,7 @@ _HADITH = [
 _KHI = [
     Source(
         id="khi-171",
+        note_id="Definisi: pewaris, ahli waris, harta warisan, harta bersama.",
         type=SourceType.KHI,
         reference="KHI Pasal 171",
         pointer="Pasal 171",
@@ -134,6 +168,7 @@ _KHI = [
     ),
     Source(
         id="khi-174",
+        note_id="Perincian ahli waris menurut hubungan darah (nasab) dan hubungan perkawinan.",
         type=SourceType.KHI,
         reference="KHI Pasal 174",
         pointer="Pasal 174",
@@ -141,6 +176,10 @@ _KHI = [
     ),
     Source(
         id="khi-175",
+        note_id=(
+            "Urutan kewajiban atas harta peninggalan: biaya pengurusan jenazah, lalu utang, "
+            "lalu wasiat (maksimal 1/3), baru dibagi kepada ahli waris."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 175",
         pointer="Pasal 175",
@@ -151,6 +190,10 @@ _KHI = [
     ),
     Source(
         id="khi-176",
+        note_id=(
+            "Anak perempuan: 1/2 bila tunggal; 2/3 bila dua atau lebih; bersama anak laki- "
+            "laki berlaku perbandingan 2:1 laki-laki:perempuan (asabah bi ghairihi)."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 176",
         pointer="Pasal 176",
@@ -161,6 +204,13 @@ _KHI = [
     ),
     Source(
         id="khi-177",
+        note_id=(
+            "Teks harfiahnya memberi ayah 1/3 bila tidak ada anak, yang bertentangan dengan "
+            "sistem fara'id; yurisprudensi Mahkamah Agung dan praktik arus utama KHI "
+            "membaca bagian ayah sebagai 1/6 bila ada keturunan dan sebagai asabah bila "
+            "tidak — penafsiran inilah yang diterapkan mesin ini. Antarmuka wajib "
+            "menampilkan catatan ini pada mode Profesional."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 177 (as interpreted per Mahkamah Agung jurisprudence)",
         pointer="Pasal 177",
@@ -174,6 +224,7 @@ _KHI = [
     ),
     Source(
         id="khi-178",
+        note_id="Ibu: 1/6 bila ada anak atau dua orang saudara atau lebih; selain itu 1/3.",
         type=SourceType.KHI,
         reference="KHI Pasal 178",
         pointer="Pasal 178",
@@ -183,6 +234,7 @@ _KHI = [
     ),
     Source(
         id="khi-179",
+        note_id="Duda: 1/2 tanpa anak, 1/4 dengan anak.",
         type=SourceType.KHI,
         reference="KHI Pasal 179",
         pointer="Pasal 179",
@@ -190,6 +242,7 @@ _KHI = [
     ),
     Source(
         id="khi-180",
+        note_id="Janda: 1/4 tanpa anak, 1/8 dengan anak.",
         type=SourceType.KHI,
         reference="KHI Pasal 180",
         pointer="Pasal 180",
@@ -197,6 +250,10 @@ _KHI = [
     ),
     Source(
         id="khi-181",
+        note_id=(
+            "Saudara seibu: seorang mendapat 1/6, dua atau lebih berbagi 1/3 secara "
+            "kolektif; terhalang oleh anak atau ayah."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 181",
         pointer="Pasal 181",
@@ -207,6 +264,11 @@ _KHI = [
     ),
     Source(
         id="khi-182",
+        note_id=(
+            "Saudari kandung/seayah: 1/2 bila tunggal, 2/3 bila dua atau lebih; bersama "
+            "saudara laki-laki kandung/seayah berlaku perbandingan 2:1. Terhalang oleh "
+            "keturunan dan ayah."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 182",
         pointer="Pasal 182",
@@ -217,6 +279,12 @@ _KHI = [
     ),
     Source(
         id="khi-185",
+        note_id=(
+            "Ahli waris pengganti: anak dari ahli waris yang wafat lebih dulu dapat "
+            "menggantikan kedudukannya, dibatasi sebesar bagian yang akan diterima ahli "
+            "waris yang digantikan. TIDAK ada padanannya dalam fiqh Syafi'i klasik (PRD "
+            "§4.1)."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 185",
         pointer="Pasal 185",
@@ -228,6 +296,10 @@ _KHI = [
     ),
     Source(
         id="khi-192",
+        note_id=(
+            "'Aul: bila jumlah bagian tetap melebihi harta, seluruh bagian dikurangi secara "
+            "proporsional."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 192",
         pointer="Pasal 192",
@@ -235,6 +307,11 @@ _KHI = [
     ),
     Source(
         id="khi-193",
+        note_id=(
+            "Radd: bila jumlah bagian tetap kurang dari harta dan tidak ada ahli waris "
+            "asabah, sisanya dikembalikan secara proporsional kepada ahli waris berbagian "
+            "tetap."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 193",
         pointer="Pasal 193",
@@ -248,6 +325,11 @@ _KHI = [
     # declines to implement — a gap the user is told about needs a source like any rule.
     Source(
         id="khi-209",
+        note_id=(
+            "Wasiat wajibah: wasiat wajib paling banyak 1/3 antara anak angkat dan orang "
+            "tua angkatnya, yang tidak saling mewarisi secara faraid. TIDAK "
+            "diimplementasikan — lihat faraid_engine.coverage."
+        ),
         type=SourceType.KHI,
         reference="KHI Pasal 209",
         pointer="Pasal 209",
@@ -265,6 +347,7 @@ _KHI = [
 _CLASSICAL = [
     Source(
         id="classical-fiqh-mawarith",
+        note_id="Pembahasan baku alur fara'id yang dipakai untuk memeriksa isi kaidah.",
         type=SourceType.CLASSICAL,
         reference="Fiqh al-Mawarith (science of inheritance shares), general treatment",
         pointer="Fiqh al-Mawarith",
@@ -272,6 +355,10 @@ _CLASSICAL = [
     ),
     Source(
         id="classical-zuhaili",
+        note_id=(
+            "Rujukan silang untuk isi kaidah dan perbedaan madzhab; teksnya tidak "
+            "direproduksi."
+        ),
         type=SourceType.CLASSICAL,
         reference="al-Fiqh al-Islami wa Adillatuhu — Wahbah az-Zuhaili",
         pointer="al-Fiqh al-Islami wa Adillatuhu",
@@ -279,6 +366,10 @@ _CLASSICAL = [
     ),
     Source(
         id="classical-aul-umar",
+        note_id=(
+            "Pengurangan bagian secara proporsional ketika pokok masalah lebih kecil dari "
+            "jumlah bagian. Pokok masalah yang sah: 6→7/8/9/10, 12→13/15/17, 24→27."
+        ),
         type=SourceType.IJMA,
         reference="'Aul doctrine, attributed to 'Umar ibn al-Khattab; Sahabah consensus",
         pointer="'aul",
@@ -289,6 +380,11 @@ _CLASSICAL = [
     ),
     Source(
         id="classical-radd-syafii",
+        note_id=(
+            "Dalam Syafi'i klasik, bila tidak ada lagi ashabul furud yang dapat menyerap "
+            "sisa dan tidak ada asabah, sisanya secara historis disalurkan ke baitul mal, "
+            "bukan kepada pasangan. Bergantung pada rule set (PRD §5.2 langkah 7)."
+        ),
         type=SourceType.CLASSICAL,
         reference="Radd doctrine — classical position; spouse excluded from radd (majority Sunni)",
         pointer="radd",
@@ -300,6 +396,11 @@ _CLASSICAL = [
     ),
     Source(
         id="classical-dzawil-arham",
+        note_id=(
+            "Baru tercapai bila tidak ada ashabul furud maupun asabah. Syafi'i/Maliki "
+            "secara klasik menyalurkannya ke baitul mal; Hanafi/Hanbali membagikannya "
+            "kepada dzawil arham (PRD §4.1)."
+        ),
         type=SourceType.CLASSICAL,
         reference="Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
         pointer="dzawil arham",
@@ -310,6 +411,13 @@ _CLASSICAL = [
     ),
     Source(
         id="khi-practice-baitul-mal",
+        note_id=(
+            "Dalam praktik di Indonesia saat ini tidak ada mekanisme penuntutan baitul mal "
+            "yang berjalan, sehingga Pengadilan Agama umumnya menerapkan radd kepada ahli "
+            "waris berbagian tetap (termasuk pasangan bila tidak ada ahli waris lain) "
+            "daripada menyalurkannya ke baitul mal. Ditandai sebagai catatan praktik KHI, "
+            "BUKAN doktrin Syafi'i klasik (PRD §4.1)."
+        ),
         type=SourceType.CASE_LAW,
         reference="Pengadilan Agama practice commentary on radd/dzawil arham vs. baitul mal",
         pointer="KHI practice",
@@ -322,6 +430,7 @@ _CLASSICAL = [
     ),
     Source(
         id="madhab-hanafi",
+        note_id="Rujukan umum untuk pendapat Hanafi dalam waris; teksnya tidak direproduksi.",
         type=SourceType.CLASSICAL,
         reference="Hanafi fiqh al-mawarith — Ibn 'Abidin, Radd al-Muhtar; az-Zuhaili (Hanafi positions)",
         pointer="Hanafi",
@@ -329,6 +438,7 @@ _CLASSICAL = [
     ),
     Source(
         id="madhab-maliki",
+        note_id="Rujukan umum untuk pendapat Maliki dalam waris; teksnya tidak direproduksi.",
         type=SourceType.CLASSICAL,
         reference="Maliki fiqh al-mawarith — az-Zuhaili (Maliki positions); Mukhtasar Khalil tradition",
         pointer="Maliki",
@@ -336,6 +446,7 @@ _CLASSICAL = [
     ),
     Source(
         id="madhab-hanbali",
+        note_id="Rujukan umum untuk pendapat Hanbali dalam waris; teksnya tidak direproduksi.",
         type=SourceType.CLASSICAL,
         reference="Hanbali fiqh al-mawarith — Ibn Qudamah, al-Mughni; az-Zuhaili (Hanbali positions)",
         pointer="Hanbali",
@@ -343,6 +454,14 @@ _CLASSICAL = [
     ),
     Source(
         id="jadd-muqasama-zaid",
+        note_id=(
+            "Bila tidak ada ayah, kakek bersaing dengan saudara kandung/seayah: ia "
+            "mengambil yang paling menguntungkan baginya di antara (a) muqasama, yaitu "
+            "berbagi sebagai saudara, (b) 1/3 dari sisa, atau (c) 1/6 dari keseluruhan bila "
+            "ada ashabul furud. Sub-kasus yang rumit (akdariyya; mu'adda yang mencampur "
+            "saudara kandung dan seayah) tidak diimplementasikan dan ditolak daripada "
+            "ditebak."
+        ),
         type=SourceType.CLASSICAL,
         reference="al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
         pointer="muqasama (Zaid)",
@@ -356,6 +475,11 @@ _CLASSICAL = [
     ),
     Source(
         id="hanafi-jadd-blocks-siblings",
+        note_id=(
+            "Berbeda dengan mayoritas (Maliki/Syafi'i/Hanbali yang menerapkan muqasama "
+            "Zaid), Abu Hanifah memberi kakek kekuatan menghalangi saudara sebagaimana "
+            "ayah."
+        ),
         type=SourceType.CLASSICAL,
         reference="Abu Hanifa: the grandfather blocks siblings (treated like the father)",
         pointer="al-jadd (Hanafi)",
@@ -366,6 +490,7 @@ _CLASSICAL = [
     ),
     Source(
         id="radd-hanafi-hanbali",
+        note_id="Pasangan dikecualikan dari radd menurut pendapat mayoritas.",
         type=SourceType.CLASSICAL,
         reference="Radd accepted (Hanafi & Hanbali) — surplus returned to non-spouse ashabul furud",
         pointer="radd (Hanafi/Hanbali)",
@@ -373,6 +498,10 @@ _CLASSICAL = [
     ),
     Source(
         id="maliki-no-radd",
+        note_id=(
+            "Madzhab Maliki tidak menerapkan radd; bila jumlah bagian tetap kurang dan "
+            "tidak ada asabah, sisanya disalurkan ke baitul mal."
+        ),
         type=SourceType.CLASSICAL,
         reference="Maliki: no radd — surplus escheats to baitul mal, which is treated as an heir",
         pointer="baitul mal (Maliki)",
@@ -383,6 +512,12 @@ _CLASSICAL = [
     ),
     Source(
         id="khi-harta-bersama",
+        note_id=(
+            "Bagian harta bersama pasangan yang masih hidup (umumnya 1/2 dari harta "
+            "bersama) dipisahkan SEBELUM faraid diterapkan atas sisanya. Konsep hukum "
+            "perdata Indonesia yang tidak memiliki padanan dalam fiqh klasik; nonaktif "
+            "secara bawaan pada mode Syafi'i klasik (PRD §4.1)."
+        ),
         type=SourceType.CASE_LAW,
         reference="KHI Pasal 96–97 (harta bersama) applied before faraid",
         pointer="Pasal 96–97",
@@ -395,6 +530,7 @@ _CLASSICAL = [
     ),
     Source(
         id="ijma-debts-first",
+        note_id="Dirujuk silang dengan KHI Pasal 175 untuk urutan yang berlaku di Indonesia.",
         type=SourceType.IJMA,
         reference="Consensus on netting the estate (funeral, debts, wasiat) before faraid",
         pointer="tajhiz → dain → wasiat → mirath",

@@ -110,6 +110,9 @@ def sources_payload() -> dict:
             "reference": s.reference,
             "pointer": s.pointer,
             "note": s.note,
+            # Additive: `note` stays the canonical English text so existing consumers of
+            # /api/sources/ are unaffected; the UI picks per language.
+            "note_id": s.note_id,
         }
         for s in all_sources()
     ]

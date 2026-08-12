@@ -59,6 +59,7 @@ def serialize_gaps(ruleset: str, lang: str = "id") -> list[dict]:
                     "reference": src.reference,
                     "pointer": src.pointer,
                     "note": src.note,
+                    "note_id": src.note_id,
                 },
             }
         )
@@ -177,6 +178,7 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
             "reference": src.reference,
             "pointer": src.pointer,
             "note": src.note,
+            "note_id": src.note_id,
         }
 
     return {

@@ -51,3 +51,25 @@ def test_quran_and_hadith_are_pointers_not_text():
             # A pointer, a short reference and an editorial note — never a passage.
             assert len(src["pointer"]) <= 40
             assert len(src["reference"]) <= 120
+
+
+def test_every_source_has_an_indonesian_note():
+    """PRD §7 makes Indonesian primary, and the references page is the surface where a
+    missing translation is most visible. A new source cannot ship English-only."""
+    data = build()
+    missing = [s["id"] for s in data["sources"] if s["note"] and not s.get("note_id")]
+    assert not missing, f"sources missing note_id: {missing}"
+
+
+def test_indonesian_hadith_notes_describe_rather_than_quote():
+    """PRD §5.3 allows a hadith reference and narrator, not its matn.
+
+    The English note for the asabah hadith renders the matn in translation, which already
+    brushes that line; the Indonesian rendering describes the ruling instead, and this
+    keeps the next one from reintroducing a quotation.
+    """
+    data = build()
+    for src in data["sources"]:
+        if src["type"] == "hadith" and src.get("note_id"):
+            assert '"' not in src["note_id"]
+            assert "“" not in src["note_id"]

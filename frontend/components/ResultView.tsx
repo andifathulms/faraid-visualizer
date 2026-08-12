@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalculationResult, HeirsInput, Share, SourceCitation, Working } from "@/lib/api";
+import { CalculationResult, citationNote, HeirsInput, Share, SourceCitation, Working } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { centsToMoney, formatCompact, formatMoney, toCents } from "@/lib/format";
 import { describeHeirs } from "@/lib/summary";
@@ -12,10 +12,12 @@ import CoverageGaps from "./CoverageGaps";
 // localized; this component supplies static UI chrome + the visual composition.
 
 function Citation({ id, sources }: { id: string; sources: Record<string, SourceCitation> }) {
+  const { lang } = useI18n();
   const src = sources[id];
   if (!src) return null;
+  const note = citationNote(src, lang);
   return (
-    <span className="cite" title={`${src.reference}${src.note ? " — " + src.note : ""}`}>
+    <span className="cite" title={`${src.reference}${note ? " — " + note : ""}`}>
       <Icon name="book" size={11} /> {src.pointer}
     </span>
   );
