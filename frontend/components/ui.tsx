@@ -83,14 +83,18 @@ export function NumberStepper({
   label, value, onChange, max,
 }: { label: string; value: number; onChange: (n: number) => void; max?: number }) {
   const v = value ?? 0;
+  const id = useId();
   return (
     <div className="stepper-wrap">
-      <span className="field-label">{label}</span>
+      {/* A real <label>, not a styled span. The AX tree reported all ten of these fields
+          as `spinbutton *** UNNAMED ***` — a screen reader announced "spin button, 2"
+          with no way to tell sons from paternal sisters. */}
+      <label className="field-label" htmlFor={id}>{label}</label>
       <div className="stepper">
         <button type="button" aria-label="minus" disabled={v <= 0} onClick={() => onChange(Math.max(0, v - 1))}>
           <Icon name="minus" size={16} />
         </button>
-        <input type="number" min={0} max={max} value={v}
+        <input id={id} type="number" min={0} max={max} value={v}
           onChange={(e) => {
             let n = parseInt(e.target.value || "0", 10);
             if (Number.isNaN(n) || n < 0) n = 0;
