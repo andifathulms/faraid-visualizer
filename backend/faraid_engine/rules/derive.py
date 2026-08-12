@@ -60,7 +60,14 @@ def derive(heirs: Heirs, config: RuleSetConfig) -> DeriveResult:
                 + (", ".join(f"{b.relation.display} (terhalang oleh {b.blocked_by.display})" for b in blocked)
                    if blocked else "tidak ada.")
             ),
-            data={"blocked": [b.relation.value for b in blocked]},
+            # Blocking IS a rule, and this step rendered uncited. Each HajbEntry already
+            # carries the source that excluded it; surface them so the citation sits on
+            # the step that applies them, not only inside a per-heir expander.
+            source_id=(sorted({b.source_id for b in blocked})[0] if len({b.source_id for b in blocked}) == 1 else None),
+            data={
+                "blocked": [b.relation.value for b in blocked],
+                "source_ids": sorted({b.source_id for b in blocked}),
+            },
         )
     )
 
@@ -77,6 +84,12 @@ def derive(heirs: Heirs, config: RuleSetConfig) -> DeriveResult:
             DerivationStep(
                 step="furud", title="Bagian tetap (furud muqaddarah)",
                 detail="; ".join(a.reason for a in furud_awards),
+                # A furud step applies a DIFFERENT rule per heir (spouse, mother and
+                # daughter each have their own basis), so a single step-level citation
+                # would be arbitrary. Carry them all.
+                source_id=(sorted({a.source_id for a in furud_awards})[0]
+                           if len({a.source_id for a in furud_awards}) == 1 else None),
+                data={"source_ids": sorted({a.source_id for a in furud_awards})},
             )
         )
 
@@ -154,6 +167,9 @@ def _derive_jadd_ikhwah(
         steps.append(DerivationStep(
             step="furud", title="Bagian tetap (furud muqaddarah)",
             detail="; ".join(a.reason for a in furud_awards),
+            source_id=(sorted({a.source_id for a in furud_awards})[0]
+                       if len({a.source_id for a in furud_awards}) == 1 else None),
+            data={"source_ids": sorted({a.source_id for a in furud_awards})},
         ))
 
     furud_total = sum((a.share for a in furud_awards), Fraction(0))

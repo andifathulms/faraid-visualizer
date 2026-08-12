@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalculationResult, citationNote, HeirsInput, Share, SourceCitation, Working } from "@/lib/api";
+import { CalculationResult, citationNote, HeirsInput, Share, SourceCitation, Step, Working } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { centsToMoney, formatCompact, formatMoney, toCents } from "@/lib/format";
 import { describeHeirs } from "@/lib/summary";
@@ -203,6 +203,17 @@ function WorkingTable({ working }: { working: Working }) {
   );
 }
 
+/**
+ * Every citation a step applied. `source_id` is set only when the step used exactly one
+ * rule; `data.source_ids` carries the full set, because hajb and furud each fire a
+ * different rule per heir.
+ */
+function stepSources(step: Step): string[] {
+  const many = step.data?.source_ids;
+  if (Array.isArray(many) && many.length) return many as string[];
+  return step.source_id ? [step.source_id] : [];
+}
+
 /** What produced these numbers — visible without scrolling back to the form. */
 export function InputSummary({ heirs }: { heirs: HeirsInput }) {
   const { t, lang } = useI18n();
@@ -330,7 +341,16 @@ export default function ResultView({ result }: { result: CalculationResult }) {
                   {i < result.steps.length - 1 && <div className="tl-line" />}
                 </div>
                 <div className="tl-body">
-                  <div className="tl-title">{st.title} {st.source_id && <Citation id={st.source_id} sources={result.sources} />}</div>
+                  <div className="tl-title">
+                    {st.title}
+                    {/* A step can apply several rules at once — a furud step assigns a
+                        different basis to each heir — so every source it used is cited
+                        here, at the point of application, rather than one being picked
+                        arbitrarily or the whole step going uncited. */}
+                    {stepSources(st).map((sid) => (
+                      <Citation key={sid} id={sid} sources={result.sources} />
+                    ))}
+                  </div>
                   {st.detail && <div className="tl-detail">{st.detail}</div>}
                 </div>
               </div>

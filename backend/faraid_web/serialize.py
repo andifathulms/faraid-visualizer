@@ -147,6 +147,9 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
     for st in result.steps:
         if st.source_id:
             source_ids.add(st.source_id)
+        # A step can apply several rules at once (furud assigns a different basis per
+        # heir); every one of them has to resolve in the bundled citation map.
+        source_ids.update(st.data.get("source_ids") or [])
         steps.append(
             {
                 "step": st.step,
