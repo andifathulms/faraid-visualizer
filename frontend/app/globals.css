@@ -803,6 +803,9 @@ select {
   font-size: var(--fs-md); font-weight: 700; color: var(--text); line-height: var(--lh-tight);
 }
 .share-values.money-first .share-frac-lg { font-size: var(--fs-sm); font-weight: 600; color: var(--text-muted); }
+ /* A residue is named, not measured — so it sits at the secondary rank the real result
+    gives an asabah row's supporting text, never in the fraction rank. */
+.share-residue { font-size: var(--fs-sm); color: var(--text-muted); }
 .share-compact { font-size: var(--fs-2xs); color: var(--text-faint); font-variant-numeric: tabular-nums; }
 .share-perhead-amount { font-size: var(--fs-2xs); color: var(--text-faint); font-variant-numeric: tabular-nums; }
 

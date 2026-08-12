@@ -560,7 +560,10 @@ export default function Home() {
                           </span>
                         </div>
                         <div className="share-values">
-                          <span className="share-frac-lg muted">{t("preview_residue")}</span>
+                          {/* "sisa" is a category word, not a value. In the fraction slot at
+                              fraction size it read as a quantity of the same rank as 1/4,
+                              teaching a vocabulary the real result does not use. */}
+                          <span className="share-residue">{t("preview_residue")}</span>
                         </div>
                       </div>
                     </div>
