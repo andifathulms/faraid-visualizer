@@ -1318,9 +1318,28 @@ select {
   .site-footer-inner { justify-content: center; text-align: center; }
 }
 
-/* Respect reduced-motion: pulse instead of spin. */
+/* Respect reduced-motion.
+   This block previously covered exactly one animation — the engine spinner — while the
+   section fade-ins, the chevron rotation and the switch-knob slide all kept moving.
+   Movement is the trigger, so transform/translate transitions and keyframe animations are
+   flattened wholesale; colour and shadow transitions are left alone because they do not
+   move anything and removing them would make the UI feel broken rather than calmer.
+   0.01ms rather than 0s so transitionend/animationend still fire for anything that
+   listens for them. */
 @media (prefers-reduced-motion: reduce) {
-  .engine-spinner { animation: engine-pulse 1.4s ease-in-out infinite; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-property: color, background-color, background, border-color, box-shadow, opacity !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+  /* The spinner still needs to read as "working", so it pulses in place instead. */
+  .engine-spinner {
+    animation: engine-pulse 1.4s ease-in-out infinite !important;
+    animation-duration: 1.4s !important;
+    animation-iteration-count: infinite !important;
+  }
   @keyframes engine-pulse { 50% { opacity: 0.35; } }
 }
 

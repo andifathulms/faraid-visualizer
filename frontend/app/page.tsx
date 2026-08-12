@@ -215,7 +215,11 @@ export default function Home() {
   function scrollToResult() {
     if (typeof window === "undefined" || window.innerWidth > STACKED_BREAKPOINT) return;
     // Stacked layout: the result sits below the whole form, so bring it into view.
-    requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    // Smooth scrolling is a common vestibular trigger, and this one was unconditional.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(() =>
+      resultRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" })
+    );
   }
 
   // Start downloading the WebAssembly engine immediately. Entering heirs takes far
