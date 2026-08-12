@@ -47,12 +47,10 @@ def compute_asabah(
 
     # Priority-ordered candidate resolution -------------------------------------
     if present[R.SON] > 0:
-        _assign_bi_ghairihi(awards, R.SON, present[R.SON], R.DAUGHTER, present[R.DAUGHTER], residue, src, steps,
-                            "Anak laki-laki menjadi asabah; sisa dibagi 2:1 dengan anak perempuan.")
+        _assign_bi_ghairihi(awards, R.SON, present[R.SON], R.DAUGHTER, present[R.DAUGHTER], residue, src, steps)
     elif present[R.GRANDSON_VIA_SON] > 0:
         _assign_bi_ghairihi(awards, R.GRANDSON_VIA_SON, present[R.GRANDSON_VIA_SON],
-                            R.GRANDDAUGHTER_VIA_SON, present[R.GRANDDAUGHTER_VIA_SON], residue, src, steps,
-                            "Cucu laki-laki menjadi asabah; sisa dibagi 2:1 dengan cucu perempuan.")
+                            R.GRANDDAUGHTER_VIA_SON, present[R.GRANDDAUGHTER_VIA_SON], residue, src, steps)
     elif present[R.FATHER] > 0:
         _assign_ascendant_residue(awards, R.FATHER, residue, config.source_for("father"), steps,
                                   "Ayah mengambil sisa sebagai asabah.")
@@ -61,8 +59,8 @@ def compute_asabah(
                                   "Kakek mengambil sisa sebagai asabah (menggantikan posisi ayah).")
     elif present[R.FULL_BROTHER] > 0:
         _assign_bi_ghairihi(awards, R.FULL_BROTHER, present[R.FULL_BROTHER],
-                            R.FULL_SISTER, present[R.FULL_SISTER], residue, config.source_for("full_sibling"), steps,
-                            "Saudara laki-laki kandung menjadi asabah; sisa dibagi 2:1 dengan saudari kandung.")
+                            R.FULL_SISTER, present[R.FULL_SISTER], residue,
+                            config.source_for("full_sibling"), steps)
     elif present[R.FULL_SISTER] > 0 and female_desc:
         _assign_maa_ghairihi(awards, R.FULL_SISTER, present[R.FULL_SISTER], residue,
                             config.source_for("full_sibling"), steps,
@@ -70,8 +68,8 @@ def compute_asabah(
                             "mengambil seluruh sisa.")
     elif present[R.PATERNAL_BROTHER] > 0:
         _assign_bi_ghairihi(awards, R.PATERNAL_BROTHER, present[R.PATERNAL_BROTHER],
-                            R.PATERNAL_SISTER, present[R.PATERNAL_SISTER], residue, config.source_for("paternal_sibling"), steps,
-                            "Saudara laki-laki seayah menjadi asabah; sisa dibagi 2:1 dengan saudari seayah.")
+                            R.PATERNAL_SISTER, present[R.PATERNAL_SISTER], residue,
+                            config.source_for("paternal_sibling"), steps)
     elif present[R.PATERNAL_SISTER] > 0 and female_desc:
         _assign_maa_ghairihi(awards, R.PATERNAL_SISTER, present[R.PATERNAL_SISTER], residue,
                             config.source_for("paternal_sibling"), steps,
@@ -88,12 +86,44 @@ def _frac(f: Fraction) -> str:
 
 def _assign_bi_ghairihi(
     awards: list[Award], male_rel: Relation, males: int, female_rel: Relation, females: int,
-    residue: Fraction, source: str, steps: list[DerivationStep], reason: str,
+    residue: Fraction, source: str, steps: list[DerivationStep],
 ) -> None:
-    """Distribute residue among males (2 shares each) and females (1 share each)."""
+    """Distribute residue among males (2 shares each) and females (1 share each).
+
+    The reason is BUILT from the counts actually present rather than passed in as a fixed
+    sentence. It used to be fixed, so a case with one son and no daughters was explained
+    as "sisa dibagi 2:1 dengan anak perempuan" — a 2:1 split with someone who is not in
+    the case. The share was right and the sentence describing it was false, which in a
+    tool whose whole claim is that the reasoning can be followed is the worse failure.
+
+    The head count is spelled out for the same reason: "2:1" states a ratio, and the
+    reader still has to work out where 3/5 came from. ``2 laki-laki × 2 + 1 perempuan = 5
+    bagian`` is the missing line.
+    """
     units = 2 * males + females
     unit = residue / units
     male_share = unit * 2 * males
+
+    if females > 0:
+        reason = (
+            f"{male_rel.display} menjadi asabah dan mengambil sisa bersama "
+            f"{female_rel.display}, dibagi 2:1 (laki-laki dua bagian, perempuan satu). "
+            f"Sisa {_frac(residue)} dibagi {units} bagian "
+            f"({males}×2 + {females}×1); {male_rel.display} mengambil {2 * males} bagian."
+        )
+        female_reason = (
+            f"{female_rel.display} menjadi asabah bi ghairihi — yaitu menjadi ahli waris "
+            f"sisa karena hadirnya {male_rel.display} — dan mengambil {females} dari "
+            f"{units} bagian sisa."
+        )
+    else:
+        reason = (
+            f"{male_rel.display} menjadi asabah dan mengambil SELURUH sisa "
+            f"({_frac(residue)}), karena tidak ada ahli waris sisa lain pada tingkat ini"
+            + (f", dibagi rata di antara {males} orang." if males > 1 else ".")
+        )
+        female_reason = ""
+
     awards.append(
         Award(
             relation=male_rel, count=males, share=male_share, category=ShareCategory.ASABAH,
@@ -106,12 +136,14 @@ def _assign_bi_ghairihi(
             Award(
                 relation=female_rel, count=females, share=unit * females, category=ShareCategory.ASABAH,
                 rule_applied=f"asabah:bi_ghairihi:{female_rel.value}",
-                reason=f"Menjadi asabah bi ghairihi (2:1) bersama {male_rel.label_id}.",
+                reason=female_reason,
                 source_id=source, asabah_type=AsabahType.BIGHAIRIHI,
             )
         )
     steps.append(DerivationStep(step="asabah", title="Pembagian sisa (asabah)",
-                                detail=f"{reason} Sisa {_frac(residue)}.", source_id=source))
+                                detail=reason, source_id=source,
+                                data={"residue": _frac(residue), "units": units,
+                                      "males": males, "females": females}))
 
 
 def _assign_maa_ghairihi(

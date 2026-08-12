@@ -57,7 +57,7 @@ def derive(heirs: Heirs, config: RuleSetConfig) -> DeriveResult:
             title="Penghalangan (hajb)",
             detail=(
                 "Ahli waris yang terhalang: "
-                + (", ".join(f"{b.relation.label_id} (oleh {b.blocked_by.label_id})" for b in blocked)
+                + (", ".join(f"{b.relation.display} (terhalang oleh {b.blocked_by.display})" for b in blocked)
                    if blocked else "tidak ada.")
             ),
             data={"blocked": [b.relation.value for b in blocked]},

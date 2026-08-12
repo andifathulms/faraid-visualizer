@@ -65,6 +65,36 @@ class Relation(str, Enum):
             Relation.MATERNAL_SIBLING: "saudara_seibu",
         }[self]
 
+    @property
+    def display(self) -> str:
+        """Bahasa Indonesia display name.
+
+        The engine's derivation prose is authoritative Indonesian (PRD §7), so it needs
+        the words and not just the key — several rules previously interpolated
+        ``label_id`` into a user-facing sentence and rendered "bersama anak_laki".
+
+        ``faraid_web.labels.RELATION_LABELS["id"]`` holds the same names for the UI and
+        must agree with these; a test asserts it, so the two cannot drift.
+        """
+        return {
+            Relation.HUSBAND: "Suami",
+            Relation.WIFE: "Istri",
+            Relation.SON: "Anak laki-laki",
+            Relation.DAUGHTER: "Anak perempuan",
+            Relation.FATHER: "Ayah",
+            Relation.MOTHER: "Ibu",
+            Relation.PATERNAL_GRANDFATHER: "Kakek (dari ayah)",
+            Relation.PATERNAL_GRANDMOTHER: "Nenek (dari ayah)",
+            Relation.MATERNAL_GRANDMOTHER: "Nenek (dari ibu)",
+            Relation.GRANDSON_VIA_SON: "Cucu laki-laki (dari anak laki)",
+            Relation.GRANDDAUGHTER_VIA_SON: "Cucu perempuan (dari anak laki)",
+            Relation.FULL_BROTHER: "Saudara laki-laki kandung",
+            Relation.FULL_SISTER: "Saudari kandung",
+            Relation.PATERNAL_BROTHER: "Saudara laki-laki seayah",
+            Relation.PATERNAL_SISTER: "Saudari seayah",
+            Relation.MATERNAL_SIBLING: "Saudara/i seibu",
+        }[self]
+
 
 @dataclass(frozen=True)
 class Representative:
