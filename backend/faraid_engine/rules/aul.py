@@ -33,14 +33,33 @@ def apply_aul(
     If shares do not exceed 1, ``aul_base`` is ``None`` and the awards are unchanged.
     """
     total = sum((a.share for a in awards), Fraction(0))
-    base = 1
+
+    # Group awards that hold ONE collective furud between them (see Award.aul_group).
+    # The pokok masalah is the LCM of the denominators of the shares the RULES assign —
+    # the grandmothers' 1/6 — not of the halves that 1/6 is displayed as. Splitting first
+    # made the base 12 instead of 6 and produced ratios like 12->14, which the guard below
+    # correctly rejected as impossible 'aul cases.
+    groups: list[list[Award]] = []
+    by_key: dict[str, list[Award]] = {}
     for a in awards:
-        base = _lcm(base, a.share.denominator)
+        if a.aul_group is None:
+            groups.append([a])
+            continue
+        if a.aul_group not in by_key:
+            by_key[a.aul_group] = []
+            groups.append(by_key[a.aul_group])
+        by_key[a.aul_group].append(a)
+
+    totals = [sum((a.share for a in g), Fraction(0)) for g in groups]
+
+    base = 1
+    for t in totals:
+        base = _lcm(base, t.denominator)
 
     if total <= 1:
         return awards, base, None, None
 
-    numerators = [a.share.numerator * (base // a.share.denominator) for a in awards]
+    numerators = [t.numerator * (base // t.denominator) for t in totals]
     aul_base = sum(numerators)
 
     if base not in VALID_AUL or aul_base not in VALID_AUL[base]:
@@ -49,10 +68,15 @@ def apply_aul(
             f"{VALID_AUL}; reaching anything else indicates a rule bug, not a new case."
         )
 
-    for a, n in zip(awards, numerators):
-        a.share = Fraction(n, aul_base)
-        a.reason += f" (dikurangi proporsional karena 'aul: {base}→{aul_base})."
-        a.rule_applied += f"|aul:{base}->{aul_base}"
+    for group, t, n in zip(groups, totals, numerators):
+        # The group holds n siham over the raised base; members keep the proportion they
+        # had within the group, so a collective 1/6 shared by two grandmothers becomes a
+        # collective 1/7 shared the same way.
+        group_share = Fraction(n, aul_base)
+        for a in group:
+            a.share = group_share * (a.share / t) if len(group) > 1 else group_share
+            a.reason += f" (dikurangi proporsional karena 'aul: {base}→{aul_base})."
+            a.rule_applied += f"|aul:{base}->{aul_base}"
 
     step = DerivationStep(
         step="aul",

@@ -26,6 +26,17 @@ class Award:
     reason: str
     source_id: str
     asabah_type: AsabahType | None = None
+    #: Awards that hold ONE collective furud between them, split for display only.
+    #:
+    #: The grandmothers are the only such case: al-jaddat take 1/6 together and divide it
+    #: equally, but they are two distinct Relations because hajb treats them differently —
+    #: a surviving father blocks the paternal grandmother and not the maternal one, so
+    #: they cannot be merged into a single row.
+    #:
+    #: 'Aul must reason about the 1/6, not about the halves. Splitting first made the
+    #: pokok masalah 12 instead of 6 and produced bases like 12->14 that the validity
+    #: guard correctly rejected. Tagging the pair lets apply_aul regroup them.
+    aul_group: str | None = None
 
     def to_heir_share(self) -> HeirShare:
         per_head = self.share / self.count if self.count else self.share

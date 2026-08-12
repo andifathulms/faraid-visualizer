@@ -221,6 +221,9 @@ def compute_furud(
                     share=each,
                     category=ShareCategory.FURUD,
                     rule_applied=f"furud:grandmother:{_frac(each)}",
+                    # The 1/6 is collective; `each` is only how it is displayed. See
+                    # Award.aul_group — 'aul has to see the 1/6.
+                    aul_group="grandmother" if len(gm_present) > 1 else None,
                     reason=(
                         "Nenek mendapat 1/6."
                         if len(gm_present) == 1
