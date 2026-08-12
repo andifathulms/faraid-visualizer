@@ -191,6 +191,8 @@ class CompareEndpointTests(APITestCase):
 
 class SourcesEndpointTests(APITestCase):
     def test_sources_listed(self):
+        """35 = 34 cited by rules + KHI Pasal 209, cited by a documented coverage gap
+        rather than by a rule (faraid_engine.coverage)."""
         res = self.client.get("/api/sources/")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.json()["count"], 34)
+        self.assertEqual(res.json()["count"], 35)
