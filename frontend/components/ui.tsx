@@ -82,6 +82,7 @@ export function Segmented<T extends string>({
 export function NumberStepper({
   label, value, onChange, max,
 }: { label: string; value: number; onChange: (n: number) => void; max?: number }) {
+  const { t } = useI18n();
   const v = value ?? 0;
   const id = useId();
   return (
@@ -91,7 +92,11 @@ export function NumberStepper({
           with no way to tell sons from paternal sisters. */}
       <label className="field-label" htmlFor={id}>{label}</label>
       <div className="stepper">
-        <button type="button" aria-label="minus" disabled={v <= 0} onClick={() => onChange(Math.max(0, v - 1))}>
+        {/* Named by what they do and to WHICH field. "minus"/"plus" named the glyph, and
+            with ten steppers on the form a screen reader read out twenty identical
+            buttons. */}
+        <button type="button" aria-label={`${t("stepper_less")} ${label}`}
+          disabled={v <= 0} onClick={() => onChange(Math.max(0, v - 1))}>
           <Icon name="minus" size={16} />
         </button>
         <input id={id} type="number" min={0} max={max} value={v}
@@ -101,7 +106,8 @@ export function NumberStepper({
             if (max != null) n = Math.min(max, n);
             onChange(n);
           }} />
-        <button type="button" aria-label="plus" disabled={max != null && v >= max} onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}>
+        <button type="button" aria-label={`${t("stepper_more")} ${label}`}
+          disabled={max != null && v >= max} onClick={() => onChange(max != null ? Math.min(max, v + 1) : v + 1)}>
           <Icon name="plus" size={16} />
         </button>
       </div>

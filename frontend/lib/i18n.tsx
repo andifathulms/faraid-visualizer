@@ -83,6 +83,11 @@ export const STRINGS: Dict = {
     en: "Edit it to match your situation, or press “New case” to start empty.",
   },
 
+  // Stepper button names. Prefixed to the field label so each of the twenty buttons on
+  // the form says which count it changes, rather than naming its own glyph.
+  stepper_more: { id: "Tambah", en: "Add" },
+  stepper_less: { id: "Kurangi", en: "Remove" },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },
