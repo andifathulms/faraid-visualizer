@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import {
   calculate,
@@ -97,6 +97,7 @@ export default function Home() {
   const [exportingPdf, setExportingPdf] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const rulesetId = useId();
   const resultRef = useRef<HTMLElement | null>(null);
   const hasResult = !!result || !!comparison;
 
@@ -372,8 +373,11 @@ export default function Home() {
               <div className="divider" />
 
               <div className="field">
-                <span className="field-label">{t("legal_basis")}</span>
+                {/* A real <label>, not a styled span: the AX tree reported this — the most
+                    consequential control in the app — as an UNNAMED combobox. */}
+                <label className="field-label" htmlFor={rulesetId}>{t("legal_basis")}</label>
                 <select
+                  id={rulesetId}
                   value={ruleset}
                   onChange={(e) => {
                     const r = e.target.value as Ruleset;
