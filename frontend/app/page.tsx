@@ -21,6 +21,7 @@ import ResultView, { InputSummary } from "@/components/ResultView";
 import DerivationFlow from "@/components/DerivationFlow";
 import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
+import DivergenceNotice from "@/components/DivergenceNotice";
 import EngineStatus from "@/components/EngineStatus";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
@@ -480,6 +481,17 @@ export default function Home() {
               <div className="card-pad">
                 {calculatedHeirs && (
                   <div style={{ marginBottom: "var(--sp-4)" }}><InputSummary heirs={calculatedHeirs} /></div>
+                )}
+                {/* Sits above the shares, not below them: a user who learns only after
+                    reading the answer that another school divides differently has already
+                    formed the view the notice exists to qualify. */}
+                {result.divergence && (
+                  <div style={{ marginBottom: "var(--sp-4)" }}>
+                    <DivergenceNotice
+                      divergence={result.divergence}
+                      onCompare={() => setCompareMode(true)}
+                    />
+                  </div>
                 )}
                 {view === "table" ? (
                   <ResultView result={result} />

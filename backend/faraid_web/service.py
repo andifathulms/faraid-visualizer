@@ -16,6 +16,7 @@ from faraid_engine import Ruleset, UnsupportedConfiguration, calculate
 from faraid_engine.exceptions import InvalidHeirInput
 from faraid_engine.sources import all_sources
 
+from .divergence import detect_divergence
 from .serialize import serialize_result
 from .validate import InvalidInput, build_input, validate_payload
 
@@ -23,10 +24,20 @@ DEFAULT_COMPARISON = (Ruleset.KHI.value, Ruleset.SYAFII.value)
 
 
 def calculate_payload(payload: object, *, mode_override: str | None = None) -> dict:
-    """Validate, calculate, and serialize the full derivation for one rule set."""
+    """Validate, calculate, and serialize the full derivation for one rule set.
+
+    Also runs the counterpart Tier-1 rule set to detect whether the two diverge on this
+    case (PRD §4.1). The extra run is a second pass over the same pure functions — the
+    engine has no I/O — and it is what stops a user on the KHI default from silently
+    never learning that classical Syafi'i divides their family differently.
+    """
     data = validate_payload(payload)
     result = calculate(build_input(data, mode_override=mode_override))
-    return serialize_result(result, data["lang"])
+    out = serialize_result(result, data["lang"])
+    out["divergence"] = detect_divergence(
+        data, result, mode_override=mode_override, lang=data["lang"]
+    )
+    return out
 
 
 def compare_payload(

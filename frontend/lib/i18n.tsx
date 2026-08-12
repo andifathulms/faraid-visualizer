@@ -253,6 +253,37 @@ export const STRINGS: Dict = {
   th_amount: { id: "Jumlah", en: "Amount" },
   why: { id: "kenapa?", en: "why?" },
   hide: { id: "sembunyikan", en: "hide" },
+  // Divergence notice. Worded so "they differ" reads as a fact about the two bodies of
+  // law, never as the tool being unsure of its own arithmetic — both answers are exact,
+  // and the point of PRD §4.1 is that there is no single "Islamic answer" to state.
+  divergence_differs_title: {
+    id: "Menurut {other}, pembagiannya berbeda",
+    en: "Under {other}, this divides differently",
+  },
+  divergence_differs_body: {
+    id: "Kasus ini termasuk yang membedakan {this} dan {other}. Keduanya dihitung pasti dan dirujuk — yang berbeda adalah kaidahnya, bukan ketelitiannya.",
+    en: "This case is one where {this} and {other} part ways. Both are computed exactly and cited — what differs is the rule, not the precision.",
+  },
+  divergence_unsupported_title: {
+    id: "{other} tidak dapat menyelesaikan kasus ini",
+    en: "{other} cannot resolve this case",
+  },
+  divergence_unsupported_body: {
+    id: "Mesin perhitungan menolak menebak untuk {other}, sehingga pembagian ini hanya berlaku menurut {this}.",
+    en: "The engine refuses to guess under {other}, so this division holds under {this} only.",
+  },
+  divergence_hb_title: {
+    id: "Pecahan sama, nominal berbeda",
+    en: "Same fractions, different amounts",
+  },
+  divergence_hb_body: {
+    id: "Pecahan bagiannya identik dengan {other}. Namun {this} memisahkan separuh harta bersama sebelum faraid, dan konsep itu tidak ada dalam fiqh klasik — sehingga nominal rupiahnya tetap berbeda.",
+    en: "The fractions are identical to {other}. But {this} separates half the joint marital property before faraid, and classical fiqh has no such step — so the rupiah amounts still differ.",
+  },
+  divergence_see: { id: "Lihat berdampingan", en: "See side by side" },
+  divergence_th_this: { id: "Menurut {rs}", en: "Under {rs}" },
+  divergence_none: { id: "tidak mewarisi", en: "does not inherit" },
+
   // Siham working. The app already showed "pokok masalah 12" as a badge, which is the one
   // form of a faraid result a trained user does NOT verify against — what they check is
   // the siham column and its sum against the base. Professional mode only: it is the

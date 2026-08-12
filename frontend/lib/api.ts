@@ -140,6 +140,30 @@ export interface Working {
   balanced: boolean;
 }
 
+/**
+ * Whether the counterpart Tier-1 rule set divides this case differently (PRD §4.1).
+ * Mirrors backend/faraid_web/divergence.py. Null for Beta rule sets, which have no
+ * designated counterpart.
+ */
+export interface Divergence {
+  ruleset: Ruleset;
+  ruleset_label: string;
+  counterpart: Ruleset;
+  counterpart_label: string;
+  /** "unsupported" = the counterpart refuses the configuration, which is itself an answer. */
+  status: "same" | "differs" | "unsupported";
+  detail?: string;
+  /** Fractions match, but KHI separates joint property first, so the amounts cannot. */
+  harta_bersama_only?: boolean;
+  rows: {
+    relation: string;
+    label_id: string;
+    label: string;
+    this: { numerator: number; denominator: number; text: string } | null;
+    other: { numerator: number; denominator: number; text: string } | null;
+  }[];
+}
+
 export interface EstateBreakdown {
   gross_value: string;
   funeral_costs: string;
@@ -162,6 +186,8 @@ export interface CalculationResult {
    * no table" — never "render zeroes". See backend/faraid_web/working.py.
    */
   working: Working | null;
+  /** Present on a single calculation; absent inside a comparison entry, which IS one. */
+  divergence?: Divergence | null;
   estate: EstateBreakdown | null;
   shares: Share[];
   blocked: Blocked[];

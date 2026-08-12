@@ -858,6 +858,60 @@ select {
 .tl-title { font-weight: 600; font-size: var(--fs-sm); }
 .tl-detail { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--sp-05); }
 
+/* --------------------------------------------------------- Divergence notice
+   Deliberately NOT the warning or error treatment. Both rule sets computed an exact,
+   cited answer — the disagreement is between two bodies of law, and dressing that as a
+   fault would teach the user to distrust the one thing telling them the truth. Reads as
+   a neighbouring fact: informational tint, the citation gold reserved for the rail. */
+.divergence {
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  background: var(--gold-soft);
+  padding: var(--sp-3) var(--sp-4);
+}
+.divergence-head { display: flex; align-items: flex-start; gap: var(--sp-3); flex-wrap: wrap; }
+.divergence-head .c-ico { flex: none; margin-top: var(--sp-05); color: var(--gold); }
+.divergence-copy { flex: 1; min-width: 220px; }
+.divergence-copy strong { display: block; font-size: var(--fs-sm); }
+.divergence-copy p {
+  margin-top: var(--sp-05);
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+}
+.divergence-head .btn-sm { flex: none; }
+
+.divergence-rows {
+  display: flex; flex-direction: column; gap: var(--sp-15);
+  margin-top: var(--sp-3);
+}
+.divergence-row {
+  display: grid; grid-template-columns: 1fr auto auto; gap: var(--sp-2) var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.divergence-row .dv-name { font-size: var(--fs-sm); font-weight: 600; }
+.divergence-row .dv-val {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.divergence-row .dv-rs { font-size: var(--fs-2xs); color: var(--text-faint); white-space: nowrap; }
+.divergence-row .dv-val b { font-size: var(--fs-sm); }
+
+.divergence-detail {
+  margin-top: var(--sp-2); padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-xs); background: var(--surface); border: 1px solid var(--border);
+  font-size: var(--fs-2xs); color: var(--text-muted);
+  white-space: pre-wrap; word-break: break-word;
+}
+
+@media (max-width: 560px) {
+  .divergence-row { grid-template-columns: 1fr; }
+  .divergence-row .dv-val { align-items: flex-start; flex-direction: row; gap: var(--sp-2); }
+}
+
 /* ------------------------------------------------------------ Siham working
    The tabular form a practitioner checks a hand calculation against. Figures are
    tabular-nums throughout so the siham column reads as a column — the sum against
