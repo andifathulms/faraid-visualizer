@@ -109,6 +109,17 @@ export const STRINGS: Dict = {
     en: "This diagram restates the Table view visually. To read the same content as text, switch to the Table view.",
   },
 
+  // Personal-mode pipeline disclosure. PRD §3 asks Personal for a simplified derivation
+  // view; it was shipping no derivation view at all.
+  pipeline_toggle: {
+    id: "Lihat langkah-langkah perhitungannya",
+    en: "See the steps this went through",
+  },
+  pipeline_lede: {
+    id: "Urutan ini tidak boleh dibalik: kewajiban atas harta diselesaikan lebih dulu, lalu ditentukan siapa yang terhalang, baru bagian tetap dan sisanya dibagi.",
+    en: "The order is fixed: obligations on the estate are settled first, then who is blocked is determined, and only then are the fixed shares and the residue divided.",
+  },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },

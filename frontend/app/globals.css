@@ -1447,3 +1447,23 @@ select {
    finding rather than repeating it. */
 .sens-grouped { align-items: flex-start; }
 .sens-grouped .sens-verdict { flex-basis: 100%; color: var(--text-faint); }
+
+/* ------------------------------------------------- Plain-language pipeline
+   Personal mode's view of the derivation. Deliberately a narrative list rather than the
+   Professional timeline's rail: the point is that the chain can be read, not that every
+   intermediate value is auditable. */
+.plain-pipeline { margin-top: var(--sp-1); }
+.pipeline-lede {
+  margin: var(--sp-2) 0;
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+}
+.pipeline-list {
+  margin: 0; padding-left: var(--sp-5);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+}
+.pipeline-list li { font-size: var(--fs-sm); }
+.pipeline-list .pl-title { font-weight: 600; display: block; }
+.pipeline-list .pl-detail {
+  display: block; margin-top: var(--sp-05);
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+}

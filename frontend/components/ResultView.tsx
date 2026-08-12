@@ -113,6 +113,54 @@ function RoundingNote({ result }: { result: CalculationResult }) {
 }
 
 /**
+ * The ordered pipeline, in plain language, for Personal mode.
+ *
+ * Professional mode gets the full timeline with every intermediate value. Personal mode
+ * previously got nothing at all — so the audience PRD §1 is actually written about (a
+ * family who has to bring a number back to relatives who will contest it) saw only the
+ * answer. This is the same steps the engine emitted, rendered as a short numbered
+ * narrative with each step's citations attached, so the chain is followable without
+ * becoming a spreadsheet.
+ */
+function PlainPipeline({ result }: { result: CalculationResult }) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  if (result.steps.length === 0) return null;
+
+  return (
+    <div className="plain-pipeline">
+      <button
+        className="coverage-toggle"
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <Icon name="chevron" size={14} className={open ? "rot" : undefined} />
+        {t("pipeline_toggle")}
+      </button>
+      {open && (
+        <>
+          <p className="pipeline-lede">{t("pipeline_lede")}</p>
+          <ol className="pipeline-list">
+            {result.steps.map((st, i) => (
+              <li key={i}>
+                <span className="pl-title">
+                  {st.title}
+                  {stepSources(st).map((sid) => (
+                    <Citation key={sid} id={sid} sources={result.sources} />
+                  ))}
+                </span>
+                {st.detail && <span className="pl-detail">{st.detail}</span>}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
  * The pokok masalah as working rather than as a label.
  *
  * A list of fractions and a badge reading "pokok masalah 6" is the one representation of
@@ -306,7 +354,13 @@ export default function ResultView({ result }: { result: CalculationResult }) {
           ))}
           {awarded.map((s, i) => (
             <ShareItem key={i} share={s} color={colorFor(i)} sources={result.sources}
-              defaultOpen={professional} showMoney={showMoney} moneyFirst={!professional} />
+              /* Personal mode opens the FIRST heir's reasoning. Collapsing every one of
+                 them left a family with three names, three fractions and a disclaimer —
+                 the black box PRD §1 says already exists and fails. One open row shows
+                 that the reasoning is there and what it looks like; the rest stay
+                 collapsed, which is the simplification PRD §3 actually asks for. */
+              defaultOpen={professional || i === 0}
+              showMoney={showMoney} moneyFirst={!professional} />
           ))}
         </div>
         {showMoney && <RoundingNote result={result} />}
@@ -329,6 +383,11 @@ export default function ResultView({ result }: { result: CalculationResult }) {
           </div>
         </div>
       )}
+
+      {/* The pipeline, for the mode that is NOT shown the timeline. Which rules ran, in
+          order, with the citation each one applied — the derivation as a short narrative
+          rather than a table of intermediate values. */}
+      {!professional && <PlainPipeline result={result} />}
 
       {professional && (
         <div>
