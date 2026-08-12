@@ -42,7 +42,7 @@ export default function WorkedExample() {
 
   return (
     <section className="worked" aria-labelledby="worked-heading">
-      <h3 id="worked-heading">{t("we_heading")}</h3>
+      <h2 id="worked-heading">{t("we_heading")}</h2>
       <p className="worked-lede">{t("we_lede")}</p>
 
       <ol className="worked-stages">

@@ -1462,7 +1462,7 @@ select {
    prose with numbers in it, not as a result card — a result card here would be one more
    thing to mistake for an answer. */
 .worked { padding: var(--sp-5); text-align: left; }
-.worked h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-lg); }
+.worked h2 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-lg); }
 .worked-lede {
   margin-top: var(--sp-2);
   font-size: var(--fs-sm); line-height: var(--lh-snug); color: var(--text-muted);

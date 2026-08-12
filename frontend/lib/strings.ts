@@ -24,12 +24,15 @@ export const STRINGS: Dict = {
   // The three points below answer, in order, the three objections a stranger has to any
   // calculator that touches money and religion: is it a black box, on whose authority,
   // and where does my family's data go.
+  // Leads with the phrase people actually search ("kalkulator waris Islam"), then the
+  // differentiator. The previous wording opened with the verb "Hitung", which reads fine
+  // but matches nothing anyone types. Same promise, same length on screen.
   hero_title: {
-    id: "Hitung pembagian waris Islam — lengkap dengan alasan dan rujukannya",
-    en: "Work out an Islamic inheritance — with the reasoning and the sources",
+    id: "Kalkulator waris Islam (faraid) — lengkap dengan alasan dan rujukannya",
+    en: "Islamic inheritance calculator (faraid) — with the reasoning and the sources",
   },
   hero_lede: {
-    id: "Bukan sekadar angka. Setiap bagian ditelusuri langkah demi langkah, dan setiap kaidah yang dipakai disertai rujukan ke Qur'an, hadits, atau Kompilasi Hukum Islam.",
+    id: "Cara menghitung pembagian harta warisan menurut Islam, langkah demi langkah. Bukan sekadar angka: setiap bagian ditelusuri, dan setiap kaidah yang dipakai disertai rujukan ke Qur'an, hadits, atau Kompilasi Hukum Islam (KHI).",
     en: "Not just a number. Every share is traced step by step, and every rule applied carries a citation to the Qur'an, hadith, or Indonesian Islamic law (KHI).",
   },
   hero_pt_reasoning: { id: "Penurunan langkah demi langkah", en: "Step-by-step derivation" },
