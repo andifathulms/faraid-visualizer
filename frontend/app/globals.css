@@ -326,7 +326,7 @@ a { color: var(--primary); }
 .hero {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: var(--sp-10) var(--sp-6) 0;
+  padding: var(--sp-6) var(--sp-6) 0;
 }
 .hero-inner { max-width: 62ch; }
 .hero-title {
@@ -364,10 +364,15 @@ a { color: var(--primary); }
 }
 .hero-points svg { color: var(--primary); flex: none; }
 
-@media (max-width: 940px) {
-  .hero { padding-top: var(--sp-6); }
+/* The hero must not push the primary action below the fold on the commonest laptop
+   height. 1200px is where the two-pane layout still holds but the vertical budget stops
+   affording a 36px headline plus a lede plus a points row. */
+@media (max-width: 1200px), (max-height: 900px) {
   .hero-title { font-size: var(--fs-2xl); }
   .hero-lede { font-size: var(--fs-base); }
+}
+@media (max-width: 940px) {
+  .hero { padding-top: var(--sp-5); }
 }
 @media (max-width: 420px) {
   .hero { padding-left: var(--sp-3); padding-right: var(--sp-3); }
