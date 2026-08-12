@@ -26,6 +26,7 @@ import DivergenceNotice from "@/components/DivergenceNotice";
 import EngineStatus from "@/components/EngineStatus";
 import ResultAnnouncer from "@/components/ResultAnnouncer";
 import SensitivityPanel from "@/components/SensitivityPanel";
+import WorkedExample, { EXAMPLE_CASE } from "@/components/WorkedExample";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
@@ -45,8 +46,15 @@ const HOME_HREF = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/`;
 /** Brand mark. Plain <img>, so the basePath is applied by hand as above. */
 const BRAND_ICON = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/brand/faraidvisualizer-icon.svg`;
 
-/** Seed case shown on a first visit — a worked example, not the user's data. */
-const SEED_HEIRS: HeirsInput = { husband: true, sons: 2, daughters: 1 };
+/**
+ * Seed case shown on a first visit — a worked example, not the user's data.
+ *
+ * The estate is seeded too, and deliberately matches components/WorkedExample: reading
+ * the example and pressing Calculate must produce the same figures, or the example is
+ * teaching something the app does not do.
+ */
+const SEED_HEIRS: HeirsInput = EXAMPLE_CASE.heirs;
+const SEED_ESTATE: EstateInput = EXAMPLE_CASE.estate ?? {};
 
 /**
  * Whether the form still holds the untouched seed case, so it can be labelled as the
@@ -82,7 +90,7 @@ export default function Home() {
   const [mode, setMode] = useState<Mode>("personal");
   const [ruleset, setRuleset] = useState<Ruleset>("khi");
   const [heirs, setHeirs] = useState<HeirsInput>(SEED_HEIRS);
-  const [estate, setEstate] = useState<EstateInput>({});
+  const [estate, setEstate] = useState<EstateInput>(SEED_ESTATE);
   const [hartaBersama, setHartaBersama] = useState(false);
 
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -534,67 +542,10 @@ export default function Home() {
             </div>
           ) : (
             <div className="card">
-              <div className="empty-state">
-                <h3>{t("empty_title")}</h3>
-
-                {/* A static illustration of the result vocabulary, built from the same
-                    classes the real result uses so it is a true preview rather than an
-                    artist's impression. aria-hidden: a screen reader must not hear a
-                    result the user never asked for — the heading above and the caption
-                    below carry the meaning. Nothing here touches the engine. */}
-                <div className="preview-mock" aria-hidden="true">
-                  <div className="share-list">
-                    <div className="share-item">
-                      <div className="share-main">
-                        <span className="share-accent" style={{ background: "var(--heir-1)" }} />
-                        <div className="share-id">
-                          <span className="share-name">{t("preview_heir_husband")}</span>
-                          <span className="share-meta">
-                            <span className="chip chip-furud">{t("cat_furud")}</span>
-                            <span className="cite">QS 4:12</span>
-                          </span>
-                        </div>
-                        <div className="share-values">
-                          <span className="share-frac-lg">
-                            <span className="frac"><span className="n">1</span><span className="s">/</span><span className="d">4</span></span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="share-item">
-                      <div className="share-main">
-                        <span className="share-accent" style={{ background: "var(--heir-2)" }} />
-                        <div className="share-id">
-                          <span className="share-name">{t("preview_heir_sons")}</span>
-                          <span className="share-meta">
-                            <span className="chip chip-asabah">{t("cat_asabah")}</span>
-                            <span className="cite">QS 4:11</span>
-                          </span>
-                        </div>
-                        <div className="share-values">
-                          {/* "sisa" is a category word, not a value. In the fraction slot at
-                              fraction size it read as a quantity of the same rank as 1/4,
-                              teaching a vocabulary the real result does not use. */}
-                          <span className="share-residue">{t("preview_residue")}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="timeline preview-step">
-                    <div className="tl-item">
-                      <div className="tl-rail"><div className="tl-dot">3</div></div>
-                      <div className="tl-body">
-                        <div className="tl-title">{t("preview_step_title")}</div>
-                        <div className="tl-detail">{t("preview_step_detail")}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="preview-caption">{t("preview_caption")}</p>
-                <p>{t("empty_body")}</p>
-              </div>
+              {/* A newcomer's only route to understanding used to be: fill in a form about
+                  a dead relative, accept a disclaimer, read a result. This is a complete
+                  case they can follow first, with the form already holding it. */}
+              <WorkedExample />
             </div>
           )}
         </section>

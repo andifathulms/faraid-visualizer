@@ -854,9 +854,6 @@ select {
   font-size: var(--fs-md); font-weight: 700; color: var(--text); line-height: var(--lh-tight);
 }
 .share-values.money-first .share-frac-lg { font-size: var(--fs-sm); font-weight: 600; color: var(--text-muted); }
- /* A residue is named, not measured — so it sits at the secondary rank the real result
-    gives an asabah row's supporting text, never in the fraction rank. */
-.share-residue { font-size: var(--fs-sm); color: var(--text-muted); }
 .share-compact { font-size: var(--fs-2xs); color: var(--text-faint); font-variant-numeric: tabular-nums; }
 .share-perhead-amount { font-size: var(--fs-2xs); color: var(--text-faint); font-variant-numeric: tabular-nums; }
 
@@ -1166,42 +1163,7 @@ select {
   border-radius: var(--radius); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-sm);
 }
 
-/* Empty & loading states.
-   This pane is roughly 60% of the viewport on a first visit — the only surface with
-   enough room to SHOW what the tool produces. It used to spend that room on the brand
-   mark (its second appearance within 400px) and an instruction, so it demonstrated
-   nothing. It now carries a small worked sample instead. */
-.empty-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-  gap: var(--sp-3); padding: var(--sp-10) var(--sp-6); min-height: 380px;
-}
-.empty-state h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-lg); }
-/* The closing instruction is guidance, not the point of the panel — it must not outrank
-   the "this is a sample" caption, which is the line that must not be missed. */
-.empty-state p { color: var(--text-muted); max-width: 340px; font-size: var(--fs-sm); }
 
-/* The sample is built from the real .share-item / .timeline classes, so it stays a true
-   preview: restyling the result restyles this automatically and the two cannot drift.
-   Inert by construction — no hover, no pointer target, nothing to click. */
-.preview-mock {
-  width: 100%;
-  max-width: 420px;
-  margin-top: var(--sp-2);
-  text-align: left;
-  pointer-events: none;
-  user-select: none;
-}
-.preview-mock .share-item:hover { border-color: var(--border); box-shadow: none; }
-.preview-step { margin-top: var(--sp-3); }
-.preview-step .tl-body { padding-bottom: 0; }
-/* Sits between the sample and the instruction, quiet enough not to compete with either,
-   legible enough that "this is not your result" is never missed. */
-.preview-caption {
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--text-muted);
-}
-.empty-state .preview-caption { max-width: 420px; }
 
 .skeleton { background: linear-gradient(90deg, var(--surface-inset) 25%, var(--surface-2) 37%, var(--surface-inset) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius: var(--sp-2); }
 @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
@@ -1467,3 +1429,50 @@ select {
   display: block; margin-top: var(--sp-05);
   font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
 }
+
+/* --------------------------------------------------------- Worked example
+   The empty pane's job: teach the PROCESS before the user commits anything. Reads as
+   prose with numbers in it, not as a result card — a result card here would be one more
+   thing to mistake for an answer. */
+.worked { padding: var(--sp-5); text-align: left; }
+.worked h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-lg); }
+.worked-lede {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm); line-height: var(--lh-snug); color: var(--text-muted);
+}
+.worked-stages {
+  list-style: none; margin: var(--sp-5) 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: var(--sp-4);
+}
+.ws-head { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.ws-n {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--primary-soft); color: var(--primary);
+  font-size: var(--fs-2xs); font-weight: 700;
+}
+.ws-title { font-size: var(--fs-sm); font-weight: 700; }
+.ws-body {
+  margin-top: var(--sp-1); padding-left: calc(22px + var(--sp-2));
+  font-size: var(--fs-xs); line-height: var(--lh-body); color: var(--text-muted);
+}
+.worked-result {
+  margin-top: var(--sp-5); padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border); border-left: 3px solid var(--primary);
+  border-radius: var(--radius-xs); background: var(--surface-2);
+}
+.worked-result .wr-head {
+  font-size: var(--fs-2xs); font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--sp-2);
+}
+.worked-result ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.worked-result li {
+  display: flex; justify-content: space-between; gap: var(--sp-3);
+  font-size: var(--fs-sm); font-variant-numeric: tabular-nums;
+}
+.worked-result li span { color: var(--text-muted); }
+.worked-caveat, .worked-try {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
+}
+.worked-try { color: var(--text-muted); font-weight: 600; }

@@ -46,33 +46,7 @@ export const STRINGS: Dict = {
   form_title: { id: "Ahli waris & harta", en: "Heirs & estate" },
   mode_hint_personal: { id: "Bahasa sederhana dengan penjelasan “kenapa”.", en: "Plain language with why-explanations." },
   mode_hint_professional: { id: "Derivasi lengkap, rujukan, ekspor PDF.", en: "Full derivation, citations, PDF export." },
-  // The result pane is the largest thing on screen on a first visit. It used to say
-  // "Ready to calculate" and repeat an instruction the adjacent form already implies —
-  // procedure, in the one place with room to actually demonstrate the product. It now
-  // shows a small worked sample instead, and the instruction sits under it.
-  empty_title: { id: "Beginilah bentuk hasilnya", en: "This is what you'll get" },
-  // Layout-agnostic: the form sits beside the result on desktop but above it on mobile.
-  empty_body: { id: "Isi ahli waris dan harta peninggalan, lalu tekan Hitung untuk melihat pembagian beserta alasan dan rujukannya.", en: "Fill in the heirs and the estate, then press Calculate to see the shares with their reasoning and sources." },
 
-  // Sample shown in the empty result pane. Not engine output — a static illustration of
-  // the result vocabulary (category chip, fraction, gold citation chip, derivation step)
-  // so none of it is a cold read when the real result arrives. The figures are a real,
-  // correctly cited case (husband with children takes 1/4, QS 4:12; sons take the residue
-  // as asabah, QS 4:11), because an illustration of a fiqh tool must not show fiqh that
-  // is merely plausible. It is marked aria-hidden and captioned as a sample so it can
-  // never be mistaken for a calculation the user asked for.
-  preview_caption: {
-    id: "Contoh tampilan, bukan hasil perhitungan Anda.",
-    en: "A sample view, not your calculation.",
-  },
-  preview_heir_husband: { id: "Suami", en: "Husband" },
-  preview_heir_sons: { id: "Anak laki-laki", en: "Sons" },
-  preview_residue: { id: "sisa", en: "residue" },
-  preview_step_title: { id: "Bagian tetap (furud) ditetapkan", en: "Fixed shares (furud) assigned" },
-  preview_step_detail: {
-    id: "Suami mendapat 1/4 karena almarhumah meninggalkan anak.",
-    en: "The husband takes 1/4 because the deceased left children.",
-  },
   // The form arrives pre-filled with a worked example. Unlabelled, a first-time visitor
   // reads it as either someone else's saved data or data they are expected to correct —
   // both cost seconds and trust on a page about a family's money. Labelled, the same seed
@@ -118,6 +92,46 @@ export const STRINGS: Dict = {
   pipeline_lede: {
     id: "Urutan ini tidak boleh dibalik: kewajiban atas harta diselesaikan lebih dulu, lalu ditentukan siapa yang terhalang, baru bagian tetap dan sisanya dibagi.",
     en: "The order is fixed: obligations on the estate are settled first, then who is blocked is determined, and only then are the fixed shares and the residue divided.",
+  },
+
+  // The worked example. Real numbers, end to end, readable before touching a control —
+  // and the same case the form is pre-filled with, so pressing Calculate reproduces it.
+  we_heading: { id: "Satu contoh, dihitung sampai selesai", en: "One case, worked all the way through" },
+  we_lede: {
+    id: "Seorang suami, dua anak laki-laki, dan satu anak perempuan. Harta Rp 120.000.000 dengan utang Rp 20.000.000. Formulir di sebelah sudah berisi kasus ini.",
+    en: "A husband, two sons and one daughter. An estate of Rp 120,000,000 with Rp 20,000,000 of debt. The form beside this already holds this case.",
+  },
+  we_s1_title: { id: "Selesaikan dulu kewajiban atas harta", en: "Settle what the estate owes first" },
+  we_s1_body: {
+    id: "Rp 120.000.000 − utang Rp 20.000.000 = Rp 100.000.000. Inilah harta yang dibagi. Urutannya tetap: biaya pengurusan jenazah, utang, wasiat (maksimal 1/3), baru waris.",
+    en: "Rp 120,000,000 − Rp 20,000,000 of debt = Rp 100,000,000. That is the estate to divide. The order is fixed: funeral costs, debts, bequest (max 1/3), then inheritance.",
+  },
+  we_s2_title: { id: "Tentukan siapa yang terhalang (hajb)", en: "Work out who is blocked (hajb)" },
+  we_s2_body: {
+    id: "Tidak ada yang terhalang di sini. Bila almarhum meninggalkan saudara, anak laki-laki akan menghalangi mereka — saudara tidak mendapat apa pun selama ada anak laki-laki.",
+    en: "Nobody is blocked here. Had the deceased left siblings, a son would block them — siblings receive nothing while a son survives.",
+  },
+  we_s3_title: { id: "Berikan bagian tetap (furud)", en: "Assign the fixed shares (furud)" },
+  we_s3_body: {
+    id: "Suami mendapat 1/4 karena almarhumah meninggalkan anak (tanpa anak, bagiannya 1/2). 1/4 × Rp 100.000.000 = Rp 25.000.000.",
+    en: "The husband takes 1/4 because the deceased left children (without children it would be 1/2). 1/4 × Rp 100,000,000 = Rp 25,000,000.",
+  },
+  we_s4_title: { id: "Bagikan sisanya (asabah)", en: "Divide the residue (asabah)" },
+  we_s4_body: {
+    id: "Sisa 3/4 = Rp 75.000.000 dibagi kepada anak dengan perbandingan 2:1. Ada 2 anak laki-laki dan 1 anak perempuan, jadi 2×2 + 1×1 = 5 bagian. Setiap anak laki-laki mengambil 2 bagian (Rp 30.000.000), anak perempuan 1 bagian (Rp 15.000.000).",
+    en: "The residue 3/4 = Rp 75,000,000 goes to the children in a 2:1 ratio. Two sons and one daughter make 2×2 + 1×1 = 5 parts. Each son takes 2 parts (Rp 30,000,000), the daughter 1 part (Rp 15,000,000).",
+  },
+  we_result_title: { id: "Hasilnya", en: "The result" },
+  we_r_husband: { id: "Suami", en: "Husband" },
+  we_r_sons: { id: "2 anak laki-laki (Rp 30.000.000 masing-masing)", en: "2 sons (Rp 30,000,000 each)" },
+  we_r_daughter: { id: "1 anak perempuan", en: "1 daughter" },
+  we_caveat: {
+    id: "Contoh ini memakai KHI, tanpa biaya pemakaman dan tanpa wasiat, dan tidak ada ahli waris yang terhalang. Kasus nyata bisa memuat hal-hal itu — dan menurut Syafi'i klasik sebagian kasus terbagi berbeda.",
+    en: "This example uses KHI, with no funeral costs, no bequest, and nobody blocked. A real case may involve all of those — and under classical Syafi'i some cases divide differently.",
+  },
+  we_try: {
+    id: "Ubah satu angka di formulir dan hasilnya ikut berubah — misalnya hapus anak perempuan, atau tambahkan ayah.",
+    en: "Change one number in the form and the result follows — try removing the daughter, or adding a father.",
   },
 
   theme: { id: "Tema", en: "Theme" },
