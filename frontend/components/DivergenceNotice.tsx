@@ -13,7 +13,7 @@
 // it as an error would teach the user to distrust the one thing telling them the truth.
 
 import { Divergence } from "@/lib/api";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, rulesetShort } from "@/lib/i18n";
 import { Icon } from "./ui";
 
 export default function DivergenceNotice({
@@ -23,7 +23,7 @@ export default function DivergenceNotice({
   divergence: Divergence;
   onCompare?: () => void;
 }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const d = divergence;
 
   const fill = (key: Parameters<typeof t>[0]) =>
@@ -70,13 +70,15 @@ export default function DivergenceNotice({
             <div className="divergence-row" key={r.relation}>
               <span className="dv-name">{r.label}</span>
               <span className="dv-val">
-                <span className="dv-rs">{t("divergence_th_this").replace("{rs}", d.ruleset_label)}</span>
+                {/* Short names here: the full labels are in the heading two lines up, and
+                    repeating them per row crowds out the fractions, which are the content. */}
+                <span className="dv-rs">{t("divergence_th_this").replace("{rs}", rulesetShort(d.ruleset, lang))}</span>
                 {/* An heir absent on one side is the loudest divergence there is — say it
                     in words rather than printing a bare 0, which reads as an amount. */}
                 <b>{r.this ? r.this.text : t("divergence_none")}</b>
               </span>
               <span className="dv-val">
-                <span className="dv-rs">{t("divergence_th_this").replace("{rs}", d.counterpart_label)}</span>
+                <span className="dv-rs">{t("divergence_th_this").replace("{rs}", rulesetShort(d.counterpart, lang))}</span>
                 <b>{r.other ? r.other.text : t("divergence_none")}</b>
               </span>
             </div>

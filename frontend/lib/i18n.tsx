@@ -468,6 +468,20 @@ export const RULESET_LABELS_I18N: Record<Lang, Record<string, string>> = {
   },
 };
 
+/**
+ * Column-header form of a rule set's name, for places where the full label has already
+ * been stated in the surrounding sentence and repeating it crowds out the figures.
+ *
+ * Deliberately Tier-1 ONLY. The full labels carry "(Beta)" for Hanafi/Maliki/Hanbali, and
+ * PRD §4 makes that badge non-optional — so rather than mint a short form that could drop
+ * it, this map simply has no entry for them and `rulesetShort` falls back to the full,
+ * badge-carrying label. A Beta rule set cannot lose its badge through this path.
+ */
+export const RULESET_SHORT_I18N: Record<Lang, Record<string, string>> = {
+  id: { khi: "KHI", syafii: "Syafi'i" },
+  en: { khi: "KHI", syafii: "Syafi'i" },
+};
+
 export const RELATION_LABELS_I18N: Record<Lang, Record<string, string>> = {
   id: {
     suami: "Suami", istri: "Istri", anak_laki: "Anak laki-laki", anak_perempuan: "Anak perempuan",
@@ -535,6 +549,10 @@ export function relationLabel(labelId: string, lang: Lang): string {
 }
 export function rulesetLabel(ruleset: string, lang: Lang): string {
   return RULESET_LABELS_I18N[lang][ruleset] ?? ruleset;
+}
+/** Short name where the full one is already on screen; falls back to the full label. */
+export function rulesetShort(ruleset: string, lang: Lang): string {
+  return RULESET_SHORT_I18N[lang][ruleset] ?? rulesetLabel(ruleset, lang);
 }
 export function categoryLabel(category: string, t: I18nCtx["t"]): string {
   const map: Record<string, keyof typeof STRINGS> = {
