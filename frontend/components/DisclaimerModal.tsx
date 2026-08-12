@@ -47,11 +47,19 @@ export default function DisclaimerModal({ onAccept }: { onAccept: () => void }) 
 
     return () => {
       for (const el of backdrop) el.removeAttribute("inert");
-      // Returning focus to the invoker keeps a keyboard user where they were. Guarded:
-      // the Calculate button is still mounted after accepting, but if it ever is not,
-      // doing nothing is better than throwing.
+
+      // Return focus to whatever opened the dialog, so a keyboard user resumes where they
+      // were instead of at the top of the document.
+      //
+      // Deferred by a frame on purpose. Removing the focused dialog from the DOM makes the
+      // browser reset focus to <body>, and that reset lands AFTER this cleanup runs —
+      // focusing synchronously here is silently undone. Measured against the production
+      // build: focus ended on <body> until this was deferred.
       const el = invokerRef.current;
-      if (el instanceof HTMLElement && el.isConnected) el.focus();
+      if (!(el instanceof HTMLElement)) return;
+      requestAnimationFrame(() => {
+        if (el.isConnected) el.focus();
+      });
     };
   }, []);
 
