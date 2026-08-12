@@ -253,6 +253,24 @@ export const STRINGS: Dict = {
   th_amount: { id: "Jumlah", en: "Amount" },
   why: { id: "kenapa?", en: "why?" },
   hide: { id: "sembunyikan", en: "hide" },
+  // Coverage gaps. The engine raising on a shape it cannot resolve is visible; a doctrine
+  // missing from an otherwise complete answer is not, and that is the one a user can never
+  // discover by using the app. Worded as a limit of the tool, never as a caveat that
+  // shifts responsibility onto the reader.
+  coverage_title: { id: "Yang belum dihitung di sini", en: "Not covered here" },
+  coverage_silent_lede: {
+    id: "Hasil di atas tidak memuat hal berikut, dan tidak ada peringatan otomatis bila keadaan ini berlaku pada keluarga Anda:",
+    en: "The result above does not include the following, and nothing warns you automatically if it applies to your family:",
+  },
+  coverage_announced_toggle: {
+    id: "Lihat {n} kasus lain yang ditolak mesin",
+    en: "Show {n} other cases the engine refuses",
+  },
+  coverage_announced_lede: {
+    id: "Kasus berikut akan ditolak secara eksplisit saat dihitung — Anda tidak akan mendapat angka yang salah diam-diam:",
+    en: "These are refused explicitly at calculation time — you will never get a silently wrong number for them:",
+  },
+
   // Divergence notice. Worded so "they differ" reads as a fact about the two bodies of
   // law, never as the tool being unsure of its own arithmetic — both answers are exact,
   // and the point of PRD §4.1 is that there is no single "Islamic answer" to state.

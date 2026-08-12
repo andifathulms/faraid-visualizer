@@ -119,6 +119,10 @@ class TestPdf:
 
 class TestSources:
     def test_lists_the_citation_registry(self):
+        """35 = 34 rules-in-use + KHI Pasal 209, which is cited by a documented gap rather
+        than by a rule (faraid_engine.coverage). A gap the user is told about is a claim,
+        and claims here carry a source like anything else."""
         res = call("sources")
-        assert res["data"]["count"] == 34
+        assert res["data"]["count"] == 35
         assert all({"id", "reference", "pointer"} <= set(s) for s in res["data"]["sources"])
+        assert any(s["id"] == "khi-209" for s in res["data"]["sources"])

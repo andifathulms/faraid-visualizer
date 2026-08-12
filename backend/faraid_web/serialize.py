@@ -14,12 +14,55 @@ from __future__ import annotations
 from decimal import Decimal
 from fractions import Fraction
 
-from faraid_engine import CalculationResult
+from faraid_engine import CalculationResult, Ruleset
 from faraid_engine.sources import get_source
 
+from faraid_engine.coverage import gaps_for
+from faraid_engine.rulesets import get_config
+
 from .explain import blocked_reason, reason_for, translate_note
-from .labels import category_label, disclaimer, relation_label, step_title
+from .labels import (
+    category_label,
+    disclaimer,
+    gap_kind_label,
+    gap_text,
+    relation_label,
+    step_title,
+)
 from .working import working_table
+
+
+def serialize_gaps(ruleset: str, lang: str = "id") -> list[dict]:
+    """The documented coverage gaps for a rule set, each with its citation.
+
+    Carried on every result. The engine's refusal to guess only protects against
+    configurations whose *shape* it cannot resolve; a case whose shape is fine while a
+    whole doctrine is missing produces a clean, confident, incomplete answer instead. That
+    is what this list is for — see faraid_engine.coverage.
+    """
+    config = get_config(Ruleset(ruleset)) if not isinstance(ruleset, Ruleset) else get_config(ruleset)
+    out = []
+    for gap in gaps_for(config):
+        text = gap_text(gap.key, lang)
+        src = gap.source()
+        out.append(
+            {
+                "key": gap.key,
+                "kind": gap.kind.value,
+                "kind_label": gap_kind_label(gap.kind.value, lang),
+                "title": text["title"],
+                "detail": text["detail"],
+                "source_id": gap.source_id,
+                "source": {
+                    "id": src.id,
+                    "type": src.type.value,
+                    "reference": src.reference,
+                    "pointer": src.pointer,
+                    "note": src.note,
+                },
+            }
+        )
+    return out
 
 
 def _fraction(f: Fraction) -> dict:
@@ -148,6 +191,9 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
         # faraid_web.working; consumers must treat absence as "do not show a table",
         # never as "show zeroes".
         "working": working_table(result, lang),
+        # What this rule set does NOT cover. Always present, because the danger is the
+        # case that computes cleanly while omitting a doctrine — nothing raises there.
+        "coverage_gaps": serialize_gaps(result.ruleset, lang),
         "estate": estate,
         "shares": shares,
         "blocked": blocked,

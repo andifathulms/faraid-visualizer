@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { centsToMoney, formatCompact, formatMoney, toCents } from "@/lib/format";
 import { describeHeirs } from "@/lib/summary";
 import { CategoryChip, Fraction, Icon, ProportionBar, colorFor } from "./ui";
+import CoverageGaps from "./CoverageGaps";
 
 // Data text (labels, categories, reasons, step titles, notes, disclaimer) is server-
 // localized; this component supplies static UI chrome + the visual composition.
@@ -343,6 +344,10 @@ export default function ResultView({ result }: { result: CalculationResult }) {
           </div>
         </div>
       )}
+
+      {/* Immediately above the disclaimer: both answer "how far does this go", and the
+          specific limits belong beside the general one rather than buried further up. */}
+      <CoverageGaps gaps={result.coverage_gaps} />
 
       <div className="callout callout-warn">
         <span className="c-ico"><Icon name="alert" size={17} /></span>

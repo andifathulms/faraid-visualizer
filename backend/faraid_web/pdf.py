@@ -186,6 +186,25 @@ def build_pdf(payload: dict, heirs_input: dict | None = None, lang: str = "id") 
         ))
         flow.append(Spacer(1, 2))
 
+    # Coverage limits travel with the document. This PDF is meant to be attachable to a
+    # case file, which means it will be read by someone who never saw the app — the one
+    # reader who cannot discover from the numbers that a doctrine was omitted.
+    gaps = payload.get("coverage_gaps") or []
+    silent = [g for g in gaps if g["kind"] == "silent"]
+    if gaps:
+        flow.append(Paragraph(T("coverage"), ss["FH2"]))
+        if silent:
+            flow.append(Paragraph(T("coverage_silent"), ss["FSmall"]))
+            flow.append(Spacer(1, 2))
+        for g in gaps:
+            mark = "<b>!</b> " if g["kind"] == "silent" else "• "
+            flow.append(Paragraph(
+                f"{mark}<b>{g['title']}</b> ({g['kind_label']}) — {g['detail']}"
+                f" <font color='#0d7a5f'>[{g['source']['reference']}]</font>",
+                ss["FSmall"],
+            ))
+            flow.append(Spacer(1, 2))
+
     flow.append(Spacer(1, 8))
     flow.append(HRFlowable(width="100%", color=colors.HexColor("#e8c982")))
     flow.append(Spacer(1, 4))

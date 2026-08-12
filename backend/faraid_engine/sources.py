@@ -243,6 +243,20 @@ _KHI = [
             "exists, the surplus is returned proportionally to the fixed-share heirs."
         ),
     ),
+    # Registered but never fired by a rule: wasiat wajibah is an explicit v1 non-goal
+    # (PRD §8). It is here so faraid_engine.coverage can cite the doctrine the engine
+    # declines to implement — a gap the user is told about needs a source like any rule.
+    Source(
+        id="khi-209",
+        type=SourceType.KHI,
+        reference="KHI Pasal 209",
+        pointer="Pasal 209",
+        note=(
+            "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted "
+            "child and their adoptive parents, who do not inherit from one another under "
+            "faraid. NOT implemented — see faraid_engine.coverage."
+        ),
+    ),
 ]
 
 # ---------------------------------------------------------------------------

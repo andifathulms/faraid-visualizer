@@ -164,6 +164,23 @@ export interface Divergence {
   }[];
 }
 
+/**
+ * A documented limit of the engine's coverage. Mirrors backend/faraid_engine/coverage.py.
+ *
+ * `kind` is the load-bearing field: "raises" and "uncapturable" announce themselves at
+ * calculation time, while "silent" is a doctrine the engine omits from an answer that
+ * otherwise looks complete — the only one the user cannot discover by using the app.
+ */
+export interface CoverageGap {
+  key: string;
+  kind: "raises" | "uncapturable" | "silent";
+  kind_label: string;
+  title: string;
+  detail: string;
+  source_id: string;
+  source: SourceCitation;
+}
+
 export interface EstateBreakdown {
   gross_value: string;
   funeral_costs: string;
@@ -186,6 +203,8 @@ export interface CalculationResult {
    * no table" — never "render zeroes". See backend/faraid_web/working.py.
    */
   working: Working | null;
+  /** What this rule set does not cover. Always present — see CoverageGap. */
+  coverage_gaps: CoverageGap[];
   /** Present on a single calculation; absent inside a comparison entry, which IS one. */
   divergence?: Divergence | null;
   estate: EstateBreakdown | null;

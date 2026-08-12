@@ -95,6 +95,103 @@ DISCLAIMER: dict[Lang, dict[str, str]] = {
     },
 }
 
+# Known coverage gaps (faraid_engine.coverage), keyed by Gap.key. The engine holds the
+# registry and its citations; the words a user reads live here with every other label.
+# `title` names the doctrine; `detail` says plainly what the tool does instead.
+GAP_TEXT: dict[Lang, dict[str, dict[str, str]]] = {
+    "id": {
+        "wasiat_wajibah": {
+            "title": "Wasiat wajibah untuk anak angkat",
+            "detail": (
+                "Anak angkat dan orang tua angkat tidak saling mewarisi secara faraid, "
+                "namun KHI mewajibkan wasiat maksimal 1/3 di antara mereka. Aturan ini "
+                "TIDAK dihitung di sini — hasil di atas tidak memuatnya sama sekali. Jika "
+                "ada anak angkat dalam keluarga ini, hasil ini belum lengkap."
+            ),
+        },
+        "jadd_muadda": {
+            "title": "Kakek bersama saudara kandung DAN saudara seayah (mu'adda)",
+            "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+        },
+        "jadd_akdariyya": {
+            "title": "Kakek bersama saudari (tanpa saudara laki-laki) dan pasangan (akdariyya)",
+            "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+        },
+        "jadd_with_descendant": {
+            "title": "Kakek bersama saudara sekaligus keturunan",
+            "detail": "Kombinasi ini tidak diimplementasikan; mesin menolak menghitung.",
+        },
+        "dzawil_arham_capture": {
+            "title": "Ahli waris dzawil arham",
+            "detail": (
+                "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari "
+                "saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang "
+                "hanya melibatkan mereka tidak dapat dihitung."
+            ),
+        },
+        "representation_scope": {
+            "title": "Ahli waris pengganti selain anak yang wafat",
+            "detail": (
+                "Hanya penggantian untuk anak laki-laki atau anak perempuan yang wafat "
+                "lebih dulu yang didukung (KHI Pasal 185); selainnya ditolak."
+            ),
+        },
+    },
+    "en": {
+        "wasiat_wajibah": {
+            "title": "Obligatory bequest (wasiat wajibah) for an adopted child",
+            "detail": (
+                "An adopted child and their adoptive parents do not inherit from one "
+                "another under faraid, but KHI requires a bequest of up to 1/3 between "
+                "them. That rule is NOT computed here — the result above omits it "
+                "entirely. If this family includes an adopted child, this result is "
+                "incomplete."
+            ),
+        },
+        "jadd_muadda": {
+            "title": "Grandfather with both full and paternal siblings (mu'adda)",
+            "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+        },
+        "jadd_akdariyya": {
+            "title": "Grandfather with sisters (no brothers) and a spouse (akdariyya)",
+            "detail": "An intricate sub-case that is not implemented; the engine refuses to calculate.",
+        },
+        "jadd_with_descendant": {
+            "title": "Grandfather with siblings and a descendant",
+            "detail": "This combination is not implemented; the engine refuses to calculate.",
+        },
+        "dzawil_arham_capture": {
+            "title": "Distant kindred (dzawil arham)",
+            "detail": (
+                "Relatives such as a maternal grandfather, a daughter's children or a "
+                "sister's children cannot be entered on this form, so a case involving "
+                "only them cannot be calculated."
+            ),
+        },
+        "representation_scope": {
+            "title": "Substitute heirs other than a predeceased child",
+            "detail": (
+                "Only substitution for a predeceased son or daughter is supported "
+                "(KHI Art. 185); anything else is refused."
+            ),
+        },
+    },
+}
+
+GAP_KIND_LABELS: dict[Lang, dict[str, str]] = {
+    "id": {
+        "raises": "Ditolak, tidak ditebak",
+        "uncapturable": "Tidak dapat dimasukkan",
+        "silent": "Tidak termasuk dalam hasil",
+    },
+    "en": {
+        "raises": "Refused, not guessed",
+        "uncapturable": "Cannot be entered",
+        "silent": "Not included in the result",
+    },
+}
+
+
 # PDF section headings.
 PDF_TEXT: dict[Lang, dict[str, str]] = {
     "id": {
@@ -116,6 +213,11 @@ PDF_TEXT: dict[Lang, dict[str, str]] = {
             "Jumlah siham kurang dari pokok masalah: ada sisa yang tidak jatuh kepada ahli "
             "waris (lihat Catatan)."
         ),
+        "coverage": "Yang belum dihitung di sini",
+        "coverage_silent": (
+            "Perhitungan di atas TIDAK memuat hal berikut, dan tidak ada peringatan "
+            "otomatis bila keadaan ini berlaku:"
+        ),
     },
     "en": {
         "doc_title": "Islamic Inheritance (Faraid) Calculation",
@@ -135,6 +237,11 @@ PDF_TEXT: dict[Lang, dict[str, str]] = {
         "working_unbalanced": (
             "The siham total less than the base: part of the estate does not fall to an "
             "heir (see Notes)."
+        ),
+        "coverage": "Not covered here",
+        "coverage_silent": (
+            "The calculation above does NOT include the following, and nothing warns "
+            "automatically if it applies:"
         ),
     },
 }
@@ -164,3 +271,13 @@ def disclaimer(mode: str, lang: Lang) -> str:
 
 def pdf_text(key: str, lang: Lang) -> str:
     return PDF_TEXT.get(lang, PDF_TEXT["id"]).get(key, key)
+
+
+def gap_text(key: str, lang: Lang) -> dict[str, str]:
+    """Title + detail for a coverage gap. Missing text is a bug, so it fails visibly."""
+    table = GAP_TEXT.get(lang, GAP_TEXT["id"])
+    return table.get(key, {"title": key, "detail": ""})
+
+
+def gap_kind_label(kind: str, lang: Lang) -> str:
+    return GAP_KIND_LABELS.get(lang, GAP_KIND_LABELS["id"]).get(kind, kind)

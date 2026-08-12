@@ -858,6 +858,45 @@ select {
 .tl-title { font-weight: 600; font-size: var(--fs-sm); }
 .tl-detail { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--sp-05); }
 
+/* ------------------------------------------------------------ Coverage gaps
+   Stated plainly, in the ordinary text ranks — not a warning box. These are limits of
+   the tool, and alarming a user about the tool's honesty would be the wrong lesson.
+   The silent gap is never behind a click: it is the one the app itself can never
+   reveal. */
+.coverage-lede {
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+  margin-bottom: var(--sp-2);
+}
+.gap-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.gap-item {
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border); border-radius: var(--radius-xs);
+  background: var(--surface-2);
+}
+.gap-head { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.gap-title { font-size: var(--fs-sm); font-weight: 600; }
+.gap-detail {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+}
+/* The silent gap gets the citation-gold rail: it is the one claim on this page the user
+   cannot verify by using the app, so it carries the mark the app uses for provenance. */
+.coverage-silent .gap-item { border-left: 3px solid var(--gold); background: var(--gold-soft); }
+
+.coverage-toggle {
+  display: inline-flex; align-items: center; gap: var(--sp-15);
+  margin-top: var(--sp-3);
+  border: none; background: transparent; cursor: pointer; font-family: inherit;
+  font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted);
+  padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-xs);
+  transition: color 0.15s, background 0.15s;
+}
+.coverage-toggle:hover { color: var(--primary); background: var(--primary-soft); }
+.coverage-toggle:focus-visible { outline: none; box-shadow: var(--ring); }
+.coverage-toggle svg { transition: transform 0.2s; }
+.coverage-toggle svg.rot { transform: rotate(180deg); }
+.coverage-toggle + .coverage-lede { margin-top: var(--sp-2); }
+
 /* --------------------------------------------------------- Divergence notice
    Deliberately NOT the warning or error treatment. Both rule sets computed an exact,
    cited answer — the disagreement is between two bodies of law, and dressing that as a
