@@ -19,6 +19,7 @@ from faraid_engine.sources import get_source
 
 from .explain import blocked_reason, reason_for, translate_note
 from .labels import category_label, disclaimer, relation_label, step_title
+from .working import working_table
 
 
 def _fraction(f: Fraction) -> dict:
@@ -143,6 +144,10 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
         "aul_applied": result.aul_applied,
         "aul_base": result.aul_base,
         "radd_applied": result.radd_applied,
+        # The siham working. ``None`` when it cannot be rendered exactly — see
+        # faraid_web.working; consumers must treat absence as "do not show a table",
+        # never as "show zeroes".
+        "working": working_table(result, lang),
         "estate": estate,
         "shares": shares,
         "blocked": blocked,

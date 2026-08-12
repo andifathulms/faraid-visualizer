@@ -112,6 +112,34 @@ export interface SourceCitation {
   note: string;
 }
 
+/**
+ * One row of the siham working — an heir's share re-expressed as whole parts of the base.
+ * Mirrors backend/faraid_web/working.py.
+ */
+export interface WorkingRow {
+  label_id: string;
+  label: string; // localized
+  count: number;
+  category: Share["category"];
+  share: { numerator: number; denominator: number; text: string };
+  siham: number;
+  /** Exact per-individual parts. Non-integral is normal — that is what tashih resolves. */
+  per_head_siham: { numerator: number; denominator: number; text: string };
+}
+
+export interface Working {
+  /** The base the siham are expressed over: aul_base when 'aul fired, else pokok_masalah. */
+  base: number;
+  pokok_masalah: number;
+  aul_base: number | null;
+  aul_applied: boolean;
+  radd_applied: boolean;
+  rows: WorkingRow[];
+  total_siham: number;
+  /** False when a residue falls outside the heirs (baitul mal), recorded as a note. */
+  balanced: boolean;
+}
+
 export interface EstateBreakdown {
   gross_value: string;
   funeral_costs: string;
@@ -129,6 +157,11 @@ export interface CalculationResult {
   aul_applied: boolean;
   aul_base: number | null;
   radd_applied: boolean;
+  /**
+   * The siham working, or null when it could not be derived exactly. Null means "render
+   * no table" — never "render zeroes". See backend/faraid_web/working.py.
+   */
+  working: Working | null;
   estate: EstateBreakdown | null;
   shares: Share[];
   blocked: Blocked[];

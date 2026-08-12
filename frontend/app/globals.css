@@ -858,6 +858,45 @@ select {
 .tl-title { font-weight: 600; font-size: var(--fs-sm); }
 .tl-detail { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--sp-05); }
 
+/* ------------------------------------------------------------ Siham working
+   The tabular form a practitioner checks a hand calculation against. Figures are
+   tabular-nums throughout so the siham column reads as a column — the sum against
+   the base is the thing being verified, and misaligned digits defeat that. */
+.working-scroll { overflow-x: auto; }
+.working {
+  width: 100%; border-collapse: collapse;
+  font-size: var(--fs-sm); font-variant-numeric: tabular-nums;
+}
+.working th, .working td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  text-align: left; white-space: nowrap;
+}
+.working th {
+  font-size: var(--fs-2xs); font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-muted);
+  background: var(--surface-inset);
+}
+.working th:first-child { border-top-left-radius: var(--radius-xs); }
+.working th:last-child { border-top-right-radius: var(--radius-xs); }
+.working .num { text-align: right; }
+.working td.siham { font-weight: 700; color: var(--text); }
+.working tbody td:first-child { white-space: normal; }
+.working tfoot td {
+  border-bottom: none; border-top: 2px solid var(--border-strong);
+  font-weight: 700;
+}
+/* A short total is a real statement about the case (a residue falling outside the
+   heirs), not a rendering fault — marked, but not as an error. */
+.working tfoot tr.short td.siham { color: var(--warn); }
+
+.working-notes {
+  display: flex; flex-direction: column; gap: var(--sp-15);
+  margin-top: var(--sp-2);
+  font-size: var(--fs-xs); line-height: var(--lh-snug); color: var(--text-muted);
+}
+.working-notes p { margin: 0; }
+
 /* Callouts */
 .callout {
   display: flex; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius);

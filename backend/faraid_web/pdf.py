@@ -106,6 +106,50 @@ def build_pdf(payload: dict, heirs_input: dict | None = None, lang: str = "id") 
     ]))
     flow.append(table)
 
+    # The siham working — the form a practitioner checks their own paper against. Omitted
+    # entirely when faraid_web.working could not derive it exactly; a missing section is
+    # correct, a section of rounded integers would not be.
+    working = payload.get("working")
+    if working:
+        flow.append(Paragraph(T("working"), ss["FH2"]))
+        head = [T("th_heir"), T("th_share"), T("th_siham"), T("th_perhead_siham")]
+        wdata = [head]
+        for row in working["rows"]:
+            wdata.append([
+                row["label"] + (f" ×{row['count']}" if row["count"] > 1 else ""),
+                row["share"]["text"],
+                str(row["siham"]),
+                row["per_head_siham"]["text"] if row["count"] > 1 else "—",
+            ])
+        wdata.append([
+            f"<b>{T('total')}</b>",
+            "",
+            f"<b>{working['total_siham']} / {working['base']}</b>",
+            "",
+        ])
+        # The last row carries markup, so it has to be Paragraphs rather than bare strings.
+        wdata[-1] = [Paragraph(c, ss["FSmall"]) if c else "" for c in wdata[-1]]
+        wtable = Table(wdata, colWidths=[70 * mm, 30 * mm, 30 * mm, 32 * mm], hAlign="LEFT")
+        wtable.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e6f2ee")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), ACCENT),
+            ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("LINEBELOW", (0, 0), (-1, -1), 0.4, colors.HexColor("#e3e3df")),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        flow.append(wtable)
+        if working["aul_applied"]:
+            flow.append(Spacer(1, 3))
+            flow.append(Paragraph(
+                T("working_aul").format(base=working["pokok_masalah"], aul=working["aul_base"]),
+                ss["FSmall"],
+            ))
+        if not working["balanced"]:
+            flow.append(Spacer(1, 3))
+            flow.append(Paragraph(T("working_unbalanced"), ss["FSmall"]))
+
     flow.append(Paragraph(T("reasoning"), ss["FH2"]))
     for s in payload["shares"]:
         cite = payload["sources"].get(s["source_id"])

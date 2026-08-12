@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalculationResult, HeirsInput, Share, SourceCitation } from "@/lib/api";
+import { CalculationResult, HeirsInput, Share, SourceCitation, Working } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { centsToMoney, formatCompact, formatMoney, toCents } from "@/lib/format";
 import { describeHeirs } from "@/lib/summary";
@@ -109,6 +109,91 @@ function RoundingNote({ result }: { result: CalculationResult }) {
   );
 }
 
+/**
+ * The pokok masalah as working rather than as a label.
+ *
+ * A list of fractions and a badge reading "pokok masalah 6" is the one representation of
+ * a faraid result a trained user cannot check against their own paper — what they check
+ * is the siham column and its sum against the base. It also makes 'aul legible: the
+ * fraction list makes 6→7 look like everyone shrank, while the siham column shows each
+ * heir's parts unchanged and the denominator moving, which is the whole content of 'aul.
+ *
+ * Every number here is computed in faraid_web/working.py, not in this component. When the
+ * engine cannot express the shares exactly over the base the payload carries null and
+ * this renders nothing — a missing table is correct, rounded integers would not be.
+ */
+function WorkingTable({ working }: { working: Working }) {
+  const { t } = useI18n();
+  const anyGroups = working.rows.some((r) => r.count > 1);
+  const anyFractionalPerHead = working.rows.some(
+    (r) => r.count > 1 && r.per_head_siham.denominator !== 1
+  );
+
+  return (
+    <div>
+      <div className="res-section-title">
+        <span className="ico"><Icon name="table" size={16} /></span>
+        {t("working_title")}
+        <span className="badge badge-soft">{t("pokok_masalah")} {working.base}</span>
+      </div>
+      <p className="small muted" style={{ marginBottom: "var(--sp-2)" }}>{t("working_hint")}</p>
+
+      <div className="working-scroll">
+        <table className="working">
+          <thead>
+            <tr>
+              <th>{t("th_heir")}</th>
+              <th className="num">{t("th_share")}</th>
+              <th className="num">{t("th_siham")}</th>
+              {anyGroups && <th className="num">{t("th_perhead_siham")}</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {working.rows.map((r, i) => (
+              <tr key={i}>
+                <td>
+                  {r.label}
+                  {r.count > 1 && <span className="count-tag">×{r.count}</span>}
+                </td>
+                <td className="num">{r.share.text}</td>
+                <td className="num siham">{r.siham}</td>
+                {anyGroups && (
+                  <td className="num">{r.count > 1 ? r.per_head_siham.text : "—"}</td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className={working.balanced ? "" : "short"}>
+              <td>{t("working_total")}</td>
+              <td className="num" />
+              <td className="num siham">
+                {working.total_siham} / {working.base}
+              </td>
+              {anyGroups && <td className="num" />}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div className="working-notes">
+        {working.aul_applied && working.aul_base !== null && (
+          <p>
+            {t("working_aul_note")
+              .replace("{base}", String(working.pokok_masalah))
+              .replace("{aul}", String(working.aul_base))}
+          </p>
+        )}
+        {working.radd_applied && (
+          <p>{t("working_radd_note").replace("{base}", String(working.base))}</p>
+        )}
+        {!working.balanced && <p>{t("working_unbalanced_note")}</p>}
+        {anyFractionalPerHead && <p>{t("working_tashih_note")}</p>}
+      </div>
+    </div>
+  );
+}
+
 /** What produced these numbers — visible without scrolling back to the form. */
 export function InputSummary({ heirs }: { heirs: HeirsInput }) {
   const { t, lang } = useI18n();
@@ -206,6 +291,10 @@ export default function ResultView({ result }: { result: CalculationResult }) {
         </div>
         {showMoney && <RoundingNote result={result} />}
       </div>
+
+      {/* Professional only: this is the verification artifact, not the answer. Personal
+          mode keeps the money-first hierarchy the result view was rebuilt around. */}
+      {professional && result.working && <WorkingTable working={result.working} />}
 
       {result.blocked.length > 0 && (
         <div>

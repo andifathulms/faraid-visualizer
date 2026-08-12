@@ -106,6 +106,16 @@ PDF_TEXT: dict[Lang, dict[str, str]] = {
         "reasoning": "Alasan & dasar tiap bagian", "blocked": "Terhalang (hajb)",
         "steps": "Langkah penurunan", "notes": "Catatan", "references": "Daftar rujukan",
         "beta": "BETA — rule set ini masih dalam validasi ilmiah.",
+        "working": "Perhitungan siham", "th_siham": "Siham",
+        "th_perhead_siham": "Siham per orang", "total": "Jumlah",
+        "working_aul": (
+            "'Aul: pokok masalah {base} dinaikkan menjadi {aul}. Siham setiap ahli waris "
+            "tidak berubah — yang berubah adalah penyebutnya."
+        ),
+        "working_unbalanced": (
+            "Jumlah siham kurang dari pokok masalah: ada sisa yang tidak jatuh kepada ahli "
+            "waris (lihat Catatan)."
+        ),
     },
     "en": {
         "doc_title": "Islamic Inheritance (Faraid) Calculation",
@@ -116,6 +126,16 @@ PDF_TEXT: dict[Lang, dict[str, str]] = {
         "reasoning": "Reason & basis for each share", "blocked": "Blocked (hajb)",
         "steps": "Derivation steps", "notes": "Notes", "references": "References",
         "beta": "BETA — this rule set is still under scholarly validation.",
+        "working": "Siham working", "th_siham": "Siham",
+        "th_perhead_siham": "Siham per person", "total": "Total",
+        "working_aul": (
+            "'Aul: the base rises from {base} to {aul}. Each heir's siham are unchanged — "
+            "it is the denominator that moves."
+        ),
+        "working_unbalanced": (
+            "The siham total less than the base: part of the estate does not fall to an "
+            "heir (see Notes)."
+        ),
     },
 }
 

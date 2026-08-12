@@ -253,6 +253,38 @@ export const STRINGS: Dict = {
   th_amount: { id: "Jumlah", en: "Amount" },
   why: { id: "kenapa?", en: "why?" },
   hide: { id: "sembunyikan", en: "hide" },
+  // Siham working. The app already showed "pokok masalah 12" as a badge, which is the one
+  // form of a faraid result a trained user does NOT verify against — what they check is
+  // the siham column and its sum against the base. Professional mode only: it is the
+  // verification artifact, not the answer.
+  working_title: { id: "Perhitungan siham", en: "Siham working" },
+  working_hint: {
+    id: "Setiap bagian dinyatakan sebagai siham (bagian bulat) atas pokok masalah — bentuk yang dicocokkan dengan perhitungan manual.",
+    en: "Each share expressed as siham (whole parts) over the base — the form you check a hand calculation against.",
+  },
+  th_siham: { id: "Siham", en: "Siham" },
+  th_perhead_siham: { id: "Per orang", en: "Per person" },
+  working_total: { id: "Jumlah", en: "Total" },
+  working_aul_note: {
+    id: "'Aul: pokok masalah {base} dinaikkan menjadi {aul}. Siham setiap ahli waris tidak berubah — yang berubah penyebutnya.",
+    en: "'Aul: the base rises from {base} to {aul}. Each heir's siham are unchanged — it is the denominator that moves.",
+  },
+  working_radd_note: {
+    id: "Radd: sisa dikembalikan kepada ahli waris berbagian tetap, sehingga pokok masalah menyusut menjadi {base}.",
+    en: "Radd: the surplus returns to the fixed-share heirs, so the base contracts to {base}.",
+  },
+  working_unbalanced_note: {
+    id: "Jumlah siham kurang dari pokok masalah — ada sisa yang tidak jatuh kepada ahli waris. Lihat Catatan.",
+    en: "The siham total less than the base — part of the estate does not fall to an heir. See Notes.",
+  },
+  // Shown when a group's siham do not divide evenly among its members. The engine does not
+  // perform tashih al-mas'alah (that would be a further derivation step needing its own
+  // citation), so the exact fraction is reported rather than a rounded whole number.
+  working_tashih_note: {
+    id: "Siham yang tidak habis dibagi anggota kelompok ditampilkan sebagai pecahan apa adanya; penyamaan (tashih) tidak dilakukan otomatis.",
+    en: "Siham that do not divide evenly within a group are shown as the exact fraction; tashih is not applied automatically.",
+  },
+
   blocked_title: { id: "Terhalang (hajb)", en: "Blocked (hajb)" },
   blocked_by: { id: "Terhalang oleh", en: "Blocked by" },
   steps_title: { id: "Langkah penurunan", en: "Derivation steps" },
