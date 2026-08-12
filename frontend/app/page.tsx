@@ -27,6 +27,7 @@ import EngineStatus from "@/components/EngineStatus";
 import ResultAnnouncer from "@/components/ResultAnnouncer";
 import SensitivityPanel from "@/components/SensitivityPanel";
 import WorkedExample, { EXAMPLE_CASE } from "@/components/WorkedExample";
+import EstateScale from "@/components/EstateScale";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
@@ -523,6 +524,15 @@ export default function Home() {
                 {view === "table" ? (
                   <>
                     <ResultView result={result} />
+                    {/* Answer "what if the estate were bigger?" by letting them try it,
+                        right under the numbers it changes. Only once there is money to
+                        scale — with no estate entered there is nothing to observe. */}
+                    {result.estate && result.estate.net_divisible !== "0.00" && (
+                      <EstateScale
+                        value={estate.gross_value ?? ""}
+                        onChange={(v) => setEstate({ ...estate, gross_value: v })}
+                      />
+                    )}
                     {/* Below the result and its disclaimer: it answers a question that
                         only arises once the answer has been read. */}
                     <div style={{ marginTop: "var(--sp-5)" }}>

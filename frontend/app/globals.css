@@ -1496,3 +1496,21 @@ select {
   margin: 0 0 var(--sp-2);
   font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
 }
+
+/* --------------------------------------------------------- Estate scale
+   A slider under the result, so "what if the estate were bigger" is answered by trying
+   it. Sits with the numbers it changes, not in a settings panel. */
+.scale {
+  margin-top: var(--sp-4); padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface-2);
+  display: grid; grid-template-columns: 1fr auto; gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+}
+.scale-label { grid-column: 1 / -1; font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); }
+.scale input[type="range"] { width: 100%; accent-color: var(--primary); min-height: var(--sp-6); }
+.scale-value { font-size: var(--fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scale-hint {
+  grid-column: 1 / -1; margin: 0;
+  font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
+}

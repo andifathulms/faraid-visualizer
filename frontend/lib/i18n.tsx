@@ -168,6 +168,16 @@ export const STRINGS: Dict = {
     en: "When the fixed shares do not use up the estate and there is no residuary heir, the remainder returns to them.",
   },
 
+  // "What if the estate were bigger?" — the one question a reader can answer for
+  // themselves in one gesture, and the fastest way to see that the fractions are the
+  // ruling and the rupiah are only its arithmetic.
+  scale_label: { id: "Coba nilai harta lain", en: "Try a different estate value" },
+  scale_hint: {
+    id: "Geser untuk mengubah nilai harta. Perhatikan: pecahan bagiannya tidak berubah sama sekali — yang berubah hanya nominalnya. Pecahan itulah ketetapannya; rupiah hanya hitungannya.",
+    en: "Drag to change the estate. Notice the fractions do not move at all — only the amounts do. The fractions are the ruling; the rupiah are just its arithmetic.",
+  },
+  scale_apply: { id: "Pakai nilai ini", en: "Use this value" },
+
   theme: { id: "Tema", en: "Theme" },
   theme_system: { id: "Sistem", en: "System" },
   theme_light: { id: "Terang", en: "Light" },
