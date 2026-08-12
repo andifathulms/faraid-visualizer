@@ -60,21 +60,46 @@ export function Fraction({ value, className = "" }: { value: FractionValue; clas
 }
 
 /* ---------------------------------------------------------- Segmented ctrl */
+/**
+ * Single-choice picker: mode, language, result view, ruleset.
+ *
+ * Was `role="tablist"` + `role="tab"` buttons. Nothing it controls is a tab panel — the
+ * document had 3 tablists, 6 tabs and 0 tabpanels — so a screen reader announced "tab, 1
+ * of 2" and sent the user looking for a panel that does not exist. The tab pattern also
+ * requires arrow-key navigation and a roving tabindex, and this had neither: all six were
+ * in the tab order and ArrowRight did nothing.
+ *
+ * Now a native radio group. Exactly one option is always selected, which is precisely what
+ * radios mean, and the browser supplies for free everything the ARIA version was missing:
+ * arrow-key navigation, roving tabindex, the group name from the <legend>, and correct
+ * "radio button, 1 of 2, selected" announcements. No ARIA role remains.
+ *
+ * The radio itself is visually hidden rather than `display: none` — a display:none input
+ * is not focusable and would take the whole control back out of the keyboard path.
+ */
 export function Segmented<T extends string>({
   options, value, onChange, block, ariaLabel,
 }: {
   options: { value: T; label: ReactNode }[];
   value: T; onChange: (v: T) => void; block?: boolean; ariaLabel?: string;
 }) {
+  const name = useId();
   return (
-    <div className={`segmented ${block ? "block" : ""}`} role="tablist" aria-label={ariaLabel}>
+    <fieldset className={`segmented ${block ? "block" : ""}`}>
+      <legend className="sr-only">{ariaLabel}</legend>
       {options.map((o) => (
-        <button key={o.value} role="tab" aria-selected={value === o.value}
-          className={value === o.value ? "active" : ""} onClick={() => onChange(o.value)}>
-          {o.label}
-        </button>
+        <label key={o.value} className={`seg-option ${value === o.value ? "active" : ""}`}>
+          <input
+            type="radio"
+            name={name}
+            value={o.value}
+            checked={value === o.value}
+            onChange={() => onChange(o.value)}
+          />
+          <span>{o.label}</span>
+        </label>
       ))}
-    </div>
+    </fieldset>
   );
 }
 
