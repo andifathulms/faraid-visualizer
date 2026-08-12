@@ -29,9 +29,17 @@ export const SITE = {
   lang: "id",
 } as const;
 
-/** The share image. The 512px brand icon — no asset invented, nothing generated. */
+/**
+ * The share image. The 512px brand icon — no asset invented, nothing generated.
+ *
+ * Root-relative and deliberately WITHOUT basePath: Next resolves this against
+ * `metadataBase`, whose URL already ends in the project path. Including basePath here
+ * doubled it in production — `/faraid-visualizer/faraid-visualizer/brand/icon-512.png`,
+ * a 404 — while a local build (where NEXT_PUBLIC_BASE_PATH is empty) looked correct.
+ * Verify changes here with `NEXT_PUBLIC_BASE_PATH=/faraid-visualizer npm run build`.
+ */
 export const OG_IMAGE = {
-  url: `${BASE_PATH}/brand/icon-512.png`,
+  url: "/brand/icon-512.png",
   width: 512,
   height: 512,
   alt: SITE.name,
