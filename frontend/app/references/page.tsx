@@ -21,7 +21,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import data from "@/lib/generated/reference-data.json";
-import { useI18n, rulesetLabel } from "@/lib/i18n";
+import { useI18n, rulesetLabel, type Lang } from "@/lib/i18n";
 import { ThemeToggle } from "@/lib/theme";
 import { Icon, Segmented } from "@/components/ui";
 import type { CoverageGap, Ruleset, SourceCitation } from "@/lib/api";
@@ -39,7 +39,7 @@ const SOURCES = data.sources as SourceCitation[];
 const GAPS = data.gaps as Record<string, Record<string, CoverageGap[]>>;
 
 export default function References() {
-  const { t, lang } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const [ruleset, setRuleset] = useState<Ruleset>("khi");
 
   const grouped = useMemo(() => {
@@ -67,7 +67,18 @@ export default function References() {
               <div className="brand-tag">{t("app_tagline")}</div>
             </div>
           </a>
-          <ThemeToggle />
+          <div className="row gap-10">
+            <ThemeToggle />
+            <Segmented<Lang>
+              ariaLabel="Language"
+              value={lang}
+              onChange={setLang}
+              options={[
+                { value: "id", label: "ID" },
+                { value: "en", label: "EN" },
+              ]}
+            />
+          </div>
         </div>
       </header>
 

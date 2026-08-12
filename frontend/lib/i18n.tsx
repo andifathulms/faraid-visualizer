@@ -268,6 +268,12 @@ export const STRINGS: Dict = {
   sens_none: { id: "tidak mewarisi", en: "does not inherit" },
   sens_no_change: { id: "tidak mengubah apa pun", en: "changes nothing" },
   sens_blocked_by: { id: "tidak mengubah apa pun — terhalang oleh {by}", en: "changes nothing — blocked by {by}" },
+  // Several heirs blocked by the same person collapse onto one line; the shared blocker is
+  // the finding, and repeating it per row buried it.
+  sens_blocked_group: {
+    id: "Semuanya terhalang oleh {by} — tidak mengubah apa pun",
+    en: "All blocked by {by} — none of them changes anything",
+  },
   sens_changes: { id: "{n} bagian berubah", en: "{n} shares move" },
   sens_refused: { id: "tidak dapat dihitung", en: "cannot be calculated" },
   sens_inert_head: { id: "Tidak mengubah hasil ({n})", en: "Changes nothing ({n})" },

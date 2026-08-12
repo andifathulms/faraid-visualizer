@@ -143,9 +143,41 @@ export default function SensitivityPanel({
               <div className="sens-group-head">
                 {t("sens_inert_head").replace("{n}", String(data.inert.length))}
               </div>
-              <ul className="sens-list">
-                {data.inert.map((r) => <RowItem key={`${r.direction}:${r.slot}`} row={r} />)}
-              </ul>
+              {(() => {
+                // A son typically blocks the entire collateral line, which produced seven
+                // rows all reading "changes nothing — blocked by Son". Identical verdicts
+                // collapse onto the heir who causes them: one statement about the case's
+                // structure reads better than seven repetitions of it, and the grouping
+                // IS the insight.
+                const byBlocker = new Map<string, SensitivityRow[]>();
+                const loose: SensitivityRow[] = [];
+                for (const r of data.inert) {
+                  if (r.blocked_by) {
+                    const list = byBlocker.get(r.blocked_by) ?? [];
+                    list.push(r);
+                    byBlocker.set(r.blocked_by, list);
+                  } else loose.push(r);
+                }
+                return (
+                  <ul className="sens-list">
+                    {[...byBlocker.entries()].map(([blocker, group]) =>
+                      group.length > 1 ? (
+                        <li className="sens-row sens-inert sens-grouped" key={blocker}>
+                          <span className="sens-q">
+                            {t("sens_blocked_group").replace("{by}", blocker)}
+                          </span>
+                          <span className="sens-verdict">
+                            {group.map((g) => g.label).join(" · ")}
+                          </span>
+                        </li>
+                      ) : (
+                        group.map((r) => <RowItem key={`${r.direction}:${r.slot}`} row={r} />)
+                      )
+                    )}
+                    {loose.map((r) => <RowItem key={`${r.direction}:${r.slot}`} row={r} />)}
+                  </ul>
+                );
+              })()}
             </div>
           )}
 
