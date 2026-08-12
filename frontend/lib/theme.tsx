@@ -68,7 +68,6 @@ export function ThemeToggle() {
     <button
       className="theme-toggle"
       onClick={() => setTheme(next)}
-      title={`${t("theme")}: ${label[theme]}`}
       aria-label={`${t("theme")}: ${label[theme]}`}
     >
       <Icon name={ICON[theme]} size={16} />

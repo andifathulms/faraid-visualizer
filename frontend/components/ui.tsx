@@ -183,7 +183,6 @@ export function MoneyInput({
             aria-expanded={showHint}
             aria-controls={hintId}
             aria-label={`${t("what_is_this")} — ${label}`}
-            title={hint}
           >
             <Icon name="info" size={13} />
           </button>
