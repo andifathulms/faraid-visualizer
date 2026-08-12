@@ -116,17 +116,10 @@ export interface SourceCitation {
 }
 
 /**
- * The editorial note for a citation in the reader's language.
- *
- * PRD §7 makes Indonesian primary, but the notes were authored in English as
- * engineer-facing documentation and rendered as-is — so the references page, whose whole
- * job is to show an Indonesian professional what this tool rests on, addressed half its
- * audience in a second language. English stays canonical and is the fallback, so a
- * payload without note_id degrades to the old behaviour rather than to blank.
+ * Re-exported for the many call sites that already import it from here. The definition
+ * lives in lib/citations.ts, which imports no engine code — see that file.
  */
-export function citationNote(src: SourceCitation, lang: Lang): string {
-  return (lang === "id" && src.note_id) || src.note;
-}
+export { citationNote } from "@/lib/citations";
 
 /**
  * One row of the siham working — an heir's share re-expressed as whole parts of the base.
