@@ -1563,8 +1563,19 @@ select {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-5);
   margin-top: var(--sp-6);
 }
-@media (max-width: 860px) { .me-grid { grid-template-columns: 1fr; } }
+/* Stack below 1100px, not 860. Between those widths the columns are narrow enough that
+   the longest result label wraps in one card and not the other, so the two result blocks
+   ended up different heights and the figures stopped reading across — which is the whole
+   point of putting them side by side. Above 1100px they align exactly; below it they are
+   stacked, where alignment is moot. */
+@media (max-width: 1100px) { .me-grid { grid-template-columns: 1fr; } }
+/* A column so the result block can be pinned to the bottom. The two cases have
+   different numbers of steps, so their result boxes started at different heights and the
+   figures did not read across. The grid already stretches both cards to the same height;
+   pushing the results down means both blocks share a top and bottom edge, and the slack
+   falls in the middle where it is invisible. */
 .me-case {
+  display: flex; flex-direction: column;
   padding: var(--sp-5);
   border: 1px solid var(--border); border-radius: var(--radius-lg);
   background: var(--surface);
@@ -1583,7 +1594,9 @@ select {
   padding-left: var(--sp-3); border-left: 2px solid var(--border);
 }
 .me-result {
-  list-style: none; margin: var(--sp-4) 0 0; padding: var(--sp-3) var(--sp-4);
+  /* auto top margin: takes up whatever vertical slack the card has, so the block sits on
+     the card's bottom edge and aligns with its neighbour. */
+  list-style: none; margin: var(--sp-4) 0 0; margin-top: auto; padding: var(--sp-3) var(--sp-4);
   border-radius: var(--radius-xs); background: var(--surface-2);
   border-left: 3px solid var(--primary);
   display: flex; flex-direction: column; gap: var(--sp-1);
