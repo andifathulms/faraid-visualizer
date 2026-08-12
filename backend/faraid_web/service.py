@@ -17,6 +17,7 @@ from faraid_engine.exceptions import InvalidHeirInput
 from faraid_engine.sources import all_sources
 
 from .divergence import detect_divergence
+from .sensitivity import analyze
 from .serialize import serialize_result
 from .validate import InvalidInput, build_input, validate_payload
 
@@ -71,6 +72,18 @@ def compare_payload(
     return {"comparison": entries}
 
 
+def sensitivity_payload(payload: object, *, mode_override: str | None = None) -> dict:
+    """Which heirs are load-bearing for this case, and which change nothing.
+
+    A separate action rather than a field on every calculation: it is roughly thirty
+    additional engine runs, and it answers a question the user has to ask before it is
+    worth spending them. The default path stays as fast as it was.
+    """
+    data = validate_payload(payload)
+    result = calculate(build_input(data, mode_override=mode_override))
+    return analyze(data, result, mode_override=mode_override, lang=data["lang"])
+
+
 def pdf_payload(payload: object) -> bytes:
     """Professional-mode PDF export (PRD §7). Always computes in Professional mode.
 
@@ -108,5 +121,6 @@ __all__ = [
     "calculate_payload",
     "compare_payload",
     "pdf_payload",
+    "sensitivity_payload",
     "sources_payload",
 ]

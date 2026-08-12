@@ -253,6 +253,31 @@ export const STRINGS: Dict = {
   th_amount: { id: "Jumlah", en: "Amount" },
   why: { id: "kenapa?", en: "why?" },
   hide: { id: "sembunyikan", en: "hide" },
+  // Counterfactual sensitivity. Every string is a statement about a hypothetical
+  // division, never an instruction — the app must not start telling people to go and
+  // check whether a relative is alive, or rank heirs by how much they matter.
+  sens_title: { id: "Apa yang mengubah hasil ini", en: "What would change this answer" },
+  sens_lede: {
+    id: "Setiap baris dihitung ulang secara utuh dengan satu ahli waris diubah — bukan perkiraan.",
+    en: "Each row is the case fully recalculated with one heir changed — not an estimate.",
+  },
+  sens_run: { id: "Periksa", en: "Check" },
+  sens_running: { id: "Menghitung…", en: "Working…" },
+  sens_q_remove: { id: "Tanpa {heir}", en: "Without {heir}" },
+  sens_q_add: { id: "Jika ada juga {heir}", en: "If there were also {heir}" },
+  sens_none: { id: "tidak mewarisi", en: "does not inherit" },
+  sens_no_change: { id: "tidak mengubah apa pun", en: "changes nothing" },
+  sens_blocked_by: { id: "tidak mengubah apa pun — terhalang oleh {by}", en: "changes nothing — blocked by {by}" },
+  sens_changes: { id: "{n} bagian berubah", en: "{n} shares move" },
+  sens_refused: { id: "tidak dapat dihitung", en: "cannot be calculated" },
+  sens_inert_head: { id: "Tidak mengubah hasil ({n})", en: "Changes nothing ({n})" },
+  sens_changing_head: { id: "Mengubah hasil ({n})", en: "Changes the division ({n})" },
+  sens_refused_head: { id: "Tidak dapat dihitung ({n})", en: "Cannot be calculated ({n})" },
+  sens_foot: {
+    id: "Daftar ini menjawab “bagaimana jika”, bukan anjuran untuk memeriksa keadaan siapa pun. Setiap angka di atas tetap berasal dari kaidah yang sama dan dapat ditelusuri.",
+    en: "This answers “what if”, and is not a suggestion to go and verify anyone's circumstances. Every figure above comes from the same rules and remains traceable.",
+  },
+
   // References page. sources.py was the first engine commit by design — uncited rules
   // don't ship — so the citations are the substrate results stand on, not decoration on
   // them. This page is where that substrate is legible without triggering a rule.

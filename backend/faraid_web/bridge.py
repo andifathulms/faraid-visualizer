@@ -32,10 +32,16 @@ from faraid_engine import (
     UnsupportedConfiguration,
 )
 
-from .service import calculate_payload, compare_payload, pdf_payload, sources_payload
+from .service import (
+    calculate_payload,
+    compare_payload,
+    pdf_payload,
+    sensitivity_payload,
+    sources_payload,
+)
 from .validate import InvalidInput
 
-ACTIONS = ("calculate", "compare", "pdf", "sources")
+ACTIONS = ("calculate", "compare", "pdf", "sensitivity", "sources")
 
 
 def _ok(data: object) -> str:
@@ -69,6 +75,8 @@ def dispatch(action: str, request_json: str) -> str:
             return _ok(calculate_payload(payload, mode_override=mode_override))
         if action == "compare":
             return _ok(compare_payload(payload, request.get("rulesets"), mode_override=mode_override))
+        if action == "sensitivity":
+            return _ok(sensitivity_payload(payload, mode_override=mode_override))
         if action == "sources":
             return _ok(sources_payload())
         # PDF bytes cannot travel as JSON; base64 keeps the envelope uniform. The payload

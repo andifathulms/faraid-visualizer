@@ -24,6 +24,7 @@ import ComparisonView from "@/components/ComparisonView";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import DivergenceNotice from "@/components/DivergenceNotice";
 import EngineStatus from "@/components/EngineStatus";
+import SensitivityPanel from "@/components/SensitivityPanel";
 import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
@@ -500,7 +501,14 @@ export default function Home() {
                   </div>
                 )}
                 {view === "table" ? (
-                  <ResultView result={result} />
+                  <>
+                    <ResultView result={result} />
+                    {/* Below the result and its disclaimer: it answers a question that
+                        only arises once the answer has been read. */}
+                    <div style={{ marginTop: "var(--sp-5)" }}>
+                      <SensitivityPanel request={buildRequest()} mode={mode} />
+                    </div>
+                  </>
                 ) : (
                   <>
                     <DerivationFlow result={result} />

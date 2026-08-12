@@ -154,8 +154,11 @@ export type Envelope<T> =
   | { ok: true; data: T }
   | { ok: false; kind: "invalid_input" | "unsupported" | "engine_error"; error: string; detail: unknown };
 
+/** Mirrors faraid_web.bridge.ACTIONS — keep in sync with that tuple. */
+export type EngineAction = "calculate" | "compare" | "pdf" | "sensitivity" | "sources";
+
 export async function callEngine<T>(
-  action: "calculate" | "compare" | "pdf" | "sources",
+  action: EngineAction,
   request: Record<string, unknown>
 ): Promise<Envelope<T>> {
   const dispatch = await preloadEngine();

@@ -7,7 +7,7 @@
 //
 // Mirrors backend/faraid_web/serialize.py:serialize_result — keep in sync with that shape.
 
-import { callEngine, ensurePdfSupport, type Envelope } from "@/lib/engine";
+import { callEngine, ensurePdfSupport, type EngineAction, type Envelope } from "@/lib/engine";
 
 export type Ruleset = "khi" | "syafii" | "hanafi" | "maliki" | "hanbali";
 export type Mode = "personal" | "professional";
@@ -264,7 +264,7 @@ function toError(env: Extract<Envelope<unknown>, { ok: false }>): CalculationErr
 }
 
 async function run<T>(
-  action: "calculate" | "compare" | "pdf",
+  action: EngineAction,
   request: Record<string, unknown>
 ): Promise<T> {
   const env = await callEngine<T>(action, request);
@@ -304,6 +304,50 @@ export async function compare(
     mode_override: mode,
   });
   return data.comparison ?? [];
+}
+
+/** One single-slot counterfactual. Mirrors backend/faraid_web/sensitivity.py. */
+export interface SensitivityRow {
+  slot: string;
+  relation: string;
+  label: string;
+  direction: "add" | "remove";
+  from: number | boolean;
+  to: number | boolean;
+  status: "changes" | "no_change" | "unsupported" | "engine_error";
+  detail?: string;
+  changed: {
+    relation: string;
+    label: string;
+    from: { numerator: number; denominator: number; text: string } | null;
+    to: { numerator: number; denominator: number; text: string } | null;
+  }[];
+  /** For an added heir who changes nothing, the heir who blocks them. */
+  blocked_by?: string | null;
+  blocked_reason_source?: string | null;
+}
+
+export interface Sensitivity {
+  base_ruleset: Ruleset;
+  changing: SensitivityRow[];
+  inert: SensitivityRow[];
+  refused: SensitivityRow[];
+  counts: { changing: number; inert: number; refused: number };
+}
+
+/**
+ * Which heirs are load-bearing for this case. Roughly thirty extra engine runs, so it is
+ * a separate call made when the user asks for it rather than a field on every result.
+ */
+export async function sensitivity(
+  req: CalculationRequest,
+  mode: Mode,
+  lang: Lang = "id"
+): Promise<Sensitivity> {
+  return run<Sensitivity>("sensitivity", {
+    payload: { ...req, lang },
+    mode_override: mode,
+  });
 }
 
 // Professional-mode PDF export (PRD §7). Returns the PDF as a Blob for download.
