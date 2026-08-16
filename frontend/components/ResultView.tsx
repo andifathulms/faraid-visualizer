@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { CalculationResult, citationNote, HeirsInput, Share, SourceCitation, Step, Working } from "@/lib/api";
+import { CalculationResult, citationNote, HeirsInput, SourceCitation, Step, Working } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { centsToMoney, formatCompact, formatMoney, toCents } from "@/lib/format";
+import { centsToMoney, toCents } from "@/lib/format";
 import { describeHeirs } from "@/lib/summary";
-import { CategoryChip, Fraction, Icon, ProportionBar, colorFor } from "./ui";
+import { Icon } from "./ui";
 import CoverageGaps from "./CoverageGaps";
+import EstateFlow from "./EstateFlow";
 
 // Data text (labels, categories, reasons, step titles, notes, disclaimer) is server-
 // localized; this component supplies static UI chrome + the visual composition.
@@ -31,55 +32,6 @@ function Citation({ id, sources }: { id: string; sources: Record<string, SourceC
 function hasMoney(result: CalculationResult): boolean {
   const net = toCents(result.estate?.net_divisible);
   return net !== null && net > 0n;
-}
-
-function ShareItem({ share, color, sources, defaultOpen, showMoney, moneyFirst }: {
-  share: Share; color: string; sources: Record<string, SourceCitation>;
-  defaultOpen: boolean; showMoney: boolean; moneyFirst: boolean;
-}) {
-  const { t, lang } = useI18n();
-  const [open, setOpen] = useState(defaultOpen);
-  const isHb = share.category === "harta_bersama";
-  const money = showMoney && !isHb ? formatMoney(share.amount, lang) : "";
-  const compact = money ? formatCompact(share.amount, lang) : "";
-  const perHead =
-    showMoney && !isHb && share.count > 1 ? formatMoney(share.per_head_amount, lang) : "";
-
-  return (
-    <div className="share-item">
-      <div className="share-main">
-        <span className="share-accent" style={{ background: color }} />
-        <div className="share-id">
-          <div className="share-name">
-            {share.label}
-            {share.count > 1 && <span className="count-tag">×{share.count}</span>}
-          </div>
-          <div className="share-meta">
-            <CategoryChip category={share.category} label={share.category_label} />
-            {share.count > 1 && !isHb && (
-              <span className="per-head">@ <Fraction value={share.per_head} />{" "}{t("th_perhead").toLowerCase()}</span>
-            )}
-          </div>
-        </div>
-        <div className={`share-values ${moneyFirst && money ? "money-first" : ""}`}>
-          {isHb ? <span className="muted small">—</span> : <Fraction value={share.share} className="share-frac-lg" />}
-          {money && <span className="share-amount">{money}</span>}
-          {compact && <span className="share-compact">≈ {compact}</span>}
-          {perHead && (
-            <span className="share-perhead-amount">{perHead} / {t("per_person")}</span>
-          )}
-        </div>
-        <button className={`why-toggle ${open ? "open" : ""}`} onClick={() => setOpen((o) => !o)} aria-label="why">
-          <Icon name="chevron" size={16} />
-        </button>
-      </div>
-      {open && (
-        <div className="why-body">
-          {share.reason} <Citation id={share.source_id} sources={sources} />
-        </div>
-      )}
-    </div>
-  );
 }
 
 /**
@@ -293,9 +245,6 @@ export default function ResultView({ result }: { result: CalculationResult }) {
   const professional = result.mode === "professional";
   const e = result.estate;
   const showMoney = hasMoney(result);
-  const awarded = result.shares.filter((s) => s.category !== "harta_bersama");
-  const hb = result.shares.filter((s) => s.category === "harta_bersama");
-
   return (
     <div className="stack gap-20">
       {result.beta && (
@@ -305,27 +254,11 @@ export default function ResultView({ result }: { result: CalculationResult }) {
         </div>
       )}
 
-      {/* Summary + proportion */}
-      <div className="result-summary">
-        <div className="summary-badges">
-          <span className="summary-stat">{t("pokok_masalah")} <b>{result.pokok_masalah}</b></span>
-          {result.aul_applied && <span className="badge badge-soft">'aul → {result.aul_base}</span>}
-          {result.radd_applied && <span className="badge badge-soft">radd</span>}
-          <span className="summary-stat"><b>{awarded.length}</b> {t("th_heir").toLowerCase()}</span>
-        </div>
-        {awarded.length > 0 && <ProportionBar shares={awarded} />}
-        {awarded.length > 0 && (
-          <div className="legend">
-            {awarded.map((s, i) => (
-              <span className="legend-item" key={i}>
-                <span className="legend-sw" style={{ background: colorFor(i) }} />
-                <span className="lg-name">{s.label}</span>
-                <span className="lg-val"><Fraction value={s.share} /></span>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* The estate descending through the pipeline, splitting — DESIGN.md §5. Absorbs
+          what used to be three separate half-pictures of the same quantity: the
+          summary/proportion bar, the estate-deduction sentence, and the per-share list
+          with its "why?" disclosures (the gold rule-lines carry that citation now). */}
+      <EstateFlow input={{ kind: "result", result }} lang={lang} />
 
       {/* An estate was entered but nothing survives the deductions, so the shares carry no
           rupiah. Say why rather than quietly rendering fractions only — the usual cause is
@@ -337,51 +270,11 @@ export default function ResultView({ result }: { result: CalculationResult }) {
         </div>
       )}
 
-      {showMoney && e && (e.net_divisible !== e.gross_value || (toCents(e.harta_bersama_deducted) ?? 0n) > 0n) && (
-        <div className="estate-strip">
-          <Icon name="scroll" size={15} />
-          <span>{t("divisible_estate")}:</span>
-          <span>
-            {formatMoney(e.gross_value, lang)} − {formatMoney(e.funeral_costs, lang)} −{" "}
-            {formatMoney(e.debts, lang)} − {formatMoney(e.wasiyya, lang)}
-            {(toCents(e.harta_bersama_deducted) ?? 0n) > 0n
-              ? ` − ${formatMoney(e.harta_bersama_deducted, lang)}`
-              : ""} =
-          </span>
-          <b>{formatMoney(e.net_divisible, lang)}</b>
-        </div>
-      )}
+      {showMoney && <RoundingNote result={result} />}
 
-      {/* Shares */}
-      <div>
-        <div className="res-section-title"><span className="ico"><Icon name="scale" size={17} /></span>{t("distribution")}</div>
-        {/* The two category names every row is tagged with. */}
-        <dl className="defs">
-          <div><dt>{t("cat_furud")}</dt><dd>{t("def_furud")}</dd></div>
-          <div><dt>{t("cat_asabah")}</dt><dd>{t("def_asabah")}</dd></div>
-        </dl>
-        <div className="share-list">
-          {hb.map((s, i) => (
-            <ShareItem key={`hb-${i}`} share={s} color="var(--gold)" sources={result.sources}
-              defaultOpen={professional} showMoney={showMoney} moneyFirst={false} />
-          ))}
-          {awarded.map((s, i) => (
-            <ShareItem key={i} share={s} color={colorFor(i)} sources={result.sources}
-              /* Personal mode opens the FIRST heir's reasoning. Collapsing every one of
-                 them left a family with three names, three fractions and a disclaimer —
-                 the black box PRD §1 says already exists and fails. One open row shows
-                 that the reasoning is there and what it looks like; the rest stay
-                 collapsed, which is the simplification PRD §3 actually asks for. */
-              defaultOpen={professional || i === 0}
-              showMoney={showMoney} moneyFirst={!professional} />
-          ))}
-        </div>
-        {showMoney && <RoundingNote result={result} />}
-      </div>
-
-      {/* Professional only: this is the verification artifact, not the answer. Personal
-          mode keeps the money-first hierarchy the result view was rebuilt around. */}
-      {professional && result.working && <WorkingTable working={result.working} />}
+      {/* Always present, never behind a mode or a toggle (DESIGN.md §1, §4) — this is
+          the verification artifact a trained user actually checks a result against. */}
+      {result.working && <WorkingTable working={result.working} />}
 
       {result.blocked.length > 0 && (
         <div>

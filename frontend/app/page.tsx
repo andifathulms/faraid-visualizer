@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import {
   calculate,
   CalculationError,
@@ -33,20 +32,6 @@ import { preloadEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
 import { totalHeirs } from "@/lib/summary";
-
-/**
- * React Flow and its dependency graph are 45.8 KB gz — measured — and the diagram is
- * unreachable until a result exists AND the user switches away from the default table
- * view. Statically imported, every visitor paid for it whether or not they ever opened it.
- *
- * ssr:false because the component is client-only anyway (it measures the DOM to lay out
- * nodes), and because a static export would otherwise prerender a canvas nobody sees.
- * The fallback keeps the container's height so switching views does not jump the page.
- */
-const DerivationFlow = dynamic(() => import("@/components/DerivationFlow"), {
-  ssr: false,
-  loading: () => <div className="flow-wrap flow-loading" />,
-});
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
 
@@ -118,7 +103,6 @@ export default function Home() {
   const [busy, setBusy] = useState<"idle" | "initial" | "live">("idle");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [pendingCalc, setPendingCalc] = useState(false);
-  const [view, setView] = useState<"table" | "diagram">("table");
   const [exportingPdf, setExportingPdf] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -504,13 +488,6 @@ export default function Home() {
                   <span className="badge badge-primary" style={{ marginLeft: "var(--sp-05)" }}>{rulesetLabel(result.ruleset, lang)}</span>
                 </div>
                 <div className="result-toolbar">
-                  <Segmented<"table" | "diagram">
-                    ariaLabel="View" value={view} onChange={setView}
-                    options={[
-                      { value: "table", label: <><Icon name="table" size={14} /> {t("view_table")}</> },
-                      { value: "diagram", label: <><Icon name="sitemap" size={14} /> {t("view_diagram")}</> },
-                    ]}
-                  />
                   <button className="btn btn-secondary" onClick={handleCopyLink} title={t("copy_link_hint")}>
                     <Icon name={copied ? "info" : "branch"} size={16} /> {copied ? t("copied") : t("copy_link")}
                   </button>
@@ -536,33 +513,21 @@ export default function Home() {
                     />
                   </div>
                 )}
-                {view === "table" ? (
-                  <>
-                    <ResultView result={result} />
-                    {/* Answer "what if the estate were bigger?" by letting them try it,
-                        right under the numbers it changes. Only once there is money to
-                        scale — with no estate entered there is nothing to observe. */}
-                    {result.estate && result.estate.net_divisible !== "0.00" && (
-                      <EstateScale
-                        value={estate.gross_value ?? ""}
-                        onChange={(v) => setEstate({ ...estate, gross_value: v })}
-                      />
-                    )}
-                    {/* Below the result and its disclaimer: it answers a question that
-                        only arises once the answer has been read. */}
-                    <div style={{ marginTop: "var(--sp-5)" }}>
-                      <SensitivityPanel request={buildRequest()} mode={mode} />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <DerivationFlow result={result} />
-                    <div className="callout callout-warn" style={{ marginTop: "var(--sp-4)" }}>
-                      <span className="c-ico"><Icon name="alert" size={17} /></span>
-                      <span>{result.disclaimer}</span>
-                    </div>
-                  </>
+                <ResultView result={result} />
+                {/* Answer "what if the estate were bigger?" by letting them try it,
+                    right under the numbers it changes. Only once there is money to
+                    scale — with no estate entered there is nothing to observe. */}
+                {result.estate && result.estate.net_divisible !== "0.00" && (
+                  <EstateScale
+                    value={estate.gross_value ?? ""}
+                    onChange={(v) => setEstate({ ...estate, gross_value: v })}
+                  />
                 )}
+                {/* Below the result and its disclaimer: it answers a question that
+                    only arises once the answer has been read. */}
+                <div style={{ marginTop: "var(--sp-5)" }}>
+                  <SensitivityPanel request={buildRequest()} mode={mode} />
+                </div>
               </div>
             </div>
           ) : (
