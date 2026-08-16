@@ -1280,16 +1280,13 @@ select {
   .result-toolbar { flex: 1 0 100%; justify-content: flex-start; margin-left: 0; }
 }
 
-/* ---------------------------------------------------- React Flow node styling */
-.flow-wrap { height: 560px; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: var(--sp-15); background: var(--surface-2); }
-.rf-node { border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); padding: var(--sp-2) var(--sp-3); font-size: var(--fs-xs); width: 216px; box-shadow: var(--shadow-sm); }
-.rf-node .rf-title { font-weight: 700; margin-bottom: 3px; }
-.rf-node .rf-sub { color: var(--text-muted); font-size: var(--fs-2xs); font-variant-numeric: tabular-nums; }
-.rf-node.rf-blocked { border-color: color-mix(in srgb, var(--blocked) 55%, var(--border)); background: var(--danger-soft); }
-.rf-node.rf-furud { border-left: 4px solid var(--furud); }
-.rf-node.rf-asabah { border-left: 4px solid var(--asabah); }
-.rf-node.rf-radd { border-left: 4px solid var(--radd); }
-.rf-node.rf-root { border-color: var(--primary); background: var(--primary-softer); }
+/* ------------------------------------------------------------------ EstateFlow shell
+   Was "React Flow node styling" — the reactflow-based DerivationFlow this served is
+   gone (DESIGN.md build order step 9: no consumer remained once EstateFlow replaced it
+   as the default view in every mode). EstateFlow is the sole remaining user of
+   .flow-wrap, and always overrides height/overflow/background inline, so those three
+   are dropped here rather than left as dead defaults nothing ever renders. */
+.flow-wrap { border: 1px solid var(--border); border-radius: var(--radius-lg); margin-top: var(--sp-15); }
 
 /* Utility */
 .stack { display: flex; flex-direction: column; }
@@ -1600,9 +1597,6 @@ select {
   font-size: var(--fs-2xs); line-height: var(--lh-snug); color: var(--text-faint);
 }
 
-/* Placeholder while the diagram chunk loads. Same box as .flow-wrap so switching from
-   the table view does not shift the page under the user. */
-.flow-loading { background: var(--surface-2); }
 
 /* ------------------------------------------------------- More worked cases
    Page content below the tool. Reads as an article, not as a second calculator — a
