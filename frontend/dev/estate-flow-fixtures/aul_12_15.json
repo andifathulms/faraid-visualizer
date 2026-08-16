@@ -1,0 +1,372 @@
+{
+  "ruleset": "khi",
+  "mode": "professional",
+  "beta": false,
+  "pokok_masalah": 12,
+  "aul_applied": true,
+  "aul_base": 15,
+  "radd_applied": false,
+  "working": {
+    "base": 15,
+    "pokok_masalah": 12,
+    "aul_base": 15,
+    "aul_applied": true,
+    "radd_applied": false,
+    "rows": [
+      {
+        "label_id": "suami",
+        "label": "Suami",
+        "count": 1,
+        "category": "furud",
+        "share": {
+          "numerator": 1,
+          "denominator": 5,
+          "text": "1/5"
+        },
+        "siham": 3,
+        "per_head_siham": {
+          "numerator": 3,
+          "denominator": 1,
+          "text": "3"
+        }
+      },
+      {
+        "label_id": "anak_perempuan",
+        "label": "Anak perempuan",
+        "count": 3,
+        "category": "furud",
+        "share": {
+          "numerator": 8,
+          "denominator": 15,
+          "text": "8/15"
+        },
+        "siham": 8,
+        "per_head_siham": {
+          "numerator": 8,
+          "denominator": 3,
+          "text": "8/3"
+        }
+      },
+      {
+        "label_id": "ayah",
+        "label": "Ayah",
+        "count": 1,
+        "category": "furud",
+        "share": {
+          "numerator": 2,
+          "denominator": 15,
+          "text": "2/15"
+        },
+        "siham": 2,
+        "per_head_siham": {
+          "numerator": 2,
+          "denominator": 1,
+          "text": "2"
+        }
+      },
+      {
+        "label_id": "ibu",
+        "label": "Ibu",
+        "count": 1,
+        "category": "furud",
+        "share": {
+          "numerator": 2,
+          "denominator": 15,
+          "text": "2/15"
+        },
+        "siham": 2,
+        "per_head_siham": {
+          "numerator": 2,
+          "denominator": 1,
+          "text": "2"
+        }
+      }
+    ],
+    "total_siham": 15,
+    "balanced": true
+  },
+  "coverage_gaps": [
+    {
+      "key": "wasiat_wajibah",
+      "kind": "silent",
+      "kind_label": "Tidak termasuk dalam hasil",
+      "title": "Wasiat wajibah untuk anak angkat",
+      "detail": "Anak angkat dan orang tua angkat tidak saling mewarisi secara faraid, namun KHI mewajibkan wasiat maksimal 1/3 di antara mereka. Aturan ini TIDAK dihitung di sini — hasil di atas tidak memuatnya sama sekali. Jika ada anak angkat dalam keluarga ini, hasil ini belum lengkap.",
+      "source_id": "khi-209",
+      "source": {
+        "id": "khi-209",
+        "type": "khi",
+        "reference": "KHI Pasal 209",
+        "pointer": "Pasal 209",
+        "note": "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted child and their adoptive parents, who do not inherit from one another under faraid. NOT implemented — see faraid_engine.coverage.",
+        "note_id": "Wasiat wajibah: wasiat wajib paling banyak 1/3 antara anak angkat dan orang tua angkatnya, yang tidak saling mewarisi secara faraid. TIDAK diimplementasikan — lihat faraid_engine.coverage."
+      }
+    },
+    {
+      "key": "dzawil_arham_capture",
+      "kind": "uncapturable",
+      "kind_label": "Tidak dapat dimasukkan",
+      "title": "Ahli waris dzawil arham",
+      "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+      "source_id": "classical-dzawil-arham",
+      "source": {
+        "id": "classical-dzawil-arham",
+        "type": "classical",
+        "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+        "pointer": "dzawil arham",
+        "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1).",
+        "note_id": "Baru tercapai bila tidak ada ashabul furud maupun asabah. Syafi'i/Maliki secara klasik menyalurkannya ke baitul mal; Hanafi/Hanbali membagikannya kepada dzawil arham (PRD §4.1)."
+      }
+    },
+    {
+      "key": "representation_scope",
+      "kind": "raises",
+      "kind_label": "Ditolak, tidak ditebak",
+      "title": "Ahli waris pengganti selain anak yang wafat",
+      "detail": "Hanya penggantian untuk anak laki-laki atau anak perempuan yang wafat lebih dulu yang didukung (KHI Pasal 185); selainnya ditolak.",
+      "source_id": "khi-185",
+      "source": {
+        "id": "khi-185",
+        "type": "khi",
+        "reference": "KHI Pasal 185",
+        "pointer": "Pasal 185",
+        "note": "Ahli waris pengganti (representation): children of an heir who predeceased the deceased may step into that heir's position, capped at the share the replaced heir would have received. NO classical Syafi'i equivalent (PRD §4.1).",
+        "note_id": "Ahli waris pengganti: anak dari ahli waris yang wafat lebih dulu dapat menggantikan kedudukannya, dibatasi sebesar bagian yang akan diterima ahli waris yang digantikan. TIDAK ada padanannya dalam fiqh Syafi'i klasik (PRD §4.1)."
+      }
+    }
+  ],
+  "estate": {
+    "gross_value": "0.00",
+    "funeral_costs": "0.00",
+    "debts": "0.00",
+    "wasiyya": "0.00",
+    "harta_bersama_deducted": "0.00",
+    "net_divisible": "0.00"
+  },
+  "shares": [
+    {
+      "relation": "husband",
+      "label_id": "suami",
+      "label": "Suami",
+      "count": 1,
+      "share": {
+        "numerator": 1,
+        "denominator": 5,
+        "text": "1/5",
+        "float": 0.2
+      },
+      "per_head": {
+        "numerator": 1,
+        "denominator": 5,
+        "text": "1/5",
+        "float": 0.2
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:husband:1/4|aul:12->15",
+      "reason": "Suami mendapat 1/4 karena ada keturunan. (dikurangi proporsional karena 'aul: 12→15).",
+      "source_id": "khi-179",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    },
+    {
+      "relation": "daughter",
+      "label_id": "anak_perempuan",
+      "label": "Anak perempuan",
+      "count": 3,
+      "share": {
+        "numerator": 8,
+        "denominator": 15,
+        "text": "8/15",
+        "float": 0.5333333333333333
+      },
+      "per_head": {
+        "numerator": 8,
+        "denominator": 45,
+        "text": "8/45",
+        "float": 0.17777777777777778
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:daughter:2/3|aul:12->15",
+      "reason": "3 anak perempuan bersama-sama mendapat 2/3, dibagi rata. (dikurangi proporsional karena 'aul: 12→15).",
+      "source_id": "khi-176",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    },
+    {
+      "relation": "father",
+      "label_id": "ayah",
+      "label": "Ayah",
+      "count": 1,
+      "share": {
+        "numerator": 2,
+        "denominator": 15,
+        "text": "2/15",
+        "float": 0.13333333333333333
+      },
+      "per_head": {
+        "numerator": 2,
+        "denominator": 15,
+        "text": "2/15",
+        "float": 0.13333333333333333
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:father:1/6|aul:12->15",
+      "reason": "Ayah mendapat 1/6 sebagai bagian tetap karena ada keturunan perempuan, sekaligus menerima sisa (asabah) bila masih ada. (dikurangi proporsional karena 'aul: 12→15).",
+      "source_id": "khi-177",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    },
+    {
+      "relation": "mother",
+      "label_id": "ibu",
+      "label": "Ibu",
+      "count": 1,
+      "share": {
+        "numerator": 2,
+        "denominator": 15,
+        "text": "2/15",
+        "float": 0.13333333333333333
+      },
+      "per_head": {
+        "numerator": 2,
+        "denominator": 15,
+        "text": "2/15",
+        "float": 0.13333333333333333
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:mother:1/6|aul:12->15",
+      "reason": "Ibu mendapat 1/6 karena ada keturunan. (dikurangi proporsional karena 'aul: 12→15).",
+      "source_id": "khi-178",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    }
+  ],
+  "blocked": [],
+  "steps": [
+    {
+      "step": "debts",
+      "title": "Pelunasan kewajiban atas harta peninggalan",
+      "detail": "Belum ada nilai harta yang dimasukkan, sehingga hasil di bawah hanya berupa pecahan bagian. Bila nilai harta diisi, urutannya: biaya pengurusan jenazah dibayar lebih dulu, lalu utang almarhum, lalu wasiat (maksimal 1/3 dari sisa) — baru sisanya dibagi kepada ahli waris.",
+      "source_id": "khi-175",
+      "data": {
+        "gross": "0",
+        "funeral": "0",
+        "debts": "0",
+        "wasiyya": "0",
+        "wasiyya_capped": false,
+        "after_wasiyya": "0"
+      }
+    },
+    {
+      "step": "hajb",
+      "title": "Penghalangan (hajb)",
+      "detail": "Ahli waris yang terhalang: tidak ada.",
+      "source_id": null,
+      "data": {
+        "blocked": [],
+        "source_ids": []
+      }
+    },
+    {
+      "step": "furud",
+      "title": "Bagian tetap (furud muqaddarah)",
+      "detail": "Suami mendapat 1/4 karena ada keturunan.; 3 anak perempuan bersama-sama mendapat 2/3, dibagi rata.; Ayah mendapat 1/6 sebagai bagian tetap karena ada keturunan perempuan, sekaligus menerima sisa (asabah) bila masih ada.; Ibu mendapat 1/6 karena ada keturunan.",
+      "source_id": null,
+      "data": {
+        "source_ids": [
+          "khi-176",
+          "khi-177",
+          "khi-178",
+          "khi-179"
+        ]
+      }
+    },
+    {
+      "step": "aul",
+      "title": "'Aul — pengurangan proporsional",
+      "detail": "Atas pokok masalah 12, bagian-bagian tetap berjumlah 3 + 8 + 2 + 2 = 15 bagian — lebih besar dari 12, sehingga harta tidak cukup. Pokok masalah dinaikkan menjadi 15: setiap ahli waris tetap memegang jumlah bagian yang sama, tetapi kini dihitung atas 15, sehingga totalnya kembali menjadi 1.",
+      "source_id": "khi-192",
+      "data": {
+        "pokok_masalah": 12,
+        "aul_base": 15,
+        "siham": [
+          3,
+          8,
+          2,
+          2
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Catatan KHI Pasal 177: teks harfiah memberi ayah 1/3 bila tidak ada anak, namun yurisprudensi Mahkamah Agung dan praktik KHI membaca ayah sebagai 1/6 saat ada keturunan dan sebagai asabah (sisa) bila tidak ada keturunan — itulah yang diterapkan di sini."
+  ],
+  "disclaimer": "Hasil ini bersifat advisory dan tidak menggantikan penetapan resmi. Setiap kaidah disertai rujukan; verifikasi tetap tanggung jawab pengguna profesional. Bukan dokumen hukum yang mengikat.",
+  "sources": {
+    "khi-175": {
+      "id": "khi-175",
+      "type": "khi",
+      "reference": "KHI Pasal 175",
+      "pointer": "Pasal 175",
+      "note": "Ordering of obligations on the estate: funeral costs, then debts, then wasiat (max 1/3), then division among heirs.",
+      "note_id": "Urutan kewajiban atas harta peninggalan: biaya pengurusan jenazah, lalu utang, lalu wasiat (maksimal 1/3), baru dibagi kepada ahli waris."
+    },
+    "khi-176": {
+      "id": "khi-176",
+      "type": "khi",
+      "reference": "KHI Pasal 176",
+      "pointer": "Pasal 176",
+      "note": "Daughter: 1/2 if sole; 2/3 if two or more; with a son the ratio is 2:1 male:female (asabah bi ghairihi).",
+      "note_id": "Anak perempuan: 1/2 bila tunggal; 2/3 bila dua atau lebih; bersama anak laki- laki berlaku perbandingan 2:1 laki-laki:perempuan (asabah bi ghairihi)."
+    },
+    "khi-177": {
+      "id": "khi-177",
+      "type": "khi",
+      "reference": "KHI Pasal 177 (as interpreted per Mahkamah Agung jurisprudence)",
+      "pointer": "Pasal 177",
+      "note": "Literal text assigns the father 1/3 when there is no child, which conflicts with the fara'id system; Mahkamah Agung jurisprudence and mainstream KHI practice read the father as 1/6 when a descendant exists and residuary ('asabah) otherwise — the interpretation applied by this engine. UI must surface this caveat in Professional mode.",
+      "note_id": "Teks harfiahnya memberi ayah 1/3 bila tidak ada anak, yang bertentangan dengan sistem fara'id; yurisprudensi Mahkamah Agung dan praktik arus utama KHI membaca bagian ayah sebagai 1/6 bila ada keturunan dan sebagai asabah bila tidak — penafsiran inilah yang diterapkan mesin ini. Antarmuka wajib menampilkan catatan ini pada mode Profesional."
+    },
+    "khi-178": {
+      "id": "khi-178",
+      "type": "khi",
+      "reference": "KHI Pasal 178",
+      "pointer": "Pasal 178",
+      "note": "Mother: 1/6 if there is a child or two or more siblings; otherwise 1/3.",
+      "note_id": "Ibu: 1/6 bila ada anak atau dua orang saudara atau lebih; selain itu 1/3."
+    },
+    "khi-179": {
+      "id": "khi-179",
+      "type": "khi",
+      "reference": "KHI Pasal 179",
+      "pointer": "Pasal 179",
+      "note": "Widower (duda): 1/2 without child, 1/4 with child.",
+      "note_id": "Duda: 1/2 tanpa anak, 1/4 dengan anak."
+    },
+    "khi-192": {
+      "id": "khi-192",
+      "type": "khi",
+      "reference": "KHI Pasal 192",
+      "pointer": "Pasal 192",
+      "note": "'Aul: when fixed shares exceed the estate, shares are reduced proportionally.",
+      "note_id": "'Aul: bila jumlah bagian tetap melebihi harta, seluruh bagian dikurangi secara proporsional."
+    }
+  },
+  "divergence": {
+    "ruleset": "khi",
+    "ruleset_label": "KHI (Kompilasi Hukum Islam)",
+    "counterpart": "syafii",
+    "counterpart_label": "Syafi'i (klasik)",
+    "status": "same",
+    "harta_bersama_only": false,
+    "rows": []
+  }
+}

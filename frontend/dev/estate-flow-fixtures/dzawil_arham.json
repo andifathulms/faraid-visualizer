@@ -1,0 +1,7 @@
+{
+  "synthetic": true,
+  "synthetic_reason": "No heir input in the v1 model reaches faraid_engine.rules.dzawil_arham.resolve_dzawil_arham() — every modeled Relation is furud- or asabah-eligible, so awards is never empty for a validated, non-empty heir set. This envelope exists only to exercise EstateFlow's refused/unsupported render path with the engine's own real error text, not a computed distribution.",
+  "kind": "unsupported",
+  "error": "UnsupportedConfiguration",
+  "detail": "Only dzawil arham (distant kindred) would inherit here, but dzawil arham heir capture is not implemented in v1 (PRD §5.1 scope). This configuration cannot be resolved without inventing a distribution — please consult an ustadz/PPAIW. (routing basis: khi-practice-baitul-mal)"
+}

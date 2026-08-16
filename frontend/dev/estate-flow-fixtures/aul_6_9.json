@@ -1,0 +1,324 @@
+{
+  "ruleset": "syafii",
+  "mode": "professional",
+  "beta": false,
+  "pokok_masalah": 6,
+  "aul_applied": true,
+  "aul_base": 9,
+  "radd_applied": false,
+  "working": {
+    "base": 9,
+    "pokok_masalah": 6,
+    "aul_base": 9,
+    "aul_applied": true,
+    "radd_applied": false,
+    "rows": [
+      {
+        "label_id": "suami",
+        "label": "Suami",
+        "count": 1,
+        "category": "furud",
+        "share": {
+          "numerator": 1,
+          "denominator": 3,
+          "text": "1/3"
+        },
+        "siham": 3,
+        "per_head_siham": {
+          "numerator": 3,
+          "denominator": 1,
+          "text": "3"
+        }
+      },
+      {
+        "label_id": "saudara_seibu",
+        "label": "Saudara/i seibu",
+        "count": 2,
+        "category": "furud",
+        "share": {
+          "numerator": 2,
+          "denominator": 9,
+          "text": "2/9"
+        },
+        "siham": 2,
+        "per_head_siham": {
+          "numerator": 1,
+          "denominator": 1,
+          "text": "1"
+        }
+      },
+      {
+        "label_id": "saudari_kandung",
+        "label": "Saudari kandung",
+        "count": 2,
+        "category": "furud",
+        "share": {
+          "numerator": 4,
+          "denominator": 9,
+          "text": "4/9"
+        },
+        "siham": 4,
+        "per_head_siham": {
+          "numerator": 2,
+          "denominator": 1,
+          "text": "2"
+        }
+      }
+    ],
+    "total_siham": 9,
+    "balanced": true
+  },
+  "coverage_gaps": [
+    {
+      "key": "jadd_muadda",
+      "kind": "raises",
+      "kind_label": "Ditolak, tidak ditebak",
+      "title": "Kakek bersama saudara kandung DAN saudara seayah (mu'adda)",
+      "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+      "source_id": "jadd-muqasama-zaid",
+      "source": {
+        "id": "jadd-muqasama-zaid",
+        "type": "classical",
+        "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+        "pointer": "muqasama (Zaid)",
+        "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing.",
+        "note_id": "Bila tidak ada ayah, kakek bersaing dengan saudara kandung/seayah: ia mengambil yang paling menguntungkan baginya di antara (a) muqasama, yaitu berbagi sebagai saudara, (b) 1/3 dari sisa, atau (c) 1/6 dari keseluruhan bila ada ashabul furud. Sub-kasus yang rumit (akdariyya; mu'adda yang mencampur saudara kandung dan seayah) tidak diimplementasikan dan ditolak daripada ditebak."
+      }
+    },
+    {
+      "key": "jadd_akdariyya",
+      "kind": "raises",
+      "kind_label": "Ditolak, tidak ditebak",
+      "title": "Kakek bersama saudari (tanpa saudara laki-laki) dan pasangan (akdariyya)",
+      "detail": "Sub-kasus rumit yang tidak diimplementasikan; mesin menolak menghitung.",
+      "source_id": "jadd-muqasama-zaid",
+      "source": {
+        "id": "jadd-muqasama-zaid",
+        "type": "classical",
+        "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+        "pointer": "muqasama (Zaid)",
+        "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing.",
+        "note_id": "Bila tidak ada ayah, kakek bersaing dengan saudara kandung/seayah: ia mengambil yang paling menguntungkan baginya di antara (a) muqasama, yaitu berbagi sebagai saudara, (b) 1/3 dari sisa, atau (c) 1/6 dari keseluruhan bila ada ashabul furud. Sub-kasus yang rumit (akdariyya; mu'adda yang mencampur saudara kandung dan seayah) tidak diimplementasikan dan ditolak daripada ditebak."
+      }
+    },
+    {
+      "key": "jadd_with_descendant",
+      "kind": "raises",
+      "kind_label": "Ditolak, tidak ditebak",
+      "title": "Kakek bersama saudara sekaligus keturunan",
+      "detail": "Kombinasi ini tidak diimplementasikan; mesin menolak menghitung.",
+      "source_id": "jadd-muqasama-zaid",
+      "source": {
+        "id": "jadd-muqasama-zaid",
+        "type": "classical",
+        "reference": "al-jadd wa al-ikhwah (Zaid ibn Thabit's muqasama), adopted by Maliki/Syafi'i/Hanbali",
+        "pointer": "muqasama (Zaid)",
+        "note": "With no father, the grandfather competes with full/paternal siblings: he takes the best for him of (a) muqasama sharing as a brother, (b) 1/3 of the remainder, or (c) 1/6 of the whole when ashabul furud are present. The intricate sub-cases (akdariyya; mu'adda mixing full and paternal siblings) are not implemented and raise instead of guessing.",
+        "note_id": "Bila tidak ada ayah, kakek bersaing dengan saudara kandung/seayah: ia mengambil yang paling menguntungkan baginya di antara (a) muqasama, yaitu berbagi sebagai saudara, (b) 1/3 dari sisa, atau (c) 1/6 dari keseluruhan bila ada ashabul furud. Sub-kasus yang rumit (akdariyya; mu'adda yang mencampur saudara kandung dan seayah) tidak diimplementasikan dan ditolak daripada ditebak."
+      }
+    },
+    {
+      "key": "dzawil_arham_capture",
+      "kind": "uncapturable",
+      "kind_label": "Tidak dapat dimasukkan",
+      "title": "Ahli waris dzawil arham",
+      "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+      "source_id": "classical-dzawil-arham",
+      "source": {
+        "id": "classical-dzawil-arham",
+        "type": "classical",
+        "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+        "pointer": "dzawil arham",
+        "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1).",
+        "note_id": "Baru tercapai bila tidak ada ashabul furud maupun asabah. Syafi'i/Maliki secara klasik menyalurkannya ke baitul mal; Hanafi/Hanbali membagikannya kepada dzawil arham (PRD §4.1)."
+      }
+    }
+  ],
+  "estate": {
+    "gross_value": "0.00",
+    "funeral_costs": "0.00",
+    "debts": "0.00",
+    "wasiyya": "0.00",
+    "harta_bersama_deducted": "0.00",
+    "net_divisible": "0.00"
+  },
+  "shares": [
+    {
+      "relation": "husband",
+      "label_id": "suami",
+      "label": "Suami",
+      "count": 1,
+      "share": {
+        "numerator": 1,
+        "denominator": 3,
+        "text": "1/3",
+        "float": 0.3333333333333333
+      },
+      "per_head": {
+        "numerator": 1,
+        "denominator": 3,
+        "text": "1/3",
+        "float": 0.3333333333333333
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:husband:1/2|aul:6->9",
+      "reason": "Suami mendapat 1/2 karena tidak ada keturunan. (dikurangi proporsional karena 'aul: 6→9).",
+      "source_id": "quran-nisa-12",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    },
+    {
+      "relation": "maternal_sibling",
+      "label_id": "saudara_seibu",
+      "label": "Saudara/i seibu",
+      "count": 2,
+      "share": {
+        "numerator": 2,
+        "denominator": 9,
+        "text": "2/9",
+        "float": 0.2222222222222222
+      },
+      "per_head": {
+        "numerator": 1,
+        "denominator": 9,
+        "text": "1/9",
+        "float": 0.1111111111111111
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:maternal_sibling:1/3|aul:6->9",
+      "reason": "2 saudara seibu bersama-sama mendapat 1/3, dibagi rata tanpa membedakan laki-laki dan perempuan. (dikurangi proporsional karena 'aul: 6→9).",
+      "source_id": "quran-nisa-12",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    },
+    {
+      "relation": "full_sister",
+      "label_id": "saudari_kandung",
+      "label": "Saudari kandung",
+      "count": 2,
+      "share": {
+        "numerator": 4,
+        "denominator": 9,
+        "text": "4/9",
+        "float": 0.4444444444444444
+      },
+      "per_head": {
+        "numerator": 2,
+        "denominator": 9,
+        "text": "2/9",
+        "float": 0.2222222222222222
+      },
+      "category": "furud",
+      "category_label": "Bagian tetap (furud)",
+      "asabah_type": null,
+      "rule_applied": "furud:full_sister:2/3|aul:6->9",
+      "reason": "2 saudari kandung bersama-sama mendapat 2/3. (dikurangi proporsional karena 'aul: 6→9).",
+      "source_id": "quran-nisa-176",
+      "amount": "0.00",
+      "per_head_amount": "0.00"
+    }
+  ],
+  "blocked": [],
+  "steps": [
+    {
+      "step": "debts",
+      "title": "Pelunasan kewajiban atas harta peninggalan",
+      "detail": "Belum ada nilai harta yang dimasukkan, sehingga hasil di bawah hanya berupa pecahan bagian. Bila nilai harta diisi, urutannya: biaya pengurusan jenazah dibayar lebih dulu, lalu utang almarhum, lalu wasiat (maksimal 1/3 dari sisa) — baru sisanya dibagi kepada ahli waris.",
+      "source_id": "ijma-debts-first",
+      "data": {
+        "gross": "0",
+        "funeral": "0",
+        "debts": "0",
+        "wasiyya": "0",
+        "wasiyya_capped": false,
+        "after_wasiyya": "0"
+      }
+    },
+    {
+      "step": "hajb",
+      "title": "Penghalangan (hajb)",
+      "detail": "Ahli waris yang terhalang: tidak ada.",
+      "source_id": null,
+      "data": {
+        "blocked": [],
+        "source_ids": []
+      }
+    },
+    {
+      "step": "furud",
+      "title": "Bagian tetap (furud muqaddarah)",
+      "detail": "Suami mendapat 1/2 karena tidak ada keturunan.; 2 saudara seibu bersama-sama mendapat 1/3, dibagi rata tanpa membedakan laki-laki dan perempuan.; 2 saudari kandung bersama-sama mendapat 2/3.",
+      "source_id": null,
+      "data": {
+        "source_ids": [
+          "quran-nisa-12",
+          "quran-nisa-176"
+        ]
+      }
+    },
+    {
+      "step": "aul",
+      "title": "'Aul — pengurangan proporsional",
+      "detail": "Atas pokok masalah 6, bagian-bagian tetap berjumlah 3 + 2 + 4 = 9 bagian — lebih besar dari 6, sehingga harta tidak cukup. Pokok masalah dinaikkan menjadi 9: setiap ahli waris tetap memegang jumlah bagian yang sama, tetapi kini dihitung atas 9, sehingga totalnya kembali menjadi 1.",
+      "source_id": "classical-aul-umar",
+      "data": {
+        "pokok_masalah": 6,
+        "aul_base": 9,
+        "siham": [
+          3,
+          2,
+          4
+        ]
+      }
+    }
+  ],
+  "notes": [],
+  "disclaimer": "Hasil ini bersifat advisory dan tidak menggantikan penetapan resmi. Setiap kaidah disertai rujukan; verifikasi tetap tanggung jawab pengguna profesional. Bukan dokumen hukum yang mengikat.",
+  "sources": {
+    "classical-aul-umar": {
+      "id": "classical-aul-umar",
+      "type": "ijma",
+      "reference": "'Aul doctrine, attributed to 'Umar ibn al-Khattab; Sahabah consensus",
+      "pointer": "'aul",
+      "note": "Proportional reduction of shares when the pokok masalah is over-subscribed. Valid bases: 6→7/8/9/10, 12→13/15/17, 24→27.",
+      "note_id": "Pengurangan bagian secara proporsional ketika pokok masalah lebih kecil dari jumlah bagian. Pokok masalah yang sah: 6→7/8/9/10, 12→13/15/17, 24→27."
+    },
+    "ijma-debts-first": {
+      "id": "ijma-debts-first",
+      "type": "ijma",
+      "reference": "Consensus on netting the estate (funeral, debts, wasiat) before faraid",
+      "pointer": "tajhiz → dain → wasiat → mirath",
+      "note": "Cross-referenced with KHI Pasal 175 for the Indonesian sequence.",
+      "note_id": "Dirujuk silang dengan KHI Pasal 175 untuk urutan yang berlaku di Indonesia."
+    },
+    "quran-nisa-12": {
+      "id": "quran-nisa-12",
+      "type": "quran",
+      "reference": "QS An-Nisa 4:12",
+      "pointer": "4:12",
+      "note": "Spouse shares (husband 1/2 without child, 1/4 with child; wife 1/4 without child, 1/8 with child) and maternal (uterine) siblings — one gets 1/6, two or more share 1/3 collectively.",
+      "note_id": "Bagian pasangan (suami 1/2 tanpa anak, 1/4 dengan anak; istri 1/4 tanpa anak, 1/8 dengan anak) serta saudara seibu — seorang mendapat 1/6, dua atau lebih berbagi 1/3 secara kolektif."
+    },
+    "quran-nisa-176": {
+      "id": "quran-nisa-176",
+      "type": "quran",
+      "reference": "QS An-Nisa 4:176",
+      "pointer": "4:176",
+      "note": "Kalalah: full/paternal sister 1/2 (single) or 2/3 (two or more); a brother takes the residue in the 2:1 male:female ratio with sisters.",
+      "note_id": "Kalalah: saudari kandung/seayah 1/2 (tunggal) atau 2/3 (dua atau lebih); saudara laki-laki mengambil sisa dengan perbandingan 2:1 laki-laki:perempuan bersama saudari."
+    }
+  },
+  "divergence": {
+    "ruleset": "syafii",
+    "ruleset_label": "Syafi'i (klasik)",
+    "counterpart": "khi",
+    "counterpart_label": "KHI (Kompilasi Hukum Islam)",
+    "status": "same",
+    "harta_bersama_only": false,
+    "rows": []
+  }
+}
