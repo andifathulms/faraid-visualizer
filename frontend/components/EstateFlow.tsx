@@ -99,7 +99,6 @@ const GAP_XS = 6;
 const GAP_S = 12;
 const GAP_M = 22;
 const CITE_H = 26;
-const CITE_H_OPEN = 62;
 const BRANCH_ROW_H = 34;
 const SEG_MIN_W = 3;
 
@@ -188,16 +187,29 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
     id ? result.sources[id] : undefined;
 
   /**
+   * A step can apply MORE than one rule (furud assigns a different basis per heir, hajb
+   * excludes each blocked heir under its own citation) — mirrors ResultView.tsx's
+   * stepSources(), the existing pattern for exactly this case, so a stage with mixed
+   * sources still gets a gold line instead of silently having none.
+   */
+  function stepSourceIds(step: { source_id: string | null; data?: Record<string, unknown> } | undefined): string[] {
+    const many = step?.data?.source_ids;
+    if (Array.isArray(many) && many.length) return many.filter((x): x is string => typeof x === "string");
+    return step?.source_id ? [step.source_id] : [];
+  }
+
+  /**
    * Gold rule-line, drawn IN PLACE at the stage transition it belongs to (DESIGN.md
    * §5.4: "the visible skeleton of the derivation", not a list beside it). A real
    * <button>, so it is keyboard-focusable in pipeline/DOM order; activating it reveals
-   * the same reference + note ShareItem's "why?" disclosure already carries.
+   * every citation the stage applied — the same reference + note ShareItem's "why?"
+   * disclosure used to carry, one block per source when more than one fired.
    */
-  function citeAnchor(key: string, sourceId: string | null | undefined, label: string) {
-    const s = src(sourceId);
-    if (!s) return;
+  function citeLine(key: string, sourceIds: string[], label: string) {
+    const found = sourceIds.map((id) => src(id)).filter((s): s is SourceCitation => !!s);
+    if (found.length === 0) return;
     const isOpen = openCite === key;
-    const h = isOpen ? CITE_H_OPEN : CITE_H;
+    const h = isOpen ? CITE_H + found.length * 32 : CITE_H;
     const cy = y;
     const btnId = `${uid}-${key}`;
     blocks.push(
@@ -214,22 +226,32 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
           }}
           title={tr(T.citationHint, lang)}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", whiteSpace: "nowrap" }}>
               {label}
             </span>
-            <span aria-hidden="true" style={{ flex: 1, height: 1, background: "var(--gold)", opacity: isOpen ? 1 : 0.55 }} />
-            <span className="cite" style={{ marginLeft: 0 }}>{s.pointer}</span>
+            <span aria-hidden="true" style={{ flex: 1, minWidth: 12, height: 1, background: "var(--gold)", opacity: isOpen ? 1 : 0.55 }} />
+            {found.map((s) => (
+              <span className="cite" style={{ marginLeft: 0 }} key={s.id}>{s.pointer}</span>
+            ))}
           </div>
           {isOpen && (
-            <div id={`${btnId}-panel`} style={{ marginTop: 4, fontSize: 10, lineHeight: 1.4, color: "var(--text-muted)", whiteSpace: "normal" }}>
-              <strong style={{ color: "var(--text)" }}>{s.reference}</strong> — {citationNote(s, lang)}
+            <div id={`${btnId}-panel`} style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
+              {found.map((s) => (
+                <div key={s.id} style={{ fontSize: 10, lineHeight: 1.4, color: "var(--text-muted)", whiteSpace: "normal" }}>
+                  <strong style={{ color: "var(--text)" }}>{s.reference}</strong> — {citationNote(s, lang)}
+                </div>
+              ))}
             </div>
           )}
         </button>
       </foreignObject>
     );
     y += h;
+  }
+
+  function citeAnchor(key: string, step: { source_id: string | null; data?: Record<string, unknown> } | undefined, label: string) {
+    citeLine(key, stepSourceIds(step), label);
   }
 
   function bar(key: string, label: string, sub: string, w = TRUNK_W) {
@@ -375,11 +397,11 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
     if (Number(e.funeral_costs) > 0) deduction("d-funeral", tr(T.funeral, lang), e.funeral_costs);
     if (Number(e.debts) > 0) deduction("d-debts", tr(T.debts, lang), e.debts);
     if (Number(e.wasiyya) > 0) deduction("d-wasiyya", tr(T.wasiyya, lang), e.wasiyya);
-    citeAnchor("cite-debts", debtsStep?.source_id, tr(T.deductions, lang));
+    citeAnchor("cite-debts", debtsStep, tr(T.deductions, lang));
     if (Number(e.harta_bersama_deducted) > 0) {
       const hbStep = result.steps.find((s) => s.step === "harta_bersama");
       deduction("d-hb", tr(T.hb, lang), e.harta_bersama_deducted);
-      citeAnchor("cite-hb", hbStep?.source_id, tr(T.hb, lang));
+      citeAnchor("cite-hb", hbStep, tr(T.hb, lang));
     }
     bar("net", tr(T.net, lang), formatMoney(e.net_divisible, lang));
   } else {
@@ -390,7 +412,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
   // ---- Stage 4: hajb — blocked heirs branch off and terminate ---------------------
   if (result.blocked.length > 0) {
     const hajbStep = result.steps.find((s) => s.step === "hajb");
-    citeAnchor("cite-hajb", hajbStep?.source_id, tr(T.hajb, lang));
+    citeAnchor("cite-hajb", hajbStep, tr(T.hajb, lang));
     branches(result.blocked);
     y += GAP_S;
   }
@@ -419,7 +441,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
 
   if (furudGroup.length > 0) {
     const furudStep = result.steps.find((s) => s.step === "furud");
-    citeAnchor("cite-furud", furudStep?.source_id, tr(T.furud, lang));
+    citeAnchor("cite-furud", furudStep, tr(T.furud, lang));
 
     if (result.aul_applied && result.aul_base != null) {
       // Overhang row: claimed shares BEFORE 'aul. `numerator` is held constant by
@@ -471,7 +493,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
 
   if (asabahGroup.length > 0) {
     const asabahStep = result.steps.find((s) => s.step === "asabah");
-    citeAnchor("cite-asabah", asabahStep?.source_id, tr(T.asabah, lang));
+    citeAnchor("cite-asabah", asabahStep, tr(T.asabah, lang));
     const widths = shareWidths(asabahGroup, TRUNK_W);
     const segs = asabahGroup.map((s, i) => segFor(s, widths[i].x, widths[i].w));
     segRow("asabah", segs);
@@ -480,7 +502,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
   // ---- Stage 8: dzawil arham — only if the pipeline actually assigned it ----------
   const dzawilGroup = awarded.filter((s) => s.category === "dzawil_arham");
   if (dzawilGroup.length > 0) {
-    citeAnchor("cite-dzawil", dzawilGroup[0].source_id, tr(T.dzawil, lang));
+    citeLine("cite-dzawil", Array.from(new Set(dzawilGroup.map((s) => s.source_id))), tr(T.dzawil, lang));
     const widths = shareWidths(dzawilGroup, TRUNK_W);
     const segs = dzawilGroup.map((s, i) => segFor(s, widths[i].x, widths[i].w));
     segRow("dzawil", segs);
