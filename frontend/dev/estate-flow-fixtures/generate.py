@@ -122,6 +122,18 @@ def main() -> None:
          "full_brothers": 1, "full_sisters": 1},
         "khi")
 
+    # Regression: hajb blocking three heirs under three DIFFERENT citations puts three
+    # .cite chips on one gold line. Inline+flexWrap made the real rendered height depend
+    # on the container's pixel width (fine at some widths, silently overlapping the
+    # branches below it at others) — the same underlying mistake as the long-label fix
+    # above, just in citeLine() instead of branches(). blocked_multiple above has two
+    # blocked heirs but only ONE citation between them (both blocked by the same rule),
+    # so it never exercised the multi-citation-per-line path.
+    gen("blocked_hajb_multi_citation",
+        {"husband": True, "sons": 2, "daughters": 1, "father": True,
+         "paternal_grandmother": True, "grandsons_via_son": 1, "full_brothers": 1},
+        "khi", estate=MONEY)
+
     # Dzawil arham — see gen_dzawil_arham_refusal().
     gen_dzawil_arham_refusal()
 

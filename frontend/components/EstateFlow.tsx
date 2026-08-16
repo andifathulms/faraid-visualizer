@@ -265,7 +265,21 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     const found = sourceIds.map((id) => src(id)).filter((s): s is SourceCitation => !!s);
     if (found.length === 0) return;
     const isOpen = openCite === key;
-    const h = isOpen ? CITE_H + found.length * 32 : CITE_H;
+    // Citation chips always stack one per row below the label+rule line, rather than
+    // wrapping inline with it — a stage with several distinct sources (hajb blocking
+    // three different heirs under three different citations is the case that broke
+    // this) made an inline flex-wrap row's real rendered height depend on the
+    // container's pixel width, which this component has no way to know at layout time
+    // (the SVG scales responsively; a row that fits on one line at 1440px can wrap at
+    // 320px, or even at 1440px once there are simply enough chips). A fixed, one-row
+    // height reserved for content that can silently become two rows is exactly the bug
+    // class the branches() label fix (see its own comment) already fixed once — this
+    // makes the same mistake unreachable here by never wrapping in the first place:
+    // each row's content is one short chip, which does not itself wrap at any
+    // reasonable width, so the height this reserves is always exactly right.
+    const CHIP_ROW_H = 15;
+    const closedH = CITE_H + found.length * CHIP_ROW_H;
+    const h = isOpen ? closedH + found.length * 32 : closedH;
     const cy = y;
     const btnId = `${uid}-${key}`;
     citeOverlays.push({
@@ -285,7 +299,7 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
           }}
           title={tr(T.citationHint, lang)}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {/* DESIGN.md §7: "they diverge at a specific gold line" — the compared
                 counterpart is identical everywhere above this. Stays inside the gold
                 family (badge-gold), never the warning/error treatment — a divergence
@@ -305,6 +319,8 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
                 opacity: isOpen || opts.divergent ? 1 : 0.55,
               }}
             />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2, marginTop: 2 }}>
             {found.map((s) => (
               <span className="cite" style={{ marginLeft: 0 }} key={s.id}>{s.pointer}</span>
             ))}
