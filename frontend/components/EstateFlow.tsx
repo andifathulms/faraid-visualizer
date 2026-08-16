@@ -218,6 +218,11 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
   }
 
   const blocks: JSX.Element[] = [];
+  // Citation buttons — rendered as an HTML overlay OUTSIDE the aria-hidden svg; see
+  // citeLine()'s comment for why. `y`/`h` are in the same SVG user-coordinate units as
+  // everything else and get converted to a percentage of totalH at render time, once
+  // totalH is known.
+  const citeOverlays: { key: string; y: number; h: number; node: JSX.Element }[] = [];
   let y = 0;
 
   const src = (id: string | null | undefined): SourceCitation | undefined =>
@@ -236,11 +241,23 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
   }
 
   /**
-   * Gold rule-line, drawn IN PLACE at the stage transition it belongs to (DESIGN.md
-   * §5.4: "the visible skeleton of the derivation", not a list beside it). A real
-   * <button>, so it is keyboard-focusable in pipeline/DOM order; activating it reveals
-   * every citation the stage applied — the same reference + note ShareItem's "why?"
-   * disclosure used to carry, one block per source when more than one fired.
+   * Gold rule-line, positioned to align with the stage transition it belongs to
+   * (DESIGN.md §5.4: "the visible skeleton of the derivation", not a list beside it). A
+   * real <button>, so it is keyboard-focusable in pipeline/DOM order; activating it
+   * reveals every citation the stage applied — the same reference + note ShareItem's
+   * "why?" disclosure used to carry, one block per source when more than one fired.
+   *
+   * NOT drawn inside the <svg> — an earlier version put it there via <foreignObject>,
+   * which scripts/check-a11y.mjs caught (axe rule aria-hidden-focus) before it shipped:
+   * the svg root is aria-hidden="true" (DESIGN.md §5.6 — the diagram is genuinely
+   * decorative, the working table below is its real text equivalent), so a real,
+   * independently valuable focusable control living inside it is reachable by keyboard
+   * but invisible to a screen reader. aria-hidden="false" on the descendant is
+   * spec-legal but unreliably honored (this axe rule doesn't respect it, and neither do
+   * some AT/browser combinations) — the only robust fix is structural: this renders as
+   * plain HTML, a sibling of the svg, absolutely positioned to the same y using a
+   * percentage of the shared total height so it tracks the svg's own responsive scaling
+   * without needing to measure anything at runtime.
    */
   function citeLine(key: string, sourceIds: string[], label: string, opts: { divergent?: boolean } = {}) {
     const found = sourceIds.map((id) => src(id)).filter((s): s is SourceCitation => !!s);
@@ -249,8 +266,11 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     const h = isOpen ? CITE_H + found.length * 32 : CITE_H;
     const cy = y;
     const btnId = `${uid}-${key}`;
-    blocks.push(
-      <foreignObject key={key} x={0} y={cy} width={W} height={h}>
+    citeOverlays.push({
+      key,
+      y: cy,
+      h,
+      node: (
         <button
           type="button"
           id={btnId}
@@ -297,8 +317,8 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
             </div>
           )}
         </button>
-      </foreignObject>
-    );
+      ),
+    });
     y += h;
   }
 
@@ -579,15 +599,35 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     // overflow:visible (not the .flow-wrap class's own overflow:hidden, kept for
     // DerivationFlow) — an 'aul overhang has to actually be visible past the trunk.
     <div className="flow-wrap" style={{ height: "auto", padding: 12, background: "var(--surface)", overflow: "visible" }}>
-      <svg
-        role="img"
-        aria-hidden="true"
-        viewBox={`0 0 ${W} ${totalH}`}
-        width="100%"
-        style={{ display: "block", overflow: "visible" }}
-      >
-        {blocks}
-      </svg>
+      {/* position:relative anchors the citation overlay below to the same box the svg
+          occupies, so a percentage `top` lines each button up with its y in the svg's
+          own coordinate system — that box scales with viewport width exactly as the svg
+          does (same width, height set by the svg's own intrinsic aspect ratio), so the
+          two stay aligned without measuring anything at runtime. */}
+      <div style={{ position: "relative" }}>
+        <svg
+          role="img"
+          aria-hidden="true"
+          viewBox={`0 0 ${W} ${totalH}`}
+          width="100%"
+          style={{ display: "block", overflow: "visible" }}
+        >
+          {blocks}
+        </svg>
+        {citeOverlays.map((c) => (
+          <div
+            key={c.key}
+            style={{
+              position: "absolute",
+              left: 0, right: 0,
+              top: `${(c.y / totalH) * 100}%`,
+              height: `${(c.h / totalH) * 100}%`,
+            }}
+          >
+            {c.node}
+          </div>
+        ))}
+      </div>
 
       {/* Screen-reader / no-JS text equivalent: the working table below is the real
           alternative (DESIGN.md §5.6) — this just says so, matching DerivationFlow's
