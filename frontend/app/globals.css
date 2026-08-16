@@ -131,107 +131,157 @@
   --serif: var(--font-serif, Georgia, serif);
 
   --maxw: 1240px;
+
+  /* ---------------------------------------------------- Dark palette, declared once
+     Dark applies under TWO conditions that plain CSS cannot express as one rule: the OS
+     prefers it (a @media query) and no explicit choice overrides it, OR the user
+     explicitly chose dark (an attribute selector, regardless of OS). That used to mean
+     two rule bodies with the same ~30 hex/rgba values retyped in each, kept in sync only
+     by a comment asking a human to notice a mismatch across 130 lines.
+     Restructured so the VALUES exist exactly once, here, unconditionally declared (a
+     custom property costs nothing if unused) — the two trigger blocks below only ever
+     do `--x: var(--dark-x)`, a remap that can go missing but can never itself drift into
+     a different color. Same values as before; nothing here changes what dark mode looks
+     like, only how the two trigger paths can no longer disagree about it. */
+  --dark-bg: #121310;
+  --dark-bg-grad-1: #141611;
+  --dark-bg-grad-2: #10130f;
+  --dark-surface: #1c1e18;
+  --dark-surface-2: #23251e;
+  --dark-surface-inset: #191b15;
+  --dark-border: #31342a;
+  --dark-border-strong: #40432f;
+  --dark-text: #eceadf;        /* 12.8:1 */
+  --dark-text-muted: #b9b4a9;  /*  7.5:1 */
+  --dark-text-faint: #908a7a;  /*  4.5:1 */
+  --dark-primary: #33c398;
+  --dark-primary-strong: #46d1a7;
+  --dark-primary-soft: rgba(51, 195, 152, 0.12);
+  --dark-primary-softer: rgba(51, 195, 152, 0.07);
+  --dark-on-primary: #08130f;
+  --dark-gold: #d7b35c;
+  --dark-gold-soft: rgba(215, 179, 92, 0.14);
+  --dark-furud: #33c398;
+  --dark-asabah: #7096e6;
+  --dark-radd: #b493df;
+  --dark-dzawil: #34c3c3;
+  --dark-blocked: #e58a74;
+  --dark-danger: #e58a74;
+  --dark-danger-soft: rgba(229, 138, 116, 0.12);
+  --dark-warn: #d7b35c;
+  --dark-warn-soft: rgba(215, 179, 92, 0.12);
+  /* Lightened so the segments stay separable against the dark surface. */
+  --dark-heir-1: #34c191;
+  --dark-heir-2: #7ba0ee;
+  --dark-heir-3: #b394e2;
+  --dark-heir-4: #dcb75f;
+  --dark-heir-5: #3fc3c8;
+  --dark-heir-6: #ec8f74;
+  --dark-heir-7: #90c96a;
+  --dark-heir-8: #e089b5;
+  --dark-heir-9: #6fb3d4;
+  --dark-heir-10: #c2c85f;
+  --dark-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --dark-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --dark-shadow-lg: 0 24px 55px -24px rgba(0, 0, 0, 0.7);
+  --dark-ring: 0 0 0 3px rgba(51, 195, 152, 0.28);
 }
 
-/* Dark tokens apply when the OS prefers dark AND the user hasn't forced a theme… */
+/* Trigger 1: the OS prefers dark and the user hasn't forced a theme. Every line below is
+   a remap to the canonical --dark-* value above — edit the palette there, never here. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #121310;
-    --bg-grad-1: #141611;
-    --bg-grad-2: #10130f;
-    --surface: #1c1e18;
-    --surface-2: #23251e;
-    --surface-inset: #191b15;
-    --border: #31342a;
-    --border-strong: #40432f;
-
-    --text: #eceadf;        /* 12.8:1 */
-    --text-muted: #b9b4a9;  /*  7.5:1 */
-    --text-faint: #908a7a;  /*  4.5:1 */
-
-    --primary: #33c398;
-    --primary-strong: #46d1a7;
-    --primary-soft: rgba(51, 195, 152, 0.12);
-    --primary-softer: rgba(51, 195, 152, 0.07);
-    --on-primary: #08130f;
-
-    --gold: #d7b35c;
-    --gold-soft: rgba(215, 179, 92, 0.14);
-
-    --furud: #33c398;
-    --asabah: #7096e6;
-    --radd: #b493df;
-    --dzawil: #34c3c3;
-    --blocked: #e58a74;
-    --danger: #e58a74;
-    --danger-soft: rgba(229, 138, 116, 0.12);
-    --warn: #d7b35c;
-    --warn-soft: rgba(215, 179, 92, 0.12);
-
-    /* Lightened so the segments stay separable against the dark surface. */
-    --heir-1: #34c191;
-    --heir-2: #7ba0ee;
-    --heir-3: #b394e2;
-    --heir-4: #dcb75f;
-    --heir-5: #3fc3c8;
-    --heir-6: #ec8f74;
-    --heir-7: #90c96a;
-    --heir-8: #e089b5;
-    --heir-9: #6fb3d4;
-    --heir-10: #c2c85f;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 24px 55px -24px rgba(0, 0, 0, 0.7);
-    --ring: 0 0 0 3px rgba(51, 195, 152, 0.28);
+    --bg: var(--dark-bg);
+    --bg-grad-1: var(--dark-bg-grad-1);
+    --bg-grad-2: var(--dark-bg-grad-2);
+    --surface: var(--dark-surface);
+    --surface-2: var(--dark-surface-2);
+    --surface-inset: var(--dark-surface-inset);
+    --border: var(--dark-border);
+    --border-strong: var(--dark-border-strong);
+    --text: var(--dark-text);
+    --text-muted: var(--dark-text-muted);
+    --text-faint: var(--dark-text-faint);
+    --primary: var(--dark-primary);
+    --primary-strong: var(--dark-primary-strong);
+    --primary-soft: var(--dark-primary-soft);
+    --primary-softer: var(--dark-primary-softer);
+    --on-primary: var(--dark-on-primary);
+    --gold: var(--dark-gold);
+    --gold-soft: var(--dark-gold-soft);
+    --furud: var(--dark-furud);
+    --asabah: var(--dark-asabah);
+    --radd: var(--dark-radd);
+    --dzawil: var(--dark-dzawil);
+    --blocked: var(--dark-blocked);
+    --danger: var(--dark-danger);
+    --danger-soft: var(--dark-danger-soft);
+    --warn: var(--dark-warn);
+    --warn-soft: var(--dark-warn-soft);
+    --heir-1: var(--dark-heir-1);
+    --heir-2: var(--dark-heir-2);
+    --heir-3: var(--dark-heir-3);
+    --heir-4: var(--dark-heir-4);
+    --heir-5: var(--dark-heir-5);
+    --heir-6: var(--dark-heir-6);
+    --heir-7: var(--dark-heir-7);
+    --heir-8: var(--dark-heir-8);
+    --heir-9: var(--dark-heir-9);
+    --heir-10: var(--dark-heir-10);
+    --shadow-sm: var(--dark-shadow-sm);
+    --shadow-md: var(--dark-shadow-md);
+    --shadow-lg: var(--dark-shadow-lg);
+    --ring: var(--dark-ring);
   }
 }
 
-/* …and always when the user explicitly forces dark (overrides the OS in both directions;
-   forcing light simply falls back to the light :root above). */
+/* Trigger 2: the user explicitly forced dark — overrides the OS in both directions
+   (forcing light simply falls back to the light :root above, unmodified by either
+   trigger). Same remap as trigger 1, just unconditional rather than under the media
+   query, because CSS has no way to attach one rule body to two independent conditions
+   (a media feature and an attribute selector) at once. */
 :root[data-theme="dark"] {
-  --bg: #121310;
-  --bg-grad-1: #141611;
-  --bg-grad-2: #10130f;
-  --surface: #1c1e18;
-  --surface-2: #23251e;
-  --surface-inset: #191b15;
-  --border: #31342a;
-  --border-strong: #40432f;
-  --text: #eceadf;
-  --text-muted: #b9b4a9;
-  --text-faint: #908a7a;
-  --primary: #33c398;
-  --primary-strong: #46d1a7;
-  --primary-soft: rgba(51, 195, 152, 0.12);
-  --primary-softer: rgba(51, 195, 152, 0.07);
-  --on-primary: #08130f;
-  --gold: #d7b35c;
-  --gold-soft: rgba(215, 179, 92, 0.14);
-  --furud: #33c398;
-  --asabah: #7096e6;
-  --radd: #b493df;
-  --dzawil: #34c3c3;
-  --blocked: #e58a74;
-  --danger: #e58a74;
-  --danger-soft: rgba(229, 138, 116, 0.12);
-  --warn: #d7b35c;
-  --warn-soft: rgba(215, 179, 92, 0.12);
-  /* Keep in sync with the dark heir palette in the media query above. */
-  --heir-1: #34c191;
-  --heir-2: #7ba0ee;
-  --heir-3: #b394e2;
-  --heir-4: #dcb75f;
-  --heir-5: #3fc3c8;
-  --heir-6: #ec8f74;
-  --heir-7: #90c96a;
-  --heir-8: #e089b5;
-  --heir-9: #6fb3d4;
-  --heir-10: #c2c85f;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 24px 55px -24px rgba(0, 0, 0, 0.7);
-  --ring: 0 0 0 3px rgba(51, 195, 152, 0.28);
+  --bg: var(--dark-bg);
+  --bg-grad-1: var(--dark-bg-grad-1);
+  --bg-grad-2: var(--dark-bg-grad-2);
+  --surface: var(--dark-surface);
+  --surface-2: var(--dark-surface-2);
+  --surface-inset: var(--dark-surface-inset);
+  --border: var(--dark-border);
+  --border-strong: var(--dark-border-strong);
+  --text: var(--dark-text);
+  --text-muted: var(--dark-text-muted);
+  --text-faint: var(--dark-text-faint);
+  --primary: var(--dark-primary);
+  --primary-strong: var(--dark-primary-strong);
+  --primary-soft: var(--dark-primary-soft);
+  --primary-softer: var(--dark-primary-softer);
+  --on-primary: var(--dark-on-primary);
+  --gold: var(--dark-gold);
+  --gold-soft: var(--dark-gold-soft);
+  --furud: var(--dark-furud);
+  --asabah: var(--dark-asabah);
+  --radd: var(--dark-radd);
+  --dzawil: var(--dark-dzawil);
+  --blocked: var(--dark-blocked);
+  --danger: var(--dark-danger);
+  --danger-soft: var(--dark-danger-soft);
+  --warn: var(--dark-warn);
+  --warn-soft: var(--dark-warn-soft);
+  --heir-1: var(--dark-heir-1);
+  --heir-2: var(--dark-heir-2);
+  --heir-3: var(--dark-heir-3);
+  --heir-4: var(--dark-heir-4);
+  --heir-5: var(--dark-heir-5);
+  --heir-6: var(--dark-heir-6);
+  --heir-7: var(--dark-heir-7);
+  --heir-8: var(--dark-heir-8);
+  --heir-9: var(--dark-heir-9);
+  --heir-10: var(--dark-heir-10);
+  --shadow-sm: var(--dark-shadow-sm);
+  --shadow-md: var(--dark-shadow-md);
+  --shadow-lg: var(--dark-shadow-lg);
+  --ring: var(--dark-ring);
 }
 
 * { box-sizing: border-box; }
@@ -318,7 +368,7 @@ a { color: var(--primary); }
    bar, but no gradient tile or inner highlight of its own. */
 .brand-mark {
   width: var(--sp-10); height: var(--sp-10); flex: none;
-  border-radius: 12px;
+  border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   display: block;
 }
@@ -1212,7 +1262,7 @@ select {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
   max-width: 500px; width: 100%; padding: var(--sp-8); box-shadow: var(--shadow-lg);
 }
-.modal-emblem { width: var(--sp-12); height: var(--sp-12); border-radius: 15px; display: grid; place-items: center; background: var(--warn-soft); color: var(--warn); margin-bottom: var(--sp-4); }
+.modal-emblem { width: var(--sp-12); height: var(--sp-12); border-radius: var(--radius); display: grid; place-items: center; background: var(--warn-soft); color: var(--warn); margin-bottom: var(--sp-4); }
 .modal h2 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-xl); margin-bottom: var(--sp-3); }
 .modal p { color: var(--text-muted); margin-bottom: var(--sp-3); font-size: var(--fs-sm); }
 
@@ -1232,7 +1282,7 @@ select {
 
 /* ---------------------------------------------------- React Flow node styling */
 .flow-wrap { height: 560px; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: var(--sp-15); background: var(--surface-2); }
-.rf-node { border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface); padding: var(--sp-2) var(--sp-3); font-size: var(--fs-xs); width: 216px; box-shadow: var(--shadow-sm); }
+.rf-node { border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); padding: var(--sp-2) var(--sp-3); font-size: var(--fs-xs); width: 216px; box-shadow: var(--shadow-sm); }
 .rf-node .rf-title { font-weight: 700; margin-bottom: 3px; }
 .rf-node .rf-sub { color: var(--text-muted); font-size: var(--fs-2xs); font-variant-numeric: tabular-nums; }
 .rf-node.rf-blocked { border-color: color-mix(in srgb, var(--blocked) 55%, var(--border)); background: var(--danger-soft); }
