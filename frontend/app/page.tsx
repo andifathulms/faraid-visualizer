@@ -368,19 +368,15 @@ export default function Home() {
         </div>
       </header>
 
-      {/* The proposition, stated once, above the fold. Before this existed the only
-          explanation of the product was the 12px tagline under the wordmark — sized, in
-          this design system, for de-emphasised metadata. A stranger read the page as a
-          data-entry form and never learned that the derivation is the point. */}
+      {/* DESIGN.md build order step 6: one line of positioning, not a headline plus a
+          lede plus a value-prop list between the visitor and the tool while a 13MB
+          engine downloads behind it. The h1 alone carries that line — it is also the
+          page's SEO-matched heading (git history: "put the searched phrases in the
+          headings"), so it stays even though the lede it used to sit above does not.
+          The three points it used to sit above survive, unchanged, below MoreExamples. */}
       <section className="hero">
         <div className="hero-inner">
           <h1 className="hero-title">{t("hero_title")}</h1>
-          <p className="hero-lede">{t("hero_lede")}</p>
-          <ul className="hero-points">
-            <li><Icon name="sitemap" size={15} /> {t("hero_pt_reasoning")}</li>
-            <li><Icon name="book" size={15} /> {t("hero_pt_cited")}</li>
-            <li><Icon name="shield" size={15} /> {t("hero_pt_private")}</li>
-          </ul>
         </div>
       </section>
 
@@ -595,6 +591,20 @@ export default function Home() {
       {/* Ordinary page content below the tool: two more cases, worked. Static prose, so
           it is the same whether a visitor reads it or a crawler does. */}
       <MoreExamples />
+
+      {/* The three points that used to sit in the hero, between the visitor and the
+          tool (DESIGN.md build order step 6). Same copy, same order — the three
+          objections a stranger brings (black box, authority, privacy) still deserve an
+          answer, just not before the tool they came for. */}
+      <section className="hero-points-footer">
+        <div className="hero-points-footer-inner">
+          <ul className="hero-points">
+            <li><Icon name="sitemap" size={15} /> {t("hero_pt_reasoning")}</li>
+            <li><Icon name="book" size={15} /> {t("hero_pt_cited")}</li>
+            <li><Icon name="shield" size={15} /> {t("hero_pt_private")}</li>
+          </ul>
+        </div>
+      </section>
 
       {/* Stacked layout only — the desktop action bar lives inside the form card. */}
       <div className="mobile-actions">

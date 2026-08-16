@@ -335,6 +335,10 @@ a { color: var(--primary); }
 
    No background plate, no border: it reads as the page's own first paragraph
    rather than as another card competing with the two panes below it. */
+/* DESIGN.md build order step 6: one line of positioning, not a headline plus a lede
+   plus a value-prop list between the visitor and the tool. .hero-lede is gone; the
+   three points that used to sit here now live in .hero-points-footer, below
+   MoreExamples — same list markup, so .hero-points itself is unchanged. */
 .hero {
   max-width: var(--maxw);
   margin: 0 auto;
@@ -349,20 +353,13 @@ a { color: var(--primary); }
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
-.hero-lede {
-  margin-top: var(--sp-3);
-  font-size: var(--fs-md);
-  line-height: var(--lh-snug);
-  color: var(--text-muted);
-  text-wrap: pretty;
-}
 /* The three points answer the three objections a stranger brings: black box,
    authority, privacy. Kept to one line each — they are labels, not copy. */
 .hero-points {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2) var(--sp-5);
-  margin: var(--sp-4) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -376,18 +373,29 @@ a { color: var(--primary); }
 }
 .hero-points svg { color: var(--primary); flex: none; }
 
-/* The hero must not push the primary action below the fold on the commonest laptop
-   height. 1200px is where the two-pane layout still holds but the vertical budget stops
-   affording a 36px headline plus a lede plus a points row. */
 @media (max-width: 1200px), (max-height: 900px) {
   .hero-title { font-size: var(--fs-2xl); }
-  .hero-lede { font-size: var(--fs-base); }
 }
 @media (max-width: 940px) {
   .hero { padding-top: var(--sp-5); }
 }
 @media (max-width: 420px) {
   .hero { padding-left: var(--sp-3); padding-right: var(--sp-3); }
+}
+
+/* The points' new home — same border-top-plus-inner-padding shape MoreExamples
+   already established for "ordinary page content below the tool", just centered
+   since a bare list of three items reads oddly left-aligned at full page width. */
+.hero-points-footer { border-top: 1px solid var(--border); }
+.hero-points-footer-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6);
+  display: flex;
+  justify-content: center;
+}
+@media (max-width: 420px) {
+  .hero-points-footer-inner { padding-left: var(--sp-3); padding-right: var(--sp-3); }
 }
 
 .layout {
