@@ -1,0 +1,594 @@
+{
+  "id": {
+    "ruleset": "khi",
+    "mode": "personal",
+    "beta": false,
+    "pokok_masalah": 20,
+    "aul_applied": false,
+    "aul_base": null,
+    "radd_applied": false,
+    "working": {
+      "base": 20,
+      "pokok_masalah": 20,
+      "aul_base": null,
+      "aul_applied": false,
+      "radd_applied": false,
+      "rows": [
+        {
+          "label_id": "suami",
+          "label": "Suami",
+          "count": 1,
+          "category": "furud",
+          "share": {
+            "numerator": 1,
+            "denominator": 4,
+            "text": "1/4"
+          },
+          "siham": 5,
+          "per_head_siham": {
+            "numerator": 5,
+            "denominator": 1,
+            "text": "5"
+          }
+        },
+        {
+          "label_id": "anak_laki",
+          "label": "Anak laki-laki",
+          "count": 2,
+          "category": "asabah",
+          "share": {
+            "numerator": 3,
+            "denominator": 5,
+            "text": "3/5"
+          },
+          "siham": 12,
+          "per_head_siham": {
+            "numerator": 6,
+            "denominator": 1,
+            "text": "6"
+          }
+        },
+        {
+          "label_id": "anak_perempuan",
+          "label": "Anak perempuan",
+          "count": 1,
+          "category": "asabah",
+          "share": {
+            "numerator": 3,
+            "denominator": 20,
+            "text": "3/20"
+          },
+          "siham": 3,
+          "per_head_siham": {
+            "numerator": 3,
+            "denominator": 1,
+            "text": "3"
+          }
+        }
+      ],
+      "total_siham": 20,
+      "balanced": true
+    },
+    "coverage_gaps": [
+      {
+        "key": "wasiat_wajibah",
+        "kind": "silent",
+        "kind_label": "Tidak termasuk dalam hasil",
+        "title": "Wasiat wajibah untuk anak angkat",
+        "detail": "Anak angkat dan orang tua angkat tidak saling mewarisi secara faraid, namun KHI mewajibkan wasiat maksimal 1/3 di antara mereka. Aturan ini TIDAK dihitung di sini — hasil di atas tidak memuatnya sama sekali. Jika ada anak angkat dalam keluarga ini, hasil ini belum lengkap.",
+        "source_id": "khi-209",
+        "source": {
+          "id": "khi-209",
+          "type": "khi",
+          "reference": "KHI Pasal 209",
+          "pointer": "Pasal 209",
+          "note": "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted child and their adoptive parents, who do not inherit from one another under faraid. NOT implemented — see faraid_engine.coverage.",
+          "note_id": "Wasiat wajibah: wasiat wajib paling banyak 1/3 antara anak angkat dan orang tua angkatnya, yang tidak saling mewarisi secara faraid. TIDAK diimplementasikan — lihat faraid_engine.coverage."
+        }
+      },
+      {
+        "key": "dzawil_arham_capture",
+        "kind": "uncapturable",
+        "kind_label": "Tidak dapat dimasukkan",
+        "title": "Ahli waris dzawil arham",
+        "detail": "Kerabat seperti kakek dari ibu, anak dari anak perempuan, atau anak dari saudari belum dapat dimasukkan pada formulir ini, sehingga kasus yang hanya melibatkan mereka tidak dapat dihitung.",
+        "source_id": "classical-dzawil-arham",
+        "source": {
+          "id": "classical-dzawil-arham",
+          "type": "classical",
+          "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+          "pointer": "dzawil arham",
+          "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1).",
+          "note_id": "Baru tercapai bila tidak ada ashabul furud maupun asabah. Syafi'i/Maliki secara klasik menyalurkannya ke baitul mal; Hanafi/Hanbali membagikannya kepada dzawil arham (PRD §4.1)."
+        }
+      },
+      {
+        "key": "representation_scope",
+        "kind": "raises",
+        "kind_label": "Ditolak, tidak ditebak",
+        "title": "Ahli waris pengganti selain anak yang wafat",
+        "detail": "Hanya penggantian untuk anak laki-laki atau anak perempuan yang wafat lebih dulu yang didukung (KHI Pasal 185); selainnya ditolak.",
+        "source_id": "khi-185",
+        "source": {
+          "id": "khi-185",
+          "type": "khi",
+          "reference": "KHI Pasal 185",
+          "pointer": "Pasal 185",
+          "note": "Ahli waris pengganti (representation): children of an heir who predeceased the deceased may step into that heir's position, capped at the share the replaced heir would have received. NO classical Syafi'i equivalent (PRD §4.1).",
+          "note_id": "Ahli waris pengganti: anak dari ahli waris yang wafat lebih dulu dapat menggantikan kedudukannya, dibatasi sebesar bagian yang akan diterima ahli waris yang digantikan. TIDAK ada padanannya dalam fiqh Syafi'i klasik (PRD §4.1)."
+        }
+      }
+    ],
+    "estate": {
+      "gross_value": "120000000.00",
+      "funeral_costs": "0.00",
+      "debts": "20000000.00",
+      "wasiyya": "0.00",
+      "harta_bersama_deducted": "0.00",
+      "net_divisible": "100000000.00"
+    },
+    "shares": [
+      {
+        "relation": "husband",
+        "label_id": "suami",
+        "label": "Suami",
+        "count": 1,
+        "share": {
+          "numerator": 1,
+          "denominator": 4,
+          "text": "1/4",
+          "float": 0.25
+        },
+        "per_head": {
+          "numerator": 1,
+          "denominator": 4,
+          "text": "1/4",
+          "float": 0.25
+        },
+        "category": "furud",
+        "category_label": "Bagian tetap (furud)",
+        "asabah_type": null,
+        "rule_applied": "furud:husband:1/4",
+        "reason": "Suami mendapat 1/4 karena ada keturunan.",
+        "source_id": "khi-179",
+        "amount": "25000000.00",
+        "per_head_amount": "25000000.00"
+      },
+      {
+        "relation": "son",
+        "label_id": "anak_laki",
+        "label": "Anak laki-laki",
+        "count": 2,
+        "share": {
+          "numerator": 3,
+          "denominator": 5,
+          "text": "3/5",
+          "float": 0.6
+        },
+        "per_head": {
+          "numerator": 3,
+          "denominator": 10,
+          "text": "3/10",
+          "float": 0.3
+        },
+        "category": "asabah",
+        "category_label": "Sisa (asabah)",
+        "asabah_type": "bi_nafsihi",
+        "rule_applied": "asabah:bi_nafsihi:son",
+        "reason": "Anak laki-laki menjadi asabah dan mengambil sisa bersama Anak perempuan, dibagi 2:1 (laki-laki dua bagian, perempuan satu). Sisa 3/4 dibagi 5 bagian (2×2 + 1×1); Anak laki-laki mengambil 4 bagian.",
+        "source_id": "hadith-asabah-ibn-abbas",
+        "amount": "60000000.00",
+        "per_head_amount": "30000000.00"
+      },
+      {
+        "relation": "daughter",
+        "label_id": "anak_perempuan",
+        "label": "Anak perempuan",
+        "count": 1,
+        "share": {
+          "numerator": 3,
+          "denominator": 20,
+          "text": "3/20",
+          "float": 0.15
+        },
+        "per_head": {
+          "numerator": 3,
+          "denominator": 20,
+          "text": "3/20",
+          "float": 0.15
+        },
+        "category": "asabah",
+        "category_label": "Sisa (asabah)",
+        "asabah_type": "bi_ghairihi",
+        "rule_applied": "asabah:bi_ghairihi:daughter",
+        "reason": "Anak perempuan menjadi asabah bi ghairihi — yaitu menjadi ahli waris sisa karena hadirnya Anak laki-laki — dan mengambil 1 dari 5 bagian sisa.",
+        "source_id": "hadith-asabah-ibn-abbas",
+        "amount": "15000000.00",
+        "per_head_amount": "15000000.00"
+      }
+    ],
+    "blocked": [],
+    "steps": [
+      {
+        "step": "debts",
+        "title": "Pelunasan kewajiban atas harta peninggalan",
+        "detail": "Kotor 120000000.00 − biaya pemakaman 0.00 − utang 20000000.00 − wasiat 0.00 = 100000000.00. Urutan ini tetap: jenazah, utang, wasiat, baru waris.",
+        "source_id": "khi-175",
+        "data": {
+          "gross": "120000000.00",
+          "funeral": "0.00",
+          "debts": "20000000.00",
+          "wasiyya": "0.00",
+          "wasiyya_capped": false,
+          "after_wasiyya": "100000000.00"
+        }
+      },
+      {
+        "step": "hajb",
+        "title": "Penghalangan (hajb)",
+        "detail": "Ahli waris yang terhalang: tidak ada.",
+        "source_id": null,
+        "data": {
+          "blocked": [],
+          "source_ids": []
+        }
+      },
+      {
+        "step": "furud",
+        "title": "Bagian tetap (furud muqaddarah)",
+        "detail": "Suami mendapat 1/4 karena ada keturunan.",
+        "source_id": "khi-179",
+        "data": {
+          "source_ids": [
+            "khi-179"
+          ]
+        }
+      },
+      {
+        "step": "asabah",
+        "title": "Pembagian sisa (asabah)",
+        "detail": "Anak laki-laki menjadi asabah dan mengambil sisa bersama Anak perempuan, dibagi 2:1 (laki-laki dua bagian, perempuan satu). Sisa 3/4 dibagi 5 bagian (2×2 + 1×1); Anak laki-laki mengambil 4 bagian.",
+        "source_id": "hadith-asabah-ibn-abbas",
+        "data": {
+          "residue": "3/4",
+          "units": 5,
+          "males": 2,
+          "females": 1
+        }
+      }
+    ],
+    "notes": [],
+    "disclaimer": "Ini adalah alat bantu edukasi, BUKAN fatwa atau putusan hukum. Untuk pembagian waris yang sah, konsultasikan dengan ustadz, notaris, atau PPAIW / Pengadilan Agama.",
+    "sources": {
+      "hadith-asabah-ibn-abbas": {
+        "id": "hadith-asabah-ibn-abbas",
+        "type": "hadith",
+        "reference": "Sahih al-Bukhari 6732 / Sahih Muslim 1615, narrated Ibn 'Abbas",
+        "pointer": "Bukhari 6732; Muslim 1615",
+        "note": "\"Give the fixed shares (fara'id) to those entitled to them; whatever remains goes to the nearest male ('asabah).\" Basis of the residuary rule.",
+        "note_id": "Dasar kaidah asabah: bagian-bagian tetap (fara'id) diberikan lebih dulu kepada yang berhak, dan sisanya menjadi hak kerabat laki-laki terdekat ('asabah)."
+      },
+      "khi-175": {
+        "id": "khi-175",
+        "type": "khi",
+        "reference": "KHI Pasal 175",
+        "pointer": "Pasal 175",
+        "note": "Ordering of obligations on the estate: funeral costs, then debts, then wasiat (max 1/3), then division among heirs.",
+        "note_id": "Urutan kewajiban atas harta peninggalan: biaya pengurusan jenazah, lalu utang, lalu wasiat (maksimal 1/3), baru dibagi kepada ahli waris."
+      },
+      "khi-179": {
+        "id": "khi-179",
+        "type": "khi",
+        "reference": "KHI Pasal 179",
+        "pointer": "Pasal 179",
+        "note": "Widower (duda): 1/2 without child, 1/4 with child.",
+        "note_id": "Duda: 1/2 tanpa anak, 1/4 dengan anak."
+      }
+    },
+    "divergence": {
+      "ruleset": "khi",
+      "ruleset_label": "KHI (Kompilasi Hukum Islam)",
+      "counterpart": "syafii",
+      "counterpart_label": "Syafi'i (klasik)",
+      "status": "same",
+      "harta_bersama_only": false,
+      "rows": []
+    }
+  },
+  "en": {
+    "ruleset": "khi",
+    "mode": "personal",
+    "beta": false,
+    "pokok_masalah": 20,
+    "aul_applied": false,
+    "aul_base": null,
+    "radd_applied": false,
+    "working": {
+      "base": 20,
+      "pokok_masalah": 20,
+      "aul_base": null,
+      "aul_applied": false,
+      "radd_applied": false,
+      "rows": [
+        {
+          "label_id": "suami",
+          "label": "Husband",
+          "count": 1,
+          "category": "furud",
+          "share": {
+            "numerator": 1,
+            "denominator": 4,
+            "text": "1/4"
+          },
+          "siham": 5,
+          "per_head_siham": {
+            "numerator": 5,
+            "denominator": 1,
+            "text": "5"
+          }
+        },
+        {
+          "label_id": "anak_laki",
+          "label": "Son",
+          "count": 2,
+          "category": "asabah",
+          "share": {
+            "numerator": 3,
+            "denominator": 5,
+            "text": "3/5"
+          },
+          "siham": 12,
+          "per_head_siham": {
+            "numerator": 6,
+            "denominator": 1,
+            "text": "6"
+          }
+        },
+        {
+          "label_id": "anak_perempuan",
+          "label": "Daughter",
+          "count": 1,
+          "category": "asabah",
+          "share": {
+            "numerator": 3,
+            "denominator": 20,
+            "text": "3/20"
+          },
+          "siham": 3,
+          "per_head_siham": {
+            "numerator": 3,
+            "denominator": 1,
+            "text": "3"
+          }
+        }
+      ],
+      "total_siham": 20,
+      "balanced": true
+    },
+    "coverage_gaps": [
+      {
+        "key": "wasiat_wajibah",
+        "kind": "silent",
+        "kind_label": "Not included in the result",
+        "title": "Obligatory bequest (wasiat wajibah) for an adopted child",
+        "detail": "An adopted child and their adoptive parents do not inherit from one another under faraid, but KHI requires a bequest of up to 1/3 between them. That rule is NOT computed here — the result above omits it entirely. If this family includes an adopted child, this result is incomplete.",
+        "source_id": "khi-209",
+        "source": {
+          "id": "khi-209",
+          "type": "khi",
+          "reference": "KHI Pasal 209",
+          "pointer": "Pasal 209",
+          "note": "Wasiat wajibah: an obligatory bequest of at most 1/3 between an adopted child and their adoptive parents, who do not inherit from one another under faraid. NOT implemented — see faraid_engine.coverage.",
+          "note_id": "Wasiat wajibah: wasiat wajib paling banyak 1/3 antara anak angkat dan orang tua angkatnya, yang tidak saling mewarisi secara faraid. TIDAK diimplementasikan — lihat faraid_engine.coverage."
+        }
+      },
+      {
+        "key": "dzawil_arham_capture",
+        "kind": "uncapturable",
+        "kind_label": "Cannot be entered",
+        "title": "Distant kindred (dzawil arham)",
+        "detail": "Relatives such as a maternal grandfather, a daughter's children or a sister's children cannot be entered on this form, so a case involving only them cannot be calculated.",
+        "source_id": "classical-dzawil-arham",
+        "source": {
+          "id": "classical-dzawil-arham",
+          "type": "classical",
+          "reference": "Dzawil arham routing — az-Zuhaili, comparative madhab treatment",
+          "pointer": "dzawil arham",
+          "note": "Reached only when no ashabul furud/asabah exist. Syafi'i/Maliki classically route to baitul mal; Hanafi/Hanbali distribute to dzawil arham (PRD §4.1).",
+          "note_id": "Baru tercapai bila tidak ada ashabul furud maupun asabah. Syafi'i/Maliki secara klasik menyalurkannya ke baitul mal; Hanafi/Hanbali membagikannya kepada dzawil arham (PRD §4.1)."
+        }
+      },
+      {
+        "key": "representation_scope",
+        "kind": "raises",
+        "kind_label": "Refused, not guessed",
+        "title": "Substitute heirs other than a predeceased child",
+        "detail": "Only substitution for a predeceased son or daughter is supported (KHI Art. 185); anything else is refused.",
+        "source_id": "khi-185",
+        "source": {
+          "id": "khi-185",
+          "type": "khi",
+          "reference": "KHI Pasal 185",
+          "pointer": "Pasal 185",
+          "note": "Ahli waris pengganti (representation): children of an heir who predeceased the deceased may step into that heir's position, capped at the share the replaced heir would have received. NO classical Syafi'i equivalent (PRD §4.1).",
+          "note_id": "Ahli waris pengganti: anak dari ahli waris yang wafat lebih dulu dapat menggantikan kedudukannya, dibatasi sebesar bagian yang akan diterima ahli waris yang digantikan. TIDAK ada padanannya dalam fiqh Syafi'i klasik (PRD §4.1)."
+        }
+      }
+    ],
+    "estate": {
+      "gross_value": "120000000.00",
+      "funeral_costs": "0.00",
+      "debts": "20000000.00",
+      "wasiyya": "0.00",
+      "harta_bersama_deducted": "0.00",
+      "net_divisible": "100000000.00"
+    },
+    "shares": [
+      {
+        "relation": "husband",
+        "label_id": "suami",
+        "label": "Husband",
+        "count": 1,
+        "share": {
+          "numerator": 1,
+          "denominator": 4,
+          "text": "1/4",
+          "float": 0.25
+        },
+        "per_head": {
+          "numerator": 1,
+          "denominator": 4,
+          "text": "1/4",
+          "float": 0.25
+        },
+        "category": "furud",
+        "category_label": "Fixed share (furud)",
+        "asabah_type": null,
+        "rule_applied": "furud:husband:1/4",
+        "reason": "Husband receives a fixed share of 1/4.",
+        "source_id": "khi-179",
+        "amount": "25000000.00",
+        "per_head_amount": "25000000.00"
+      },
+      {
+        "relation": "son",
+        "label_id": "anak_laki",
+        "label": "Son",
+        "count": 2,
+        "share": {
+          "numerator": 3,
+          "denominator": 5,
+          "text": "3/5",
+          "float": 0.6
+        },
+        "per_head": {
+          "numerator": 3,
+          "denominator": 10,
+          "text": "3/10",
+          "float": 0.3
+        },
+        "category": "asabah",
+        "category_label": "Residuary (asabah)",
+        "asabah_type": "bi_nafsihi",
+        "rule_applied": "asabah:bi_nafsihi:son",
+        "reason": "Son takes the residue as asabah — 3/5.",
+        "source_id": "hadith-asabah-ibn-abbas",
+        "amount": "60000000.00",
+        "per_head_amount": "30000000.00"
+      },
+      {
+        "relation": "daughter",
+        "label_id": "anak_perempuan",
+        "label": "Daughter",
+        "count": 1,
+        "share": {
+          "numerator": 3,
+          "denominator": 20,
+          "text": "3/20",
+          "float": 0.15
+        },
+        "per_head": {
+          "numerator": 3,
+          "denominator": 20,
+          "text": "3/20",
+          "float": 0.15
+        },
+        "category": "asabah",
+        "category_label": "Residuary (asabah)",
+        "asabah_type": "bi_ghairihi",
+        "rule_applied": "asabah:bi_ghairihi:daughter",
+        "reason": "Daughter becomes residuary (2:1) alongside the male of the same class — 3/20.",
+        "source_id": "hadith-asabah-ibn-abbas",
+        "amount": "15000000.00",
+        "per_head_amount": "15000000.00"
+      }
+    ],
+    "blocked": [],
+    "steps": [
+      {
+        "step": "debts",
+        "title": "Settlement of obligations on the estate",
+        "detail": "Kotor 120000000.00 − biaya pemakaman 0.00 − utang 20000000.00 − wasiat 0.00 = 100000000.00. Urutan ini tetap: jenazah, utang, wasiat, baru waris.",
+        "source_id": "khi-175",
+        "data": {
+          "gross": "120000000.00",
+          "funeral": "0.00",
+          "debts": "20000000.00",
+          "wasiyya": "0.00",
+          "wasiyya_capped": false,
+          "after_wasiyya": "100000000.00"
+        }
+      },
+      {
+        "step": "hajb",
+        "title": "Blocking (hajb)",
+        "detail": "Ahli waris yang terhalang: tidak ada.",
+        "source_id": null,
+        "data": {
+          "blocked": [],
+          "source_ids": []
+        }
+      },
+      {
+        "step": "furud",
+        "title": "Fixed shares (furud muqaddarah)",
+        "detail": "Suami mendapat 1/4 karena ada keturunan.",
+        "source_id": "khi-179",
+        "data": {
+          "source_ids": [
+            "khi-179"
+          ]
+        }
+      },
+      {
+        "step": "asabah",
+        "title": "Residuary distribution (asabah)",
+        "detail": "Anak laki-laki menjadi asabah dan mengambil sisa bersama Anak perempuan, dibagi 2:1 (laki-laki dua bagian, perempuan satu). Sisa 3/4 dibagi 5 bagian (2×2 + 1×1); Anak laki-laki mengambil 4 bagian.",
+        "source_id": "hadith-asabah-ibn-abbas",
+        "data": {
+          "residue": "3/4",
+          "units": 5,
+          "males": 2,
+          "females": 1
+        }
+      }
+    ],
+    "notes": [],
+    "disclaimer": "This is an educational tool, NOT a fatwa or legal ruling. For a valid estate division, consult an ustadz, notary, or PPAIW / Religious Court.",
+    "sources": {
+      "hadith-asabah-ibn-abbas": {
+        "id": "hadith-asabah-ibn-abbas",
+        "type": "hadith",
+        "reference": "Sahih al-Bukhari 6732 / Sahih Muslim 1615, narrated Ibn 'Abbas",
+        "pointer": "Bukhari 6732; Muslim 1615",
+        "note": "\"Give the fixed shares (fara'id) to those entitled to them; whatever remains goes to the nearest male ('asabah).\" Basis of the residuary rule.",
+        "note_id": "Dasar kaidah asabah: bagian-bagian tetap (fara'id) diberikan lebih dulu kepada yang berhak, dan sisanya menjadi hak kerabat laki-laki terdekat ('asabah)."
+      },
+      "khi-175": {
+        "id": "khi-175",
+        "type": "khi",
+        "reference": "KHI Pasal 175",
+        "pointer": "Pasal 175",
+        "note": "Ordering of obligations on the estate: funeral costs, then debts, then wasiat (max 1/3), then division among heirs.",
+        "note_id": "Urutan kewajiban atas harta peninggalan: biaya pengurusan jenazah, lalu utang, lalu wasiat (maksimal 1/3), baru dibagi kepada ahli waris."
+      },
+      "khi-179": {
+        "id": "khi-179",
+        "type": "khi",
+        "reference": "KHI Pasal 179",
+        "pointer": "Pasal 179",
+        "note": "Widower (duda): 1/2 without child, 1/4 with child.",
+        "note_id": "Duda: 1/2 tanpa anak, 1/4 dengan anak."
+      }
+    },
+    "divergence": {
+      "ruleset": "khi",
+      "ruleset_label": "KHI (Indonesian state law)",
+      "counterpart": "syafii",
+      "counterpart_label": "Syafi'i (classical)",
+      "status": "same",
+      "harta_bersama_only": false,
+      "rows": []
+    }
+  }
+}
