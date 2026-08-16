@@ -136,7 +136,7 @@ def serialize_result(result: CalculationResult, lang: str = "id") -> dict:
                 "label": relation_label(b.relation.label_id, lang),
                 "count": b.count,
                 "blocked_by": b.blocked_by.value,
-                "blocked_by_label": b.blocked_by.label_id,
+                "blocked_by_label": relation_label(b.blocked_by.label_id, lang),
                 "reason": blocked_reason(b, lang),
                 "source_id": b.source_id,
                 "full": b.full,

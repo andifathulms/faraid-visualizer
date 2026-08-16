@@ -92,3 +92,39 @@ class TestPerHeadAmount:
         assert shares
         for s in shares:
             assert "per_head_amount" in s
+
+
+class TestBlockedByLabel:
+    """blocked_by_label must be the localized display name, matching every other
+    "_label" field on this object (label, category_label) — not the raw relation slug.
+
+    Regression: it was `b.blocked_by.label_id` (e.g. "anak_laki") rather than
+    `relation_label(...)` (e.g. "Anak laki-laki"). Nothing caught it because the
+    frontend's blocked-list only ever rendered `reason` (a full sentence that embeds the
+    blocker's name correctly via a separate code path) — EstateFlow.tsx was the first
+    consumer to render blocked_by_label directly, and it surfaced as a visibly broken
+    "terhalang oleh {slug}" line instead of a name a reader recognizes.
+    """
+
+    def test_is_a_display_name_not_a_slug(self):
+        result = calculate_payload(
+            {
+                "heirs": {"father": True, "paternal_grandfather": True, "sons": 1},
+                "ruleset": "khi",
+            }
+        )
+        blocked = result["blocked"]
+        assert blocked
+        entry = blocked[0]
+        assert entry["blocked_by"] == "father"
+        assert entry["blocked_by_label"] == "Ayah"
+
+    def test_localizes_to_english(self):
+        result = calculate_payload(
+            {
+                "heirs": {"father": True, "paternal_grandfather": True, "sons": 1},
+                "ruleset": "khi",
+                "lang": "en",
+            }
+        )
+        assert result["blocked"][0]["blocked_by_label"] == "Father"
