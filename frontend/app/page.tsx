@@ -28,10 +28,12 @@ import SensitivityPanel from "@/components/SensitivityPanel";
 import WorkedExample, { EXAMPLE_CASE } from "@/components/WorkedExample";
 import EstateScale from "@/components/EstateScale";
 import MoreExamples from "@/components/MoreExamples";
-import { preloadEngine } from "@/lib/engine";
+import EstateFlow from "@/components/EstateFlow";
+import { preloadEngine, subscribeEngine } from "@/lib/engine";
 import { Icon, Segmented } from "@/components/ui";
 import { clearStateFromUrl, currentShareUrl, decodeState, writeStateToUrl, type ShareableState } from "@/lib/urlstate";
 import { totalHeirs } from "@/lib/summary";
+import seedFlowData from "@/lib/generated/seed-flow.json";
 
 const RULESETS: Ruleset[] = ["khi", "syafii", "hanafi", "maliki", "hanbali"];
 
@@ -105,6 +107,14 @@ export default function Home() {
   const [pendingCalc, setPendingCalc] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // The before-first-calculation flow (DESIGN.md build order step 4): starts as the
+  // pre-authored static seed-flow.json (renders instantly, no engine required), then
+  // swaps in place for the engine's own live computation of the identical case once it
+  // boots. Same request, same figures — swapping is never visible as a layout change.
+  const [liveSeedFlow, setLiveSeedFlow] = useState<CalculationResult | null>(null);
+  const [seedFlowBootFailed, setSeedFlowBootFailed] = useState(false);
+  const seedFlowSwapping = useRef(false);
 
   const rulesetId = useId();
   const resultRef = useRef<HTMLElement | null>(null);
@@ -237,6 +247,31 @@ export default function Home() {
       /* surfaced by <EngineStatus />; a failure here must not break the form */
     });
   }, []);
+
+  // The moment the engine is ready — and only while nothing has been calculated yet —
+  // silently run the SAME seed case the static preview already shows and swap it in.
+  // Not routed through runCalc/onSubmit: this is never "the user's calculation", so it
+  // does not touch busy/result and does not need the disclaimer (PRD §7 gates a real
+  // calculation of the user's own case, not re-deriving the worked example already
+  // shown as prose below it). A boot failure leaves the static flow exactly as it was —
+  // it is a correct picture of a real case regardless of whether the runtime works.
+  useEffect(() => {
+    return subscribeEngine((state) => {
+      if (state.stage === "error") {
+        setSeedFlowBootFailed(true);
+        return;
+      }
+      if (state.stage !== "ready" || seedFlowSwapping.current || hasResult) return;
+      seedFlowSwapping.current = true;
+      void calculate({ heirs: SEED_HEIRS, ruleset: "khi", estate: SEED_ESTATE }, mode, lang)
+        .then(setLiveSeedFlow)
+        .catch(() => setSeedFlowBootFailed(true));
+    });
+    // Re-subscribing on every mode/lang change is cheap (subscribeEngine replays the
+    // current stage immediately) and is what lets the swap use whichever mode/lang the
+    // user has selected by the time the engine actually becomes ready, not whatever was
+    // current at mount.
+  }, [hasResult, mode, lang]);
 
   // Restore a shared link. Read after mount, not during render: the page is statically
   // prerendered, so touching window during render would be a hydration mismatch. Inputs are
@@ -531,12 +566,28 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className="card">
-              {/* A newcomer's only route to understanding used to be: fill in a form about
-                  a dead relative, accept a disclaimer, read a result. This is a complete
-                  case they can follow first, with the form already holding it. */}
-              <WorkedExample />
-            </div>
+            <>
+              {/* A newcomer's only route to understanding used to be: fill in a form
+                  about a dead relative, accept a disclaimer, read a result. This is a
+                  complete case they can see reasoned out first, with the form already
+                  holding it — the pre-authored flow renders before Pyodide has even
+                  started downloading, then swaps for the engine's own live computation
+                  of the identical case in place once it boots (DESIGN.md §6). */}
+              <div className="card card-pad">
+                <EstateFlow
+                  input={{ kind: "result", result: liveSeedFlow ?? (seedFlowData[lang] as unknown as CalculationResult) }}
+                  lang={lang}
+                />
+                {seedFlowBootFailed && !liveSeedFlow && (
+                  <p className="small muted" style={{ marginTop: "var(--sp-2)" }}>
+                    {t("seed_flow_boot_failed")}
+                  </p>
+                )}
+              </div>
+              <div className="card">
+                <WorkedExample />
+              </div>
+            </>
           )}
         </section>
       </main>

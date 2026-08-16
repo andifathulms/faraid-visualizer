@@ -312,9 +312,13 @@ export const STRINGS: Dict = {
   },
   engine_error: { id: "Mesin perhitungan gagal dimuat.", en: "The calculation engine failed to load." },
   engine_retry: { id: "Coba lagi", en: "Try again" },
+  // The example flow below is pre-authored (DESIGN.md build order step 4) and stays
+  // correct even if the engine never boots — this only explains why it stopped updating.
+  seed_flow_boot_failed: {
+    id: "Mesin perhitungan gagal dimuat, jadi angka di atas tidak dapat dihitung ulang untuk saat ini — namun tetap merupakan hasil yang benar untuk kasus contoh ini.",
+    en: "The calculation engine failed to load, so the figures above can't be recalculated right now — they're still a correct result for this example case.",
+  },
   pdf_preparing: { id: "Menyiapkan PDF…", en: "Preparing PDF…" },
-  view_table: { id: "Tabel", en: "Table" },
-  view_diagram: { id: "Diagram", en: "Diagram" },
 
   // Form sections
   sec_spouse: { id: "Pasangan", en: "Spouse" },
