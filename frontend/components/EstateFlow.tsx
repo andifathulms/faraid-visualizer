@@ -127,7 +127,9 @@ const GAP_XS = 6;
 const GAP_S = 12;
 const GAP_M = 22;
 const CITE_H = 26;
-const BRANCH_ROW_H = 34;
+// Tall enough for a two-line relation label ("Cucu laki-laki (dari anak laki)") plus
+// the blocked_by line beneath it, per branch — see the foreignObject height comment.
+const BRANCH_ROW_H = 60;
 const SEG_MIN_W = 3;
 
 const COLOR = {
@@ -447,14 +449,22 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
               />
               {/* Stop mark — cue #2 of 3 (dash pattern is cue #1). */}
               <line x1={x1} y1={by - 6} x2={x1} y2={by + 6} stroke={COLOR.blocked} strokeWidth={2} />
-              {/* Label sits in the reserved margin, to the right of the stop mark. */}
-              <foreignObject x={x1 + 8} y={by - 8} width={MARGIN_R - 8} height={22}>
-                <div style={{ ...boxStyle, alignItems: "flex-start", justifyContent: "center", height: 22, gap: 0 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "var(--blocked)", textDecoration: "line-through" }}>
+              {/* Label sits in the reserved margin, to the right of the stop mark.
+                  height is generous (not the box's own font-implied minimum) because a
+                  real relation label can be long — "Cucu laki-laki (dari anak laki)" —
+                  and wraps to two lines before the blocked_by line even starts. A fixed,
+                  too-short box under justifyContent:"center" clips symmetrically from
+                  BOTH top and bottom once content overflows, which is what silently ate
+                  the first line of the label in exactly this case; flex-start clips only
+                  the bottom, so a still-too-long case degrades to a missing detail line
+                  rather than a mutilated primary label. */}
+              <foreignObject x={x1 + 8} y={by - 8} width={MARGIN_R - 8} height={56}>
+                <div style={{ ...boxStyle, alignItems: "flex-start", justifyContent: "flex-start", height: 56, gap: 2 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, lineHeight: 1.25, color: "var(--blocked)", textDecoration: "line-through" }}>
                     {b.label}
                   </span>
                   {/* Blocker's name — cue #3 of 3. */}
-                  <span style={{ fontSize: 9, color: "var(--text-muted)" }}>
+                  <span style={{ fontSize: 9, lineHeight: 1.25, color: "var(--text-muted)" }}>
                     {tr(T.blockedBy, lang)} {b.blocked_by_label}
                   </span>
                 </div>

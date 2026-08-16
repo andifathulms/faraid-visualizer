@@ -106,6 +106,22 @@ def main() -> None:
     gen("radd_spouse_excluded", {"wives": 1, "mother": True, "daughters": 1}, "khi",
         estate=MONEY)
 
+    # Regression: a long relation label ("Cucu laki-laki (dari anak laki)") wrapping to
+    # two lines inside the hajb branch's label box silently ate the whole first line and
+    # the blocked_by_label field turned out to be an unlocalized raw slug ("anak_laki")
+    # — both real bugs a user screenshot surfaced, neither caught by blocked_grandfather
+    # above (whose label and blocker are both short).
+    gen("blocked_long_label",
+        {"husband": True, "sons": 2, "daughters": 1, "father": True, "grandsons_via_son": 1},
+        "khi", estate=MONEY)
+
+    # Two blocked heirs at once — checks the taller per-branch label box (fixed alongside
+    # the long-label regression above) doesn't crowd an adjacent branch row.
+    gen("blocked_multiple",
+        {"sons": 1, "paternal_grandfather": True, "maternal_grandmother": True,
+         "full_brothers": 1, "full_sisters": 1},
+        "khi")
+
     # Dzawil arham — see gen_dzawil_arham_refusal().
     gen_dzawil_arham_refusal()
 
