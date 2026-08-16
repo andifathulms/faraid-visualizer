@@ -116,9 +116,50 @@ jobs:
         with:
           path: frontend/out
 
+  a11y:
+    name: Contrast + a11y regression check
+    # Ordering only — this rebuilds its own out/ rather than reusing build's artifact, so
+    # it stays as independent/self-contained as the other jobs. Built WITHOUT
+    # NEXT_PUBLIC_BASE_PATH (unlike the real deploy) so pages resolve at "/" for local
+    # serving; basePath only rewrites asset URLs, it does not change the DOM/ARIA tree
+    # these checks inspect (see scripts/check-a11y.mjs).
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Playwright's Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      # DESIGN.md §8: "add axe against the built pages and a contrast script over the
+      # token pairs, so the ratios already written into the comments become asserted
+      # rather than recorded."
+      - name: Contrast ratios (globals.css token pairs)
+        working-directory: frontend
+        run: npm run check:contrast
+
+      - name: axe-core against the built pages
+        working-directory: frontend
+        run: npm run check:a11y
+
   deploy:
     name: Deploy
-    needs: build
+    needs: [build, a11y]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
