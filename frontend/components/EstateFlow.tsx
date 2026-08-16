@@ -33,6 +33,33 @@ export interface ResultFlow {
 }
 export type EstateFlowInput = ResultFlow | UnsupportedFlow;
 
+export interface EstateFlowProps {
+  input: EstateFlowInput;
+  lang: Lang;
+  /**
+   * DESIGN.md §7 (compare mode): "Both flows share one scale. Different scales would
+   * make the comparison a lie." KHI and Syafi'i run the SAME request (same gross value,
+   * same deductions), so those stay comparable at a fixed width regardless — but KHI's
+   * harta-bersama separation can leave it with a smaller net_divisible than the
+   * counterpart ruleset computed from the identical input. Left undefined, a flow scales
+   * its net-divisible-onward stages to its OWN net_divisible (today's single-column
+   * behaviour, unchanged). Passed the larger of the compared entries' net_divisible
+   * amounts, both flows instead scale against that shared reference, so a ruleset that
+   * kept less to distribute visibly draws a narrower trunk from that point down — not a
+   * wager 100%-width bar telling the same lie two different absolute amounts.
+   */
+  scaleMaxNet?: string | null;
+  /**
+   * DESIGN.md §7: in compare mode, "they diverge at a specific gold line, and everything
+   * above that line is identical." The engine's `Step.step` key (e.g. "radd", "furud")
+   * of the first stage at which this ruleset's derivation actually differs from the
+   * counterpart being compared against — computed by ComparisonView, which is the one
+   * place two full derivations are ever in scope together. Undefined outside compare
+   * mode, where there is no counterpart to diverge from.
+   */
+  highlightStep?: string | null;
+}
+
 /* -------------------------------------------------------------- Local copy
    Not yet in lib/strings.ts: this component is standalone (not wired into the app),
    and DESIGN.md's build order wires citation/i18n integration in a later step. Kept
@@ -66,6 +93,7 @@ const T = {
   unsupportedTitle: { id: "Konfigurasi ini belum didukung", en: "This configuration isn't supported yet" },
   citationHint: { id: "Aktifkan untuk melihat rujukan", en: "Activate to see the citation" },
   aulInvalidTitle: { id: "Rasio 'aul tidak valid — ditolak", en: "Invalid 'aul ratio — refused" },
+  divergesHere: { id: "beda mulai di sini", en: "diverges here" },
 } as const;
 
 function tr(entry: { id: string; en: string }, lang: Lang): string {
@@ -143,7 +171,7 @@ function shareWidths(shares: Share[], trunkW: number): { x: number; w: number }[
 
 /* --------------------------------------------------------------- Component */
 
-export default function EstateFlow({ input, lang }: { input: EstateFlowInput; lang: Lang }) {
+export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: EstateFlowProps) {
   const uid = useId();
   const [openCite, setOpenCite] = useState<string | null>(null);
 
@@ -162,6 +190,15 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
   const e = result.estate;
   const hasMoney = !!e && Number(e.net_divisible) > 0;
   const awarded = result.shares.filter((s) => s.category !== "harta_bersama");
+
+  // Reference width for every stage from "net divisible" downward (hajb, furud, 'aul,
+  // radd, asabah, dzawil) — TRUNK_W scaled to this flow's own net_divisible share of
+  // scaleMaxNet when a shared scale is supplied, else TRUNK_W unchanged (the ordinary
+  // single-column case, and the "no estate entered" fractions-only case).
+  const netDivisible = hasMoney ? Number(e!.net_divisible) : 0;
+  const scaleRef = scaleMaxNet != null && Number(scaleMaxNet) > 0 ? Number(scaleMaxNet) : netDivisible;
+  const netScale = hasMoney && scaleRef > 0 ? Math.min(1, netDivisible / scaleRef) : 1;
+  const distW = hasMoney ? Math.max(SEG_MIN_W, netScale * TRUNK_W) : TRUNK_W;
 
   // 'Aul validity guard — refuse to draw an impossible ratio (DESIGN.md "Do not").
   if (result.aul_applied && result.aul_base != null) {
@@ -205,7 +242,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
    * every citation the stage applied — the same reference + note ShareItem's "why?"
    * disclosure used to carry, one block per source when more than one fired.
    */
-  function citeLine(key: string, sourceIds: string[], label: string) {
+  function citeLine(key: string, sourceIds: string[], label: string, opts: { divergent?: boolean } = {}) {
     const found = sourceIds.map((id) => src(id)).filter((s): s is SourceCitation => !!s);
     if (found.length === 0) return;
     const isOpen = openCite === key;
@@ -227,10 +264,25 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
           title={tr(T.citationHint, lang)}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            {/* DESIGN.md §7: "they diverge at a specific gold line" — the compared
+                counterpart is identical everywhere above this. Stays inside the gold
+                family (badge-gold), never the warning/error treatment — a divergence
+                between two bodies of law is information, per DivergenceNotice's own
+                existing, deliberately-non-alarming styling. */}
+            {opts.divergent && (
+              <span className="badge badge-gold" style={{ whiteSpace: "nowrap" }}>{tr(T.divergesHere, lang)}</span>
+            )}
             <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", whiteSpace: "nowrap" }}>
               {label}
             </span>
-            <span aria-hidden="true" style={{ flex: 1, minWidth: 12, height: 1, background: "var(--gold)", opacity: isOpen ? 1 : 0.55 }} />
+            <span
+              aria-hidden="true"
+              style={{
+                flex: 1, minWidth: 12, background: "var(--gold)",
+                height: opts.divergent ? 2 : 1,
+                opacity: isOpen || opts.divergent ? 1 : 0.55,
+              }}
+            />
             {found.map((s) => (
               <span className="cite" style={{ marginLeft: 0 }} key={s.id}>{s.pointer}</span>
             ))}
@@ -250,8 +302,14 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
     y += h;
   }
 
-  function citeAnchor(key: string, step: { source_id: string | null; data?: Record<string, unknown> } | undefined, label: string) {
-    citeLine(key, stepSourceIds(step), label);
+  function citeAnchor(
+    key: string,
+    step: { step?: string; source_id: string | null; data?: Record<string, unknown> } | undefined,
+    label: string
+  ) {
+    citeLine(key, stepSourceIds(step), label, {
+      divergent: !!highlightStep && step?.step === highlightStep,
+    });
   }
 
   function bar(key: string, label: string, sub: string, w = TRUNK_W) {
@@ -289,7 +347,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
   }
 
   function segRow(key: string, segs: Seg[], rowH = 68, overhangPastTrunk?: number) {
-    const maxX = overhangPastTrunk ?? TRUNK_W;
+    const maxX = overhangPastTrunk ?? distW;
     // Below this width a segment cannot fit every line without clipping inside its
     // foreignObject (SVG clips foreignObject content to its own box, unlike an
     // ordinary HTML overflow). Rather than let text spill invisibly, drop the two
@@ -306,8 +364,8 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
     const NARROW = 90;
     blocks.push(
       <g key={key}>
-        {maxX > TRUNK_W && (
-          <line x1={TRUNK_W} y1={y - 4} x2={TRUNK_W} y2={y + rowH + 4} stroke={COLOR.blocked} strokeDasharray="3 3" />
+        {maxX > distW && (
+          <line x1={distW} y1={y - 4} x2={distW} y2={y + rowH + 4} stroke={COLOR.blocked} strokeDasharray="3 3" />
         )}
         {segs.map((s) => {
           const narrow = s.w < NARROW;
@@ -356,8 +414,8 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
       <g key="hajb-branches">
         {entries.map((b, i) => {
           const by = y + i * BRANCH_ROW_H;
-          const x0 = TRUNK_W * 0.45;
-          const x1 = TRUNK_W; // terminates AT the trunk boundary, not past it
+          const x0 = distW * 0.45;
+          const x1 = distW; // terminates AT the trunk boundary, not past it
           return (
             <g key={b.relation}>
               <path
@@ -403,7 +461,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
       deduction("d-hb", tr(T.hb, lang), e.harta_bersama_deducted);
       citeAnchor("cite-hb", hbStep, tr(T.hb, lang));
     }
-    bar("net", tr(T.net, lang), formatMoney(e.net_divisible, lang));
+    bar("net", tr(T.net, lang), formatMoney(e.net_divisible, lang), distW);
   } else {
     bar("net-frac", tr(T.net, lang), tr(T.noEstate, lang));
   }
@@ -454,7 +512,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
       }));
       let cx = 0;
       const overSegs: Seg[] = claimed.map(({ s, frac, float }) => {
-        const w = Math.max(SEG_MIN_W, float * TRUNK_W);
+        const w = Math.max(SEG_MIN_W, float * distW);
         const seg = segFor(s, cx, w);
         seg.fracText = frac;
         seg.amountText = "";
@@ -472,29 +530,36 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
         </foreignObject>
       );
       y += 20 + GAP_XS;
-      const compWidths = shareWidths(furudGroup, TRUNK_W);
+      const aulStep = result.steps.find((s) => s.step === "aul");
+      citeAnchor("cite-aul", aulStep, tr(T.aulRatio, lang));
+      const compWidths = shareWidths(furudGroup, distW);
       const compSegs = furudGroup.map((s, i) => segFor(s, compWidths[i].x, compWidths[i].w));
       segRow("aul-compressed", compSegs);
-    } else if (result.radd_applied) {
-      const widths = shareWidths(furudGroup, TRUNK_W);
+    } else {
+      // apply_radd() (radd.py) is called whenever there's a furud-only surplus with no
+      // asabah, and it ALWAYS appends a "radd" step — including the branches where it
+      // decides NOT to redistribute (radd_applied stays false) and the surplus escheats
+      // to baitul mal instead. That routing choice is itself one of the three PRD §4.1
+      // divergence points named explicitly (KHI practice applies radd to a sole spouse;
+      // the classical majority view sends the surplus to baitul mal), so the step's
+      // presence — not radd_applied — is what decides whether this gets a gold line.
+      const widths = shareWidths(furudGroup, distW);
       const segs = furudGroup.map((s, i) =>
         segFor(s, widths[i].x, widths[i].w, {
           markRadd: s.category === "radd",
-          markExcluded: s.category === "furud",
+          markExcluded: result.radd_applied && s.category === "furud",
         })
       );
-      segRow("furud-radd", segs);
-    } else {
-      const widths = shareWidths(furudGroup, TRUNK_W);
-      const segs = furudGroup.map((s, i) => segFor(s, widths[i].x, widths[i].w));
-      segRow("furud", segs);
+      segRow(result.radd_applied ? "furud-radd" : "furud", segs);
+      const raddStep = result.steps.find((s) => s.step === "radd");
+      if (raddStep) citeAnchor("cite-radd", raddStep, tr(T.radd, lang));
     }
   }
 
   if (asabahGroup.length > 0) {
     const asabahStep = result.steps.find((s) => s.step === "asabah");
     citeAnchor("cite-asabah", asabahStep, tr(T.asabah, lang));
-    const widths = shareWidths(asabahGroup, TRUNK_W);
+    const widths = shareWidths(asabahGroup, distW);
     const segs = asabahGroup.map((s, i) => segFor(s, widths[i].x, widths[i].w));
     segRow("asabah", segs);
   }
@@ -503,7 +568,7 @@ export default function EstateFlow({ input, lang }: { input: EstateFlowInput; la
   const dzawilGroup = awarded.filter((s) => s.category === "dzawil_arham");
   if (dzawilGroup.length > 0) {
     citeLine("cite-dzawil", Array.from(new Set(dzawilGroup.map((s) => s.source_id))), tr(T.dzawil, lang));
-    const widths = shareWidths(dzawilGroup, TRUNK_W);
+    const widths = shareWidths(dzawilGroup, distW);
     const segs = dzawilGroup.map((s, i) => segFor(s, widths[i].x, widths[i].w));
     segRow("dzawil", segs);
   }

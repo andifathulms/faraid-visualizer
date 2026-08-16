@@ -240,7 +240,14 @@ export function InputSummary({ heirs }: { heirs: HeirsInput }) {
   );
 }
 
-export default function ResultView({ result }: { result: CalculationResult }) {
+export default function ResultView({
+  result, scaleMaxNet, highlightStep,
+}: {
+  result: CalculationResult;
+  scaleMaxNet?: string | null;
+  /** DESIGN.md §7 — the diverging rule-line, set only from compare mode. */
+  highlightStep?: string | null;
+}) {
   const { t, lang } = useI18n();
   const professional = result.mode === "professional";
   const e = result.estate;
@@ -257,8 +264,15 @@ export default function ResultView({ result }: { result: CalculationResult }) {
       {/* The estate descending through the pipeline, splitting — DESIGN.md §5. Absorbs
           what used to be three separate half-pictures of the same quantity: the
           summary/proportion bar, the estate-deduction sentence, and the per-share list
-          with its "why?" disclosures (the gold rule-lines carry that citation now). */}
-      <EstateFlow input={{ kind: "result", result }} lang={lang} />
+          with its "why?" disclosures (the gold rule-lines carry that citation now).
+          scaleMaxNet/highlightStep are set only from compare mode (DESIGN.md §7) — a
+          single result scales to its own net_divisible and highlights nothing. */}
+      <EstateFlow
+        input={{ kind: "result", result }}
+        lang={lang}
+        scaleMaxNet={scaleMaxNet}
+        highlightStep={highlightStep}
+      />
 
       {/* An estate was entered but nothing survives the deductions, so the shares carry no
           rupiah. Say why rather than quietly rendering fractions only — the usual cause is
