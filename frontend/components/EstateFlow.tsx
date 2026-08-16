@@ -127,9 +127,10 @@ const GAP_XS = 6;
 const GAP_S = 12;
 const GAP_M = 22;
 const CITE_H = 26;
-// Tall enough for a two-line relation label ("Cucu laki-laki (dari anak laki)") plus
-// the blocked_by line beneath it, per branch — see the foreignObject height comment.
-const BRANCH_ROW_H = 60;
+const HAJB_SPINE_X = 20;
+const HAJB_GROUP_HEAD_H = 22;
+const HAJB_ITEM_H = 24;
+const HAJB_GROUP_GAP = 8;
 const SEG_MIN_W = 3;
 
 const COLOR = {
@@ -447,50 +448,105 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     y += rowH + GAP_S;
   }
 
+  /**
+   * Blocked heirs, as a real tree: a spine drops from the hajb citation line (so it
+   * visibly hangs off something, not floating in blank space — the original version's
+   * biggest legibility problem) and branches to one node per DISTINCT blocker, which
+   * then sub-branches to every heir that blocker excludes. Mirrors the exact grouping
+   * SensitivityPanel.tsx already uses for this same shape of information ("several
+   * heirs sharing one blocker collapse onto a single row... the grouping IS the
+   * insight") — geometry now encodes who-blocks-whom instead of N identical parallel
+   * lines a reader has to read as text to tell apart.
+   *
+   * A blocker's group header is colored to match that heir's OWN segment further down
+   * (furud green / asabah blue / radd purple) when they are themselves awarded a share
+   * — which they always are, structurally: a hajb blocker is by definition a closer
+   * heir, so the same lookup that colors furud/asabah segments elsewhere finds them
+   * here too. That is a real, free visual link from "blocked by X" to X's own share,
+   * without drawing a line across the whole diagram to find it.
+   *
+   * Uses the full trunk width (distW), not a narrow margin strip — on top of the
+   * generous per-row height below, this makes the wrap-driven clipping bug this
+   * component has already hit twice structurally harder to hit a third time.
+   */
   function branches(entries: Blocked[]) {
+    const groups: { blockerRelation: string; blockerLabel: string; color: string; items: Blocked[] }[] = [];
+    const indexByBlocker = new Map<string, number>();
+    for (const b of entries) {
+      let idx = indexByBlocker.get(b.blocked_by);
+      if (idx === undefined) {
+        const blockerShare = awarded.find((s) => s.relation === b.blocked_by);
+        const color =
+          blockerShare?.category === "furud" ? COLOR.furud :
+          blockerShare?.category === "asabah" ? COLOR.asabah :
+          blockerShare?.category === "radd" ? COLOR.radd :
+          COLOR.blocked;
+        idx = groups.length;
+        groups.push({ blockerRelation: b.blocked_by, blockerLabel: b.blocked_by_label, color, items: [] });
+        indexByBlocker.set(b.blocked_by, idx);
+      }
+      groups[idx].items.push(b);
+    }
+
+    y += 6; // small breathing room below the citation line the spine hangs from
+    const spineTop = y;
+
+    groups.forEach((g) => {
+      const groupY = y;
+      blocks.push(
+        <g key={`hajb-g-${g.blockerRelation}`}>
+          <circle cx={HAJB_SPINE_X} cy={groupY} r={3} fill={g.color} />
+          {/* Blocker's name — cue #3 of 3 (dash pattern and stop mark are cues #1/#2,
+              per item below). Shared once per group rather than repeated per heir —
+              still immediately, visually adjacent to every dash it explains, via the
+              same spine, matching SensitivityPanel's established precedent for this
+              exact "several things, one cause" shape. */}
+          <foreignObject x={HAJB_SPINE_X + 12} y={groupY - 10} width={distW - HAJB_SPINE_X - 12} height={HAJB_GROUP_HEAD_H}>
+            <div style={{ display: "flex", alignItems: "center", height: HAJB_GROUP_HEAD_H }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: g.color }}>
+                {tr(T.blockedBy, lang)} {g.blockerLabel}
+              </span>
+            </div>
+          </foreignObject>
+        </g>
+      );
+      y += HAJB_GROUP_HEAD_H;
+
+      g.items.forEach((b) => {
+        const itemY = y;
+        const stopX = HAJB_SPINE_X + 20;
+        blocks.push(
+          <g key={b.relation}>
+            {/* Dash pattern — cue #1 of 3. */}
+            <line x1={HAJB_SPINE_X} y1={itemY} x2={stopX} y2={itemY} stroke={COLOR.blocked} strokeDasharray="3 3" strokeWidth={1.4} />
+            {/* Stop mark — cue #2 of 3. */}
+            <line x1={stopX} y1={itemY - 5} x2={stopX} y2={itemY + 5} stroke={COLOR.blocked} strokeWidth={2} />
+            <foreignObject x={stopX + 8} y={itemY - 9} width={distW - stopX - 8} height={HAJB_ITEM_H}>
+              <div style={{ display: "flex", alignItems: "center", height: HAJB_ITEM_H }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: "var(--blocked)", textDecoration: "line-through" }}>
+                  {b.label}{b.count > 1 ? ` ×${b.count}` : ""}
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        );
+        y += HAJB_ITEM_H;
+      });
+      y += HAJB_GROUP_GAP;
+    });
+
+    // Painted last so it sits at the same x every branch-point circle already occupies
+    // (a line passing through their centers reads as "nodes on a spine", which is the
+    // intent) — pushed after the groups only because their total height isn't known
+    // until they're laid out; z-order here is cosmetically inconsequential.
+    const spineBottom = y - HAJB_GROUP_GAP;
     blocks.push(
-      <g key="hajb-branches">
-        {entries.map((b, i) => {
-          const by = y + i * BRANCH_ROW_H;
-          const x0 = distW * 0.45;
-          const x1 = distW; // terminates AT the trunk boundary, not past it
-          return (
-            <g key={b.relation}>
-              <path
-                d={`M ${x0} ${by - BRANCH_ROW_H / 2} L ${x1} ${by}`}
-                fill="none"
-                stroke={COLOR.blocked}
-                strokeDasharray="4 4"
-                strokeWidth={1.6}
-              />
-              {/* Stop mark — cue #2 of 3 (dash pattern is cue #1). */}
-              <line x1={x1} y1={by - 6} x2={x1} y2={by + 6} stroke={COLOR.blocked} strokeWidth={2} />
-              {/* Label sits in the reserved margin, to the right of the stop mark.
-                  height is generous (not the box's own font-implied minimum) because a
-                  real relation label can be long — "Cucu laki-laki (dari anak laki)" —
-                  and wraps to two lines before the blocked_by line even starts. A fixed,
-                  too-short box under justifyContent:"center" clips symmetrically from
-                  BOTH top and bottom once content overflows, which is what silently ate
-                  the first line of the label in exactly this case; flex-start clips only
-                  the bottom, so a still-too-long case degrades to a missing detail line
-                  rather than a mutilated primary label. */}
-              <foreignObject x={x1 + 8} y={by - 8} width={MARGIN_R - 8} height={56}>
-                <div style={{ ...boxStyle, alignItems: "flex-start", justifyContent: "flex-start", height: 56, gap: 2 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, lineHeight: 1.25, color: "var(--blocked)", textDecoration: "line-through" }}>
-                    {b.label}
-                  </span>
-                  {/* Blocker's name — cue #3 of 3. */}
-                  <span style={{ fontSize: 9, lineHeight: 1.25, color: "var(--text-muted)" }}>
-                    {tr(T.blockedBy, lang)} {b.blocked_by_label}
-                  </span>
-                </div>
-              </foreignObject>
-            </g>
-          );
-        })}
-      </g>
+      <line
+        key="hajb-spine"
+        x1={HAJB_SPINE_X} y1={spineTop} x2={HAJB_SPINE_X} y2={spineBottom}
+        stroke="var(--border-strong)" strokeWidth={1.5}
+      />
     );
-    y += entries.length * BRANCH_ROW_H + GAP_S;
   }
 
   // ---- Stage 1–3: gross → deductions → net (only if an estate was entered) --------
