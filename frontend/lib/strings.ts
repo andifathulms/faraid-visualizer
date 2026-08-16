@@ -249,6 +249,17 @@ export const STRINGS: Dict = {
   export_pdf: { id: "Ekspor PDF", en: "Export PDF" },
   preparing: { id: "Menyiapkan…", en: "Preparing…" },
 
+  // Route-level error boundary (app/error.tsx — DESIGN.md §8/build order step 7). A
+  // render error here is a bug in the app, never the engine's own correct refusal
+  // (that path is CalculationError/.unsupported-box, untouched by this).
+  error_boundary_title: { id: "Terjadi kesalahan pada halaman ini", en: "Something went wrong on this page" },
+  error_boundary_body: {
+    id: "Ini adalah galat aplikasi, bukan penolakan mesin perhitungan yang benar. Data yang Anda masukkan tidak hilang — coba lagi, atau muat ulang halaman jika masih gagal.",
+    en: "This is an application error, not the calculation engine correctly refusing something. Your entered data is not lost — try again, or reload the page if it keeps happening.",
+  },
+  error_boundary_retry: { id: "Coba lagi", en: "Try again" },
+  error_boundary_reload: { id: "Muat ulang halaman", en: "Reload page" },
+
   // Unsupported configuration (CLAUDE.md: an unhandled case surfaces as an explicit
   // refusal, never a silently wrong number). Deliberately worded as a limit of the tool,
   // not as a user mistake, and visually distinct from a real error.
