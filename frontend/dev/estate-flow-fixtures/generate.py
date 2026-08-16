@@ -26,7 +26,7 @@ import json
 from pathlib import Path
 
 from faraid_engine.rulesets import get_config
-from faraid_web.service import calculate_payload
+from faraid_web.service import calculate_payload, compare_payload
 
 OUT = Path(__file__).parent
 
@@ -42,6 +42,19 @@ def gen(name: str, heirs: dict, ruleset: str, *, estate: dict | None = None) -> 
     print(f"wrote {name}.json  (pokok_masalah={result['pokok_masalah']}, "
           f"aul_base={result['aul_base']}, radd={result['radd_applied']}, "
           f"blocked={len(result['blocked'])})")
+
+
+def gen_compare(name: str, heirs: dict, estate: dict, *, apply_harta_bersama: bool = False) -> None:
+    """DESIGN.md §7 (shared scale, divergence-linked gold line) needs a compare_payload()
+    fixture — a full ComparisonEntry list, not a single CalculationResult — for the case
+    where KHI and Syafi'i genuinely produce different net_divisible amounts from the same
+    input (harta bersama is KHI-only)."""
+    payload = {"heirs": heirs, "ruleset": "khi", "mode": "professional", "lang": "id",
+               "estate": estate, "apply_harta_bersama": apply_harta_bersama}
+    result = compare_payload(payload, ["khi", "syafii"])
+    (OUT / f"{name}.json").write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+    nets = [e["result"]["estate"]["net_divisible"] for e in result["comparison"] if e["ok"]]
+    print(f"wrote {name}.json  (net_divisible per column: {nets})")
 
 
 def gen_dzawil_arham_refusal() -> None:
@@ -95,6 +108,13 @@ def main() -> None:
 
     # Dzawil arham — see gen_dzawil_arham_refusal().
     gen_dzawil_arham_refusal()
+
+    # Compare mode, shared scale (DESIGN.md §7): KHI separates 20M of harta bersama that
+    # Syafi'i never does, so net_divisible genuinely differs (80M vs 100M) from the same
+    # gross estate — the case a shared trunk scale exists to render honestly.
+    gen_compare("compare_hb_divergence", {"wives": 1, "sons": 1, "daughters": 1},
+                {"gross_value": "120000000", "debts": "20000000", "joint_assets": "40000000"},
+                apply_harta_bersama=True)
 
 
 if __name__ == "__main__":
