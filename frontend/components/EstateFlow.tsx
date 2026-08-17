@@ -329,7 +329,11 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
           {isOpen && (
             <div id={`${btnId}-panel`} style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
               {found.map((s) => (
-                <div key={s.id} style={{ fontSize: 10, lineHeight: 1.4, color: "var(--text-muted)", whiteSpace: "normal" }}>
+                // minWidth:0 — see segRow's comment on the same fix. A citation note is
+                // the longest text this component ever renders (a full editorial
+                // sentence), which makes this flex item the single most exposed spot
+                // to the same "refuses to shrink, overflows, gets clipped" bug.
+                <div key={s.id} style={{ fontSize: 10, lineHeight: 1.4, color: "var(--text-muted)", whiteSpace: "normal", minWidth: 0 }}>
                   <strong style={{ color: "var(--text)" }}>{s.reference}</strong> — {citationNote(s, lang)}
                 </div>
               ))}
@@ -357,8 +361,10 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
         <rect x={0} y={y} width={w} height={BAR_H} rx={6} fill={COLOR.surface2} stroke={COLOR.border} />
         <foreignObject x={8} y={y} width={w - 16} height={BAR_H}>
           <div style={boxStyle}>
-            <span style={{ fontWeight: 700, fontSize: 12 }}>{label}</span>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{sub}</span>
+            <span style={{ fontWeight: 700, fontSize: 12, minWidth: 0 }}>{label}</span>
+            {/* sub carries the "no estate entered" sentence in the fractions-only
+                case — minWidth:0 for the same reason as segRow's spans. */}
+            <span style={{ fontSize: 11, color: "var(--text-muted)", minWidth: 0 }}>{sub}</span>
           </div>
         </foreignObject>
       </g>
@@ -374,8 +380,8 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
         <rect x={0} y={y} width={TRUNK_W} height={GAP_XS + 22} fill="none" />
         <foreignObject x={0} y={y} width={TRUNK_W} height={22}>
           <div style={{ ...boxStyle, flexDirection: "row", justifyContent: "space-between", height: 22 }}>
-            <span style={{ fontSize: 11, color: "var(--text-faint)" }}>− {label}</span>
-            <span className="tabnum" style={{ fontSize: 11, color: "var(--text-faint)" }}>
+            <span style={{ fontSize: 11, color: "var(--text-faint)", minWidth: 0 }}>− {label}</span>
+            <span className="tabnum" style={{ fontSize: 11, color: "var(--text-faint)", flexShrink: 0 }}>
               {formatMoney(amount, lang)}
             </span>
           </div>
@@ -400,7 +406,7 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     // (§5.2) and does not say what should give at the extreme narrow end; solving it
     // (a leader line off to the side, matching how branches() already labels hajb
     // stops) is deferred to the wiring step rather than guessed at here.
-    const NARROW = 90;
+    const NARROW = 65;
     blocks.push(
       <g key={key}>
         {maxX > distW && (
@@ -421,20 +427,33 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
                 strokeOpacity={0.55}
               />
               <foreignObject x={s.x + 4} y={y + 3} width={Math.max(s.w - 8, 1)} height={rowH - 6}>
-                <div style={segStyle}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text)" }}>
+                {/* minWidth:0 on every flex-item span below is load-bearing, not
+                    decorative. Flex items default to min-width:auto, which means a
+                    span refuses to shrink below its OWN unwrapped ("max-content")
+                    width even though white-space stays "normal" — so a narrow column
+                    doesn't wrap text at all, it silently renders one line wider than
+                    its box and lets the box's overflow:hidden guillotine it mid-word.
+                    That is what turned "Anak perempuan" into "Anak perempua": the span
+                    was never 2 lines, it was ONE line rendered ~89px wide inside a
+                    ~51px box (measured), not obviously so since browser devtools show
+                    the SAME visual clipping either way — confirmed by reading
+                    getBoundingClientRect() vs the parent's own width. This is the
+                    well-known flexbox min-width:auto gotcha, not a sizing shortfall;
+                    the box was already tall enough for two lines. */}
+                <div style={!narrow && s.sub ? segStyleTop : segStyle}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text)", minWidth: 0 }}>
                     {s.label}
                     {s.markRadd && <span title={tr(T.radd, lang)} style={{ color: "var(--radd)" }}> ↩</span>}
                   </span>
-                  {!narrow && s.sub && <span style={{ fontSize: 10, color: "var(--text-muted)" }}>{s.sub}</span>}
-                  <span className="frac" style={{ fontSize: 13 }}>{s.fracText}</span>
+                  {!narrow && s.sub && <span style={{ fontSize: 10, color: "var(--text-muted)", minWidth: 0 }}>{s.sub}</span>}
+                  <span className="frac" style={{ fontSize: 13, minWidth: 0 }}>{s.fracText}</span>
                   {!narrow && s.amountText && (
-                    <span className="tabnum" style={{ fontSize: 10, color: "var(--text-muted)" }}>
+                    <span className="tabnum" style={{ fontSize: 10, color: "var(--text-muted)", minWidth: 0 }}>
                       {s.amountText}
                     </span>
                   )}
                   {!narrow && s.markExcluded && (
-                    <span style={{ fontSize: 9, color: "var(--danger)", fontWeight: 700 }}>
+                    <span style={{ fontSize: 9, color: "var(--danger)", fontWeight: 700, minWidth: 0 }}>
                       {tr(T.raddExcluded, lang)}
                     </span>
                   )}
@@ -503,7 +522,7 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
               exact "several things, one cause" shape. */}
           <foreignObject x={HAJB_SPINE_X + 12} y={groupY - 10} width={distW - HAJB_SPINE_X - 12} height={HAJB_GROUP_HEAD_H}>
             <div style={{ display: "flex", alignItems: "center", height: HAJB_GROUP_HEAD_H }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: g.color }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: g.color, minWidth: 0 }}>
                 {tr(T.blockedBy, lang)} {g.blockerLabel}
               </span>
             </div>
@@ -523,7 +542,7 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
             <line x1={stopX} y1={itemY - 5} x2={stopX} y2={itemY + 5} stroke={COLOR.blocked} strokeWidth={2} />
             <foreignObject x={stopX + 8} y={itemY - 9} width={distW - stopX - 8} height={HAJB_ITEM_H}>
               <div style={{ display: "flex", alignItems: "center", height: HAJB_ITEM_H }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: "var(--blocked)", textDecoration: "line-through" }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: "var(--blocked)", textDecoration: "line-through", minWidth: 0 }}>
                   {b.label}{b.count > 1 ? ` ×${b.count}` : ""}
                 </span>
               </div>
@@ -625,7 +644,7 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
       blocks.push(
         <foreignObject key="aul-ratio" x={0} y={y} width={TRUNK_W} height={20}>
           <div style={{ ...boxStyle, flexDirection: "row", gap: 6, height: 20 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gold)" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--gold)", minWidth: 0 }}>
               {tr(T.aulRatio, lang)}: {result.pokok_masalah} → {result.aul_base} ({tr(T.aulClaimed, lang)} → {tr(T.aulCompressed, lang)})
             </span>
           </div>
@@ -731,6 +750,7 @@ const boxStyle: CSSProperties = {
   fontFamily: "var(--sans)",
   color: "var(--text)",
   lineHeight: 1.2,
+  overflowWrap: "break-word",
 };
 
 const segStyle: CSSProperties = {
@@ -742,4 +762,11 @@ const segStyle: CSSProperties = {
   color: "var(--text)",
   lineHeight: 1.25,
   overflow: "hidden",
+  overflowWrap: "break-word",
 };
+
+// Same box as segStyle but anchored to the top: used wherever a segment can carry a
+// wrapped sub-label (e.g. "asabah bersama laki-laki") on top of a wrapped relation
+// name, so a too-tall stack clips only its LAST line, never its first (see the
+// justifyContent:"center" symmetric-clip bug fixed earlier in branches()).
+const segStyleTop: CSSProperties = { ...segStyle, justifyContent: "flex-start" };
