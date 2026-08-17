@@ -400,20 +400,28 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     // fraction) — narrow siham groups are exactly where the working table below
     // already carries the exact per-head figure.
     //
-    // KNOWN LIMIT, not yet solved: a segment under ~30px (e.g. the 1/24 wife's share
-    // in a 4-way 'aul case) still clips its label/fraction — the one pair this
-    // function does not drop. DESIGN.md requires the geometry to stay proportional
-    // (§5.2) and does not say what should give at the extreme narrow end; solving it
-    // (a leader line off to the side, matching how branches() already labels hajb
-    // stops) is deferred to the wiring step rather than guessed at here.
     const NARROW = 65;
+    // A segment under this width cannot fit even label+fraction without clipping
+    // inside its foreignObject (e.g. the 1/24 wife's share in a 4-way 'aul case) — the
+    // one pair segRow otherwise never drops. Rather than let it clip, the rect is still
+    // drawn at its true proportional width (DESIGN.md §5.2 — geometry stays honest) but
+    // carries no inline text; a leader line points out to a small flag below the row
+    // instead, the same "line out to a label" language branches() already uses for
+    // hajb stops.
+    const VERY_NARROW = 32;
+    const LEADER_STEM = 14;
+    const LEADER_LABEL_H = 16;
+    const LEADER_TIER_H = LEADER_LABEL_H + 6;
+    const leaders: { x: number; label: string; fracText: string; amountText: string; color: string }[] = [];
     blocks.push(
       <g key={key}>
         {maxX > distW && (
           <line x1={distW} y1={y - 4} x2={distW} y2={y + rowH + 4} stroke={COLOR.blocked} strokeDasharray="3 3" />
         )}
         {segs.map((s) => {
+          const veryNarrow = s.w < VERY_NARROW;
           const narrow = s.w < NARROW;
+          if (veryNarrow) leaders.push({ x: s.x + s.w / 2, label: s.label, fracText: s.fracText, amountText: s.amountText, color: s.color });
           return (
             <g key={s.key}>
               <rect
@@ -426,37 +434,78 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
                 stroke={s.color}
                 strokeOpacity={0.55}
               />
-              <foreignObject x={s.x + 4} y={y + 3} width={Math.max(s.w - 8, 1)} height={rowH - 6}>
-                {/* minWidth:0 on every flex-item span below is load-bearing, not
-                    decorative. Flex items default to min-width:auto, which means a
-                    span refuses to shrink below its OWN unwrapped ("max-content")
-                    width even though white-space stays "normal" — so a narrow column
-                    doesn't wrap text at all, it silently renders one line wider than
-                    its box and lets the box's overflow:hidden guillotine it mid-word.
-                    That is what turned "Anak perempuan" into "Anak perempua": the span
-                    was never 2 lines, it was ONE line rendered ~89px wide inside a
-                    ~51px box (measured), not obviously so since browser devtools show
-                    the SAME visual clipping either way — confirmed by reading
-                    getBoundingClientRect() vs the parent's own width. This is the
-                    well-known flexbox min-width:auto gotcha, not a sizing shortfall;
-                    the box was already tall enough for two lines. */}
-                <div style={!narrow && s.sub ? segStyleTop : segStyle}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text)", minWidth: 0 }}>
-                    {s.label}
-                    {s.markRadd && <span title={tr(T.radd, lang)} style={{ color: "var(--radd)" }}> ↩</span>}
-                  </span>
-                  {!narrow && s.sub && <span style={{ fontSize: 10, color: "var(--text-muted)", minWidth: 0 }}>{s.sub}</span>}
-                  <span className="frac" style={{ fontSize: 13, minWidth: 0 }}>{s.fracText}</span>
-                  {!narrow && s.amountText && (
-                    <span className="tabnum" style={{ fontSize: 10, color: "var(--text-muted)", minWidth: 0 }}>
-                      {s.amountText}
+              {!veryNarrow && (
+                <foreignObject x={s.x + 4} y={y + 3} width={Math.max(s.w - 8, 1)} height={rowH - 6}>
+                  {/* minWidth:0 on every flex-item span below is load-bearing, not
+                      decorative. Flex items default to min-width:auto, which means a
+                      span refuses to shrink below its OWN unwrapped ("max-content")
+                      width even though white-space stays "normal" — so a narrow column
+                      doesn't wrap text at all, it silently renders one line wider than
+                      its box and lets the box's overflow:hidden guillotine it mid-word.
+                      That is what turned "Anak perempuan" into "Anak perempua": the span
+                      was never 2 lines, it was ONE line rendered ~89px wide inside a
+                      ~51px box (measured), not obviously so since browser devtools show
+                      the SAME visual clipping either way — confirmed by reading
+                      getBoundingClientRect() vs the parent's own width. This is the
+                      well-known flexbox min-width:auto gotcha, not a sizing shortfall;
+                      the box was already tall enough for two lines. */}
+                  <div style={!narrow && s.sub ? segStyleTop : segStyle}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text)", minWidth: 0 }}>
+                      {s.label}
+                      {s.markRadd && <span title={tr(T.radd, lang)} style={{ color: "var(--radd)" }}> ↩</span>}
                     </span>
-                  )}
-                  {!narrow && s.markExcluded && (
-                    <span style={{ fontSize: 9, color: "var(--danger)", fontWeight: 700, minWidth: 0 }}>
-                      {tr(T.raddExcluded, lang)}
-                    </span>
-                  )}
+                    {!narrow && s.sub && <span style={{ fontSize: 10, color: "var(--text-muted)", minWidth: 0 }}>{s.sub}</span>}
+                    <span className="frac" style={{ fontSize: 13, minWidth: 0 }}>{s.fracText}</span>
+                    {!narrow && s.amountText && (
+                      <span className="tabnum" style={{ fontSize: 10, color: "var(--text-muted)", minWidth: 0 }}>
+                        {s.amountText}
+                      </span>
+                    )}
+                    {!narrow && s.markExcluded && (
+                      <span style={{ fontSize: 9, color: "var(--danger)", fontWeight: 700, minWidth: 0 }}>
+                        {tr(T.raddExcluded, lang)}
+                      </span>
+                    )}
+                  </div>
+                </foreignObject>
+              )}
+            </g>
+          );
+        })}
+        {/* Leader flags for very-narrow segments, staggered onto two tiers so two
+            adjacent tiny segments (their anchors under LABEL_W apart) don't overlap. */}
+        {leaders.map((lead, i) => {
+          const LABEL_W = 92;
+          const overlapsPrev = i > 0 && lead.x - leaders[i - 1].x < LABEL_W;
+          const tier = overlapsPrev ? (i % 2 === 0 ? 1 : 0) : 0;
+          const stemEnd = y + rowH + LEADER_STEM + tier * LEADER_TIER_H;
+          const text = [lead.label, lead.fracText, lead.amountText].filter(Boolean).join("  ");
+          return (
+            <g key={`lead-${i}`}>
+              <line x1={lead.x} y1={y + rowH} x2={lead.x} y2={stemEnd} stroke={lead.color} strokeDasharray="2 2" />
+              <circle cx={lead.x} cy={stemEnd} r={2} fill={lead.color} />
+              <foreignObject
+                x={Math.min(Math.max(lead.x - LABEL_W / 2, 0), distW - LABEL_W)}
+                y={stemEnd + 2}
+                width={LABEL_W}
+                height={LEADER_LABEL_H}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                    height: LEADER_LABEL_H,
+                    fontSize: 9,
+                    fontFamily: "var(--sans)",
+                    color: "var(--text)",
+                    whiteSpace: "nowrap",
+                  }}
+                  title={text}
+                >
+                  <span style={{ fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis" }}>{lead.label}</span>
+                  <span className="frac" style={{ fontSize: 10 }}>{lead.fracText}</span>
                 </div>
               </foreignObject>
             </g>
@@ -464,7 +513,9 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
         })}
       </g>
     );
-    y += rowH + GAP_S;
+    const leaderTiers = leaders.some((l, i) => i > 0 && l.x - leaders[i - 1].x < 92) ? 2 : leaders.length ? 1 : 0;
+    const extra = leaderTiers ? LEADER_STEM + leaderTiers * LEADER_TIER_H : 0;
+    y += rowH + extra + GAP_S;
   }
 
   /**
