@@ -751,34 +751,53 @@ export default function EstateFlow({ input, lang, scaleMaxNet, highlightStep }: 
     // overflow:visible (not the .flow-wrap class's own overflow:hidden, kept for
     // DerivationFlow) — an 'aul overhang has to actually be visible past the trunk.
     <div className="flow-wrap" style={{ height: "auto", padding: 12, background: "var(--surface)", overflow: "visible" }}>
-      {/* position:relative anchors the citation overlay below to the same box the svg
-          occupies, so a percentage `top` lines each button up with its y in the svg's
-          own coordinate system — that box scales with viewport width exactly as the svg
-          does (same width, height set by the svg's own intrinsic aspect ratio), so the
-          two stay aligned without measuring anything at runtime. */}
-      <div style={{ position: "relative" }}>
-        <svg
-          role="img"
-          aria-hidden="true"
-          viewBox={`0 0 ${W} ${totalH}`}
-          width="100%"
-          style={{ display: "block", overflow: "visible" }}
-        >
-          {blocks}
-        </svg>
-        {citeOverlays.map((c) => (
-          <div
-            key={c.key}
-            style={{
-              position: "absolute",
-              left: 0, right: 0,
-              top: `${(c.y / totalH) * 100}%`,
-              height: `${(c.h / totalH) * 100}%`,
-            }}
+      {/* .working-scroll (ResultView's siham table already uses this: overflow-x:auto
+          plus a fade-mask hint at the trailing edge, since "Professional mode is the
+          mode most likely to be read on a phone in a courthouse corridor" — reused
+          here verbatim for the same reason) + minWidth:W on the inner box, rather than
+          letting the svg shrink to fill any container width: every citeOverlay button
+          below is plain HTML positioned by a PERCENTAGE of this box's height, but its
+          real content (fixed font sizes, line-height, padding) has a fixed minimum
+          pixel height that does not shrink along with it. On a phone-width container
+          the svg — and the percentage scale citeOverlays are computed against — can
+          compress far enough that a button's real ~36px content no longer fits the
+          ~20px slot its percentage now works out to, and it visibly spills onto
+          whatever the svg draws next (a segRow, in the case that surfaced this). Every
+          reserved height in this file (CITE_H, CHIP_ROW_H, HAJB_*, VERY_NARROW's leader
+          flag) was sized against a viewBox where 1 unit ≈ 1px, i.e. W=600 rendered at
+          ≥600 real px — so rather than re-deriving each of those against an arbitrary
+          smaller scale, the diagram simply never renders smaller than that, and pans
+          horizontally below it. */}
+      <div className="working-scroll">
+        {/* position:relative anchors the citation overlay below to the same box the svg
+            occupies, so a percentage `top` lines each button up with its y in the svg's
+            own coordinate system — that box scales with viewport width exactly as the
+            svg does (same width, height set by the svg's own intrinsic aspect ratio), so
+            the two stay aligned without measuring anything at runtime. */}
+        <div style={{ position: "relative", minWidth: W }}>
+          <svg
+            role="img"
+            aria-hidden="true"
+            viewBox={`0 0 ${W} ${totalH}`}
+            width="100%"
+            style={{ display: "block", overflow: "visible" }}
           >
-            {c.node}
-          </div>
-        ))}
+            {blocks}
+          </svg>
+          {citeOverlays.map((c) => (
+            <div
+              key={c.key}
+              style={{
+                position: "absolute",
+                left: 0, right: 0,
+                top: `${(c.y / totalH) * 100}%`,
+                height: `${(c.h / totalH) * 100}%`,
+              }}
+            >
+              {c.node}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Screen-reader / no-JS text equivalent: the working table below is the real
